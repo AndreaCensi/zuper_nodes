@@ -2,7 +2,7 @@ comptest_package=zuper_nodes_tests,zuper_nodes_wrapper_tests
 out=out-comptests
 coverage_dir=out-coverage
 coverage_include='*src/zuper_*'
-coveralls_repo_token=xxxrqlJ5L8FdP2zmw3WVxQjlIeg71GaqMoHy
+coveralls_repo_token=JJ8Zi6WCBp6p09pCLuMp9fyfD88Rq2BpW
 
 all:
 

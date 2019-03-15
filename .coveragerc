@@ -1,6 +1,6 @@
 [run]
 
-source = aido_nodes
+source = zuper_nodes
 
 concurrency = multiprocessing
 
