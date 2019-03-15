@@ -45,6 +45,7 @@ setup(
             'termcolor',
             'zuper-utils',
             'cbor2',
+            'base58',
         ],
         entry_points={
             'console_scripts': [

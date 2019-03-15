@@ -12,3 +12,4 @@ coverage
 coveralls
 
 cbor2
+base58
