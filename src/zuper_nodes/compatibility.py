@@ -1,6 +1,6 @@
-from zuper_nodes import InteractionProtocol
 from contracts import indent
 from zuper_json.subcheck import can_be_used_as
+from zuper_nodes import InteractionProtocol
 
 
 class IncompatibleProtocol(Exception):

@@ -34,8 +34,10 @@ class ProtocolViolation(AIDONodesException):
 class ExternalProtocolViolation(ProtocolViolation):
     pass
 
+
 class ExternalTimeout(ExternalProtocolViolation):
     pass
+
 
 class InternalProtocolViolation(ProtocolViolation):
     pass
@@ -94,4 +96,3 @@ class TimingInfo:
     acquired: Optional[Dict[str, TimeSpec]] = field(default_factory=dict)
     processed: Optional[Dict[str, TimeSpec]] = field(default_factory=dict)
     received: Optional[TimeSpec] = None
-

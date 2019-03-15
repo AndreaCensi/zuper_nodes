@@ -31,6 +31,7 @@ class ProtocolDescription:
     data: InteractionProtocol
     meta: InteractionProtocol
 
+
 @dataclass
 class CommsHealth:
     # ignored because not compatible

@@ -8,6 +8,7 @@ __all__ = ['setup_logging_color', 'setup_logging_format', 'setup_logging', 'logg
 def get_FORMAT_datefmt():
     def dark(s):
         return termcolor.colored(s, attrs=['dark'])
+
     pre = dark('%(asctime)s|')
     pre += '%(name)s'
     pre += dark('|%(filename)s:%(lineno)s|%(funcName)s(): ')

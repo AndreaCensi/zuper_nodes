@@ -115,25 +115,28 @@ class ConcreteContext(Context):
         if timing is None:
             timing = self.last_timing
 
-        s = time.time()
-        hostname = socket.gethostname()
-        if timing.received is None:
-            # XXX
-            time1 = timestamp_from_seconds(s)
-        else:
-            time1 = timing.received.time
-        processed = TimeSpec(time=time1,
-                             time2=timestamp_from_seconds(s),
-                             frame='epoch',
-                             clock=hostname)
-        timing.processed[self.node_name] = processed
+        if timing is not None:
+            s = time.time()
+            if timing.received is None:
+                # XXX
+                time1 = timestamp_from_seconds(s)
+            else:
+                time1 = timing.received.time
+            processed = TimeSpec(time=time1,
+                                 time2=timestamp_from_seconds(s),
+                                 frame='epoch',
+                                 clock=socket.gethostname())
+            timing.processed[self.node_name] = processed
+            timing.received = None
+
         # timing = TimingInfo(acquired=acquired, processed=processed)
         m = {}
         m[FIELD_COMPAT] = [CUR_PROTOCOL]
         m[FIELD_TOPIC] = self.tout.get(topic, topic)
         m[FIELD_DATA] = object_to_ipce(data, {}, with_schema=with_schema)
-        timing.received = None
-        m[FIELD_TIMING] = object_to_ipce(timing, {}, with_schema=False)
+
+        if timing is not None:
+            m[FIELD_TIMING] = object_to_ipce(timing, {}, with_schema=False)
         self._write_raw(m)
         logger_interaction.debug(f'Written output "{topic}".')
 
