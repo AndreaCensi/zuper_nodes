@@ -44,6 +44,7 @@ setup(
             'networkx',
             'termcolor',
             'zuper-utils',
+            'cbor2',
         ],
         entry_points={
             'console_scripts': [

@@ -10,3 +10,5 @@ termcolor
 comptests==1.4.27
 coverage
 coveralls
+
+cbor2
