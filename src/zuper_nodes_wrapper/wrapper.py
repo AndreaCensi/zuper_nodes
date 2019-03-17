@@ -579,7 +579,12 @@ def call_if_fun_exists(ob, fname, **kwargs):
     for k, v in dict(kwargs).items():
         if k not in a.args:
             kwargs.pop(k)
-    f(**kwargs)
+    try:
+        f(**kwargs)
+    except TypeError as e:
+        msg = f'Cannot call function {f} with arguments {kwargs}.'
+        msg += f'\n\nargspec: {a}'
+        raise TypeError(msg) from e
 
 
 def check_implementation(node, protocol: InteractionProtocol):
