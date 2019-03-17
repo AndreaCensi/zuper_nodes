@@ -33,7 +33,8 @@ class MsgReceived(Generic[X]):
     timing: TimingInfo
 
 
-from .constants import ENV_ENCODING, ENV_ENCODING_JSON, ENV_ENCODING_CBOR
+from .constants import ENV_ENCODING, ENV_ENCODING_JSON, ENV_ENCODING_CBOR, TOPIC_ABORTED, FIELD_COMPAT, FIELD_TOPIC, \
+    FIELD_DATA, FIELD_TIMING
 
 
 def should_use_binary_encoding():
@@ -44,13 +45,20 @@ def should_use_binary_encoding():
 
 import cbor2 as cbor
 
+class RemoteNodeAborted(Exception):
+    pass
+
 
 class ComponentInterface(object):
 
     def __init__(self, fnin, fnout, expect_protocol: InteractionProtocol, nickname: str):
         self.nickname = nickname
         self._cc = None
-        os.mkfifo(fnin)
+        try:
+            os.mkfifo(fnin)
+        except BaseException as e:
+            msg = f'Cannot create fifo {fnin}'
+            raise Exception(msg) from e
         self.fpin = open(fnin, 'wb', buffering=0)
         wait_for_creation(fnout)
         self.fnout = fnout
@@ -99,16 +107,27 @@ class ComponentInterface(object):
                 msg = f'While attempting to write on topic "{topic}", cannot interpret the value as {suggest_type}.\nValue: {data}'
                 raise Exception(msg) from e  # XXX
 
-        msg = {'compat': ['aido2'], 'topic': topic, 'data': ipce, 'timing': timing}
+        msg = {FIELD_COMPAT: ['aido2'], FIELD_TOPIC: topic, FIELD_DATA: ipce, FIELD_TIMING: timing}
 
         j = self._serialize(msg)
 
-        self.fpin.write(j)
-        self.fpin.flush()
+        try:
+            self.fpin.write(j)
+            self.fpin.flush()
+        except BrokenPipeError as e:
+            msg = f'While attempting to write topic "{topic}" to node "{self.nickname}", I reckon that the pipe is closed and the node exited.'
+            try:
+                received = self.read_one(expect_topic=TOPIC_ABORTED)
+                if received.topic == TOPIC_ABORTED:
+                    msg += '\n\nThis is the aborted message:'
+                    msg += '\n\n' + indent(received.data, ' |')
+            except BaseException as e2:
+                msg += f'\n\nI could not read any aborted message: {e2}'
+            raise RemoteNodeAborted(msg) from e
 
         # make sure we write the schema when we copy it
         if not with_schema:
-            msg['data'] = object_to_ipce(data, {}, with_schema=True)
+            msg[FIELD_DATA] = object_to_ipce(data, {}, with_schema=True)
             j = self._serialize(msg)
 
         if self._cc:
@@ -138,11 +157,11 @@ class ComponentInterface(object):
             #     self._cc.write(msg_b)
             #     self._cc.flush()
 
-            topic = msg['topic']
-            if topic == 'aborted':
+            topic = msg[FIELD_TOPIC]
+            if (expect_topic != TOPIC_ABORTED) and (topic == TOPIC_ABORTED):
                 m = f'I was waiting for a message from component "{self.nickname}" but it aborted with the following error.'
-                m += '\n\n' + indent(msg['data'], '|', f'{self.nickname} error |')
-                raise Exception(m)  # XXX
+                m += '\n\n' + indent(msg[FIELD_DATA], '|', f'{self.nickname} error |')
+                raise RemoteNodeAborted(m)  # XXX
 
             if expect_topic:
                 if topic != expect_topic:
@@ -164,15 +183,15 @@ class ComponentInterface(object):
                         raise Exception(msg)  # XXX
                     else:
                         klass = self.expect_protocol.outputs[topic]
-            data = ipce_to_object(msg['data'], {}, expect_type=klass)
+            data = ipce_to_object(msg[FIELD_DATA], {}, expect_type=klass)
 
             if self._cc:
-                msg['data'] = object_to_ipce(data, {}, with_schema=True)
+                msg[FIELD_DATA] = object_to_ipce(data, {}, with_schema=True)
                 msg_b = self._serialize(msg)
                 self._cc.write(msg_b)
                 self._cc.flush()
 
-            timing = ipce_to_object(msg['timing'], {}, expect_type=TimingInfo)
+            timing = ipce_to_object(msg[FIELD_TIMING], {}, expect_type=TimingInfo)
             self.nreceived += 1
             return MsgReceived[klass](topic, data, timing)
 

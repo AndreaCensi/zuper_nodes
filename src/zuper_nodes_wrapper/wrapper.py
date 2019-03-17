@@ -14,7 +14,7 @@ from io import BufferedReader
 from logging import currentframe
 from os.path import normcase
 from typing import List, Optional, Iterator, Dict, Tuple, Any
-
+from contracts import indent
 import cbor2
 import yaml
 from networkx.drawing.nx_pydot import write_dot
@@ -196,7 +196,8 @@ def check_variables():
 
 
 from .constants import ENV_ENCODING_VALID, ENV_DATA_IN, KNOWN, ENV_DATA_OUT, ENV_TRANSLATE, ENV_ENCODING, \
-    ENV_ENCODING_CBOR, ENV_ENCODING_JSON, ENV_META_OUT, ENV_META_IN, ENV_NAME, ENV_CONFIG
+    ENV_ENCODING_CBOR, ENV_ENCODING_JSON, ENV_META_OUT, ENV_META_IN, ENV_NAME, ENV_CONFIG, FIELD_DATA, FIELD_COMPAT, \
+    CUR_PROTOCOL, FIELD_TOPIC, FIELD_TIMING
 
 
 def run_loop(node, protocol: InteractionProtocol, args: Optional[List[str]] = None):
@@ -254,10 +255,17 @@ def run_loop(node, protocol: InteractionProtocol, args: Optional[List[str]] = No
     try:
         loop(node_name, fi, fo, mi, mo, node, protocol, tin, tout, binary_out,
              config=config)
-    except BaseException:
+    except BaseException as e:
+        msg = f'Error in node {node_name}'
         logger.error(f'Error in node {node_name}: \n{traceback.format_exc()}')
-        raise
-
+        raise Exception(msg) from e
+    finally:
+        fo.flush()
+        fo.close()
+        if fo is not mo:
+            mo.flush()
+            mo.close()
+        fi.close()
 
 import traceback
 
@@ -357,21 +365,6 @@ def loop(node_name, fi, fo, mi, mo, node, protocol, tin, tout, binary_out: bool,
                 context.write('set_config_error', str(e))
             else:
                 context.write('set_config_ack', None)
-            #
-            # if hasattr(node, ATT_CONFIG):
-            #     config = node.config
-            #     if hasattr(config, key):
-            #         setattr(node.config, key, value)
-            #         call_if_fun_exists(node, 'on_updated_config', context=context, key=key, value=value)
-            #         context.write('set_config_ack', None)
-            #     else:
-            #         msg = f'Could not find config key {key}'
-            #         logger.error(msg)
-            #         context.write('set_config_error', msg)
-            # else:
-            #     msg = 'Node does not have the "config" attribute.'
-            #     logger.error(msg)
-            #     context.write('set_config_error_error', msg)
 
         def on_received_describe_protocol(self, context):
             desc = ProtocolDescription(data=protocol, meta=basic_protocol)
@@ -406,11 +399,6 @@ def loop(node_name, fi, fo, mi, mo, node, protocol, tin, tout, binary_out: bool,
 
     for k, v in config.items():
         set_config(k, v)
-        # # sc = SetConfig(k, v)
-        # parsed = {'topic': 'set_config',
-        #           'data': {'key': k, 'value': v}}
-        # handle_message_node(parsed, basic_protocol, pc2, wrapper, context_meta)
-        # # wrapper.on_received_set_config(context=context_meta, data=sc)
 
     waiting_for = 'Expecting control message or one of:  %s' % pc.get_expected_events()
 
@@ -425,13 +413,23 @@ def loop(node_name, fi, fo, mi, mo, node, protocol, tin, tout, binary_out: bool,
                 handle_message_node(parsed, basic_protocol, pc2, wrapper, context_meta)
             else:
                 if not initialized:
-                    call_if_fun_exists(node, 'init', context=context_data)
+                    try:
+                        call_if_fun_exists(node, 'init', context=context_data)
+                    except BaseException as e:
+                        msg = "Exception while calling the node's init() function."
+                        msg += '\n\n' + indent(traceback.format_exc(), '| ')
+                        context_meta.write('aborted', msg)
+                        raise Exception(msg) from e
                     initialized = True
+
                 try:
                     handle_message_node(parsed, protocol, pc, node, context_data)
-                except BaseException:
-                    context_meta.write('aborted', traceback.format_exc())
-                    raise
+                except BaseException as e:
+                    msg = f"Exception while handling a message on topic \"{topic}\"."
+                    msg += '\n\n' + indent(traceback.format_exc(), '| ')
+                    context_meta.write('aborted', msg)
+                    raise Exception(msg) from e
+
     except StopIteration:
         pass
     except ExternalTimeout as e:
@@ -445,8 +443,13 @@ def loop(node_name, fi, fo, mi, mo, node, protocol, tin, tout, binary_out: bool,
         logger_interaction.error(msg)
 
     if initialized:
-        call_if_fun_exists(node, 'finish', context=context_data)
-
+        try:
+            call_if_fun_exists(node, 'finish', context=context_data)
+        except BaseException as e:
+            msg = "Exception while calling the node's finish() function."
+            msg += '\n\n' + indent(traceback.format_exc(), '| ')
+            context_meta.write('aborted', msg)
+            raise Exception(msg) from e
 
 def handle_message_node(parsed, protocol, pc: LanguageChecker, agent, context):
     topic = parsed[FIELD_TOPIC]
@@ -499,11 +502,7 @@ def handle_message_node(parsed, protocol, pc: LanguageChecker, agent, context):
 
 import select
 
-CUR_PROTOCOL = 'aido2'
-FIELD_TIMING = 'timing'
-FIELD_COMPAT = 'compat'
-FIELD_DATA = 'data'
-FIELD_TOPIC = 'topic'
+
 
 
 def inputs(fs, give_up: Optional[float] = None, waiting_for: str = None) -> Iterator[Dict]:
