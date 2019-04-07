@@ -19,8 +19,9 @@ import cbor2
 import yaml
 from networkx.drawing.nx_pydot import write_dot
 
-from compmake.utils import make_sure_dir_exists
-from contracts.utils import format_obs, check_isinstance
+from zuper_commons.fs import make_sure_dir_exists
+from zuper_commons.types import check_isinstance
+from contracts.utils import format_obs
 from zuper_json.ipce import object_to_ipce, ipce_to_object
 from zuper_json.json2cbor import read_next_either_json_or_cbor
 from zuper_json.json_utils import encode_bytes_before_json_serialization, decode_bytes_before_json_deserialization

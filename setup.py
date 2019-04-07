@@ -25,7 +25,7 @@ def get_version(filename):
 version = get_version(filename='src/zuper_nodes/__init__.py')
 
 setup(
-        name='zuper_nodes',
+        name='zuper-nodes',
         version=version,
         keywords='',
         package_dir={'': 'src'},

@@ -79,9 +79,10 @@ class ComponentInterface(object):
         """ CC-s everything that is read or written to this file. """
         self._cc = f
 
-    def _get_node_protocol(self):
+    def _get_node_protocol(self, timeout=None):
         self.write('wrapper.describe_protocol')
-        ob: MsgReceived[ProtocolDescription] = self.read_one(expect_topic='protocol_description')
+        ob: MsgReceived[ProtocolDescription] = self.read_one(expect_topic='protocol_description',
+                                                             timeout=timeout)
         self.node_protocol = ob.data.data
         self.data_protocol = ob.data.meta
 
