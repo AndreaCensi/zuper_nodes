@@ -1,4 +1,4 @@
--e git://github.com/AndreaCensi/zuper-utils.git@z1#egg=zuper-utils
+-e git://github.com/AndreaCensi/zuper-utils.git@z2#egg=zuper-utils
 
 compmake
 pyparsing

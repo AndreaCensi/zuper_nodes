@@ -273,8 +273,8 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
                 try:
                     handle_message_node(parsed, receiver0, context0)
                     to_write = context0.get_to_write()
-                    msg = f'I wrote {len(to_write)} messages.'
-                    logger.info(msg)
+                    # msg = f'I wrote {len(to_write)} messages.'
+                    # logger.info(msg)
                     for rtm in to_write:
                         sink.write_topic_message(rtm.topic, rtm.data, rtm.timing)
                     sink.write_control_message(CTRL_OVER)
