@@ -1,4 +1,4 @@
-__version__ = '1.0.4aaa'
+__version__ = '2.0.0'
 
 from .col_logging import logger
 
