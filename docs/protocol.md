@@ -445,3 +445,5 @@ The second schema is:
 <style>
 img { max-width: 100%; }
 </style>
+
+

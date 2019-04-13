@@ -1,8 +1,8 @@
-__version__ = '1.0.4'
+__version__ = '1.0.4aaa'
 
 from .col_logging import logger
 
-logger.info(f'aido_nodes {__version__}')
+logger.info(f'zuper-nodes {__version__}')
 
 from .language import *
 

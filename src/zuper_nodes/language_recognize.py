@@ -105,7 +105,7 @@ class LanguageChecker:
     g: nx.DiGraph
     active: Set[NodeName]
 
-    def __init__(self, language):
+    def __init__(self, language: Language):
         self.g = nx.MultiDiGraph()
         self.start_node = START
         self.accept_node = ACCEPT
@@ -185,5 +185,7 @@ class LanguageChecker:
         events = set()
         for state in self.active:
             for (_, neighbor, data) in self.g.out_edges([state], data=True):
-                events.add(data['event_match'])
+                em = data['event_match']
+                if not isinstance(em, Always):
+                    events.add(em)
         return events

@@ -6,6 +6,9 @@ import sys
 from dataclasses import dataclass
 from io import BytesIO, BufferedReader
 
+import cbor2
+import yaml
+
 from zuper_nodes import InteractionProtocol
 from zuper_nodes_wrapper.meta_protocol import BuildDescription, NodeDescription, ConfigDescription, ProtocolDescription
 from contracts import indent
@@ -104,7 +107,8 @@ def identify_command(command) -> NodeInfo:
     to_send = b''
     for p in d:
         p['compat'] = ['aido2']
-        to_send += (json.dumps(p) + '\n').encode('utf-8')
+        # to_send += (json.dumps(p) + '\n').encode('utf-8')
+        to_send += cbor2.dumps(p)
     cp = subprocess.run(command, input=to_send, capture_output=True)
     s = cp.stderr.decode('utf-8')
 
@@ -114,14 +118,18 @@ def identify_command(command) -> NodeInfo:
     stream = read_cbor_or_json_objects(f)
 
     res = stream.__next__()
+    logger.debug(yaml.dump(res))
     pd: ProtocolDescription = ipce_to_object(res['data'], {}, {}, expect_type=ProtocolDescription)
     res = stream.__next__()
+    logger.debug(yaml.dump(res))
     cd: ConfigDescription = ipce_to_object(res['data'], {}, {}, expect_type=ConfigDescription)
     res = stream.__next__()
+    logger.debug(yaml.dump(res))
     nd: NodeDescription = ipce_to_object(res['data'], {}, {}, expect_type=NodeDescription)
     res = stream.__next__()
+    logger.debug(yaml.dump(res))
     bd: BuildDescription = ipce_to_object(res['data'], {}, {}, expect_type=BuildDescription)
-
+    logger.debug(yaml.dump(res))
     return NodeInfo(pd, nd, bd, cd)
 
 

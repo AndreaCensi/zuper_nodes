@@ -35,7 +35,19 @@ class ExternalProtocolViolation(ProtocolViolation):
     pass
 
 
+class ExternalNodeDidNotUnderstand(ProtocolViolation):
+    pass
+
+
+class RemoteNodeAborted(Exception):
+    pass
+
+
 class ExternalTimeout(ExternalProtocolViolation):
+    pass
+
+
+class InternalProblem(Exception):
     pass
 
 

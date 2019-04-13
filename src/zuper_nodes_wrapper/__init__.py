@@ -8,4 +8,4 @@ logger_interaction = logger.getChild("interaction")
 
 logger_interaction.setLevel(logging.CRITICAL)
 
-from .wrapper import *
+from .interface import *
