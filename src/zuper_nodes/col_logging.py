@@ -83,5 +83,3 @@ import logging
 
 logging.basicConfig()
 setup_logging()
-logger = logging.getLogger('reader')
-logger.setLevel(logging.DEBUG)

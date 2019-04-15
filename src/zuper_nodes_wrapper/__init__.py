@@ -1,11 +1,9 @@
 import logging
 
-from zuper_nodes import logger as aido_nodes_logger
-
-logger = aido_nodes_logger.getChild('wrapper')
+logger = logging.getLogger('znw')
+logger.setLevel(logging.DEBUG)
 
 logger_interaction = logger.getChild("interaction")
-
 logger_interaction.setLevel(logging.CRITICAL)
 
 from .interface import *
