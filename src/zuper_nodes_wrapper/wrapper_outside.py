@@ -20,7 +20,8 @@ from .constants import *
 class ComponentInterface:
 
     def __init__(self, fnin: str, fnout: str,
-                 expect_protocol: InteractionProtocol, nickname: str):
+                 expect_protocol: InteractionProtocol, nickname: str,
+                 timeout=None):
         self.nickname = nickname
         self._cc = None
         try:
@@ -38,7 +39,7 @@ class ComponentInterface:
         self.expect_protocol = expect_protocol
         self.node_protocol = None
         self.data_protocol = None
-        self.timeout = None
+        self.timeout = timeout
 
     def close(self):
         self.fpin.close()
