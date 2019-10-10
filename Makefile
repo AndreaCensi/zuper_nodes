@@ -2,7 +2,7 @@ comptest_package=zuper_nodes_tests,zuper_nodes_wrapper_tests
 out=out-comptests
 coverage_dir=out-coverage
 coverage_include='*src/zuper_*'
-coveralls_repo_token=JJ8Zi6WCBp6p09pCLuMp9fyfD88Rq2BpW
+#coveralls_repo_token=JJ8Zi6WCBp6p09pCLuMp9fyfD88Rq2BpW
 
 all:
 
@@ -23,7 +23,8 @@ upload:
 
 
 
-
+test:
+	$(MAKE) tests-coverage
 
 
 coverage_run=coverage run
@@ -69,7 +70,7 @@ coverage-report:
 
 coverage-coveralls:
 	# without --nogit, coveralls does not find the source code
-	COVERALLS_REPO_TOKEN=$(coveralls_repo_token) coveralls
+	#COVERALLS_REPO_TOKEN=$(coveralls_repo_token) coveralls
 
 
 

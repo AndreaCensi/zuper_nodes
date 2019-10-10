@@ -1,5 +1,4 @@
--e git://github.com/AndreaCensi/zuper-utils.git@z2#egg=zuper-utils
-
+zuper-typing-z5
 compmake
 pyparsing
 PyContracts

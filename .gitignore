@@ -8,3 +8,4 @@ out*json
 language.dot
 docs
 dist
+.idea

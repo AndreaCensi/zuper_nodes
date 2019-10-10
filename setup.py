@@ -23,9 +23,9 @@ def get_version(filename):
 
 
 version = get_version(filename='src/zuper_nodes/__init__.py')
-
+line = 'z5'
 setup(
-        name='zuper-nodes',
+        name=f'zuper-nodes-{line}',
         version=version,
         keywords='',
         package_dir={'': 'src'},
@@ -39,11 +39,9 @@ setup(
             'compmake',
             'pyparsing',
             'PyContracts',
-            'pyparsing',
-            'PyContracts',
             'networkx',
             'termcolor',
-            'zuper-utils',
+            'zuper-utils-z5',
             'cbor2',
             'base58',
         ],

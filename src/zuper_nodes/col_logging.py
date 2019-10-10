@@ -2,7 +2,7 @@
 
 import termcolor
 
-__all__ = ['setup_logging_color', 'setup_logging_format', 'setup_logging', 'logger']
+__all__ = ['setup_logging_color', 'setup_logging_format', 'setup_logging']
 
 
 def get_FORMAT_datefmt():
@@ -17,6 +17,7 @@ def get_FORMAT_datefmt():
     return FORMAT, datefmt
 
 
+# noinspection PyUnresolvedReferences
 def setup_logging_format():
     from logging import Logger, StreamHandler, Formatter
     import logging

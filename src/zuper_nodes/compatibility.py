@@ -1,6 +1,7 @@
 from contracts import indent
-from zuper_json.subcheck import can_be_used_as
+
 from zuper_nodes import InteractionProtocol
+from zuper_typing.subcheck import can_be_used_as2
 
 
 class IncompatibleProtocol(Exception):
@@ -18,9 +19,9 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
                 msg = f'First protocol misses input "{k}".'
                 raise IncompatibleProtocol(msg)
             v1 = p1.inputs[k]
-            can, why = can_be_used_as(v1, v2)
-            if not can:
-                msg = f'For input "{k}", cannot use type {v1} as {v2}: {why}'
+            r = can_be_used_as2(v1, v2)
+            if not r:
+                msg = f'For input "{k}", cannot use type {v1} as {v2}: {r}'
                 raise IncompatibleProtocol(msg)
 
         # check output compatibility
@@ -30,9 +31,9 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
                 msg = f'First protocol misses output "{k}".'
                 raise IncompatibleProtocol(msg)
             v1 = p1.outputs[k]
-            can, why = can_be_used_as(v1, v2)
-            if not can:
-                msg = f'For output "{k}", cannot use type {v1} as {v2}: {why}'
+            r = can_be_used_as2(v1, v2)
+            if not r:
+                msg = f'For output "{k}", cannot use type {v1} as {v2}: {r}'
                 raise IncompatibleProtocol(msg)
             # XXX: to finish
     except IncompatibleProtocol as e:
