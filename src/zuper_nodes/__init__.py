@@ -1,9 +1,9 @@
-__version__ = '2.0.4'
+__version__ = '5.0.0'
 
 from .col_logging import logging
-logger = logging.getLogger('zn')
+logger = logging.getLogger('zuper-nodes')
 logger.setLevel(logging.DEBUG)
-logger.info(f'zn {__version__}')
+logger.info(f'zuper-nodes {__version__}')
 
 from .language import *
 

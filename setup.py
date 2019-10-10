@@ -41,7 +41,7 @@ setup(
             'PyContracts',
             'networkx',
             'termcolor',
-            'zuper-utils-z5',
+            'zuper-ipce-z5',
             'cbor2',
             'base58',
         ],
