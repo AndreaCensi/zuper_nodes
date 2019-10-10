@@ -8,7 +8,7 @@ termcolor
 # testing
 comptests==1.4.33
 coverage
-coveralls
 
 cbor2
 base58
+codecov
