@@ -8,11 +8,12 @@ from dataclasses import dataclass
 from typing import *
 
 import yaml
+from zuper_ipce import object_from_ipce, ipce_from_object, IESO
 
 from contracts.utils import format_obs
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance
-from zuper_json.ipce import object_to_ipce, ipce_to_object
+
 from zuper_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker
 from zuper_nodes.structures import TimingInfo, local_time, TimeSpec, timestamp_from_seconds, DecodingError, \
     ExternalProtocolViolation, NotConforming, ExternalTimeout, InternalProblem
@@ -70,7 +71,7 @@ class ConcreteContext(Context):
         klass = self.protocol.outputs[topic]
 
         if isinstance(data, dict):
-            data = ipce_to_object(data, {}, {}, expect_type=klass)
+            data = object_from_ipce(data, klass)
 
         if timing is None:
             timing = self.last_timing
@@ -90,10 +91,12 @@ class ConcreteContext(Context):
             timing.received = None
 
         topic_o = self.tout.get(topic, topic)
-        data = object_to_ipce(data, {}, with_schema=with_schema)
+        ieso = IESO(use_ipce_from_typelike_cache=True, with_schema=with_schema)
+        data = ipce_from_object(data, ieso=ieso)
 
         if timing is not None:
-            timing_o = object_to_ipce(timing, {}, with_schema=False)
+            ieso = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
+            timing_o = ipce_from_object(timing, ieso=ieso)
         else:
             timing_o = None
 
@@ -390,7 +393,7 @@ def handle_message_node(parsed: RawTopicMessage,
 
     klass = protocol.inputs[topic]
     try:
-        ob = ipce_to_object(data, {}, {}, expect_type=klass)
+        ob = object_from_ipce(data,  klass)
     except BaseException as e:
         msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
         try:
@@ -401,7 +404,7 @@ def handle_message_node(parsed: RawTopicMessage,
         raise DecodingError(msg) from e
 
     if parsed.timing is not None:
-        timing = ipce_to_object(parsed.timing, {}, {}, expect_type=TimingInfo)
+        timing = object_from_ipce(parsed.timing,  TimingInfo)
     else:
         timing = TimingInfo()
 
