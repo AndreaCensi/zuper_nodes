@@ -1,20 +1,23 @@
 import argparse
 import dataclasses
-import json
 import subprocess
 import sys
 from dataclasses import dataclass
-from io import BytesIO, BufferedReader
+from io import BufferedReader, BytesIO
 
 import cbor2
 import yaml
+from zuper_ipce import object_from_ipce
 
-from zuper_nodes import InteractionProtocol
-from zuper_nodes_wrapper.meta_protocol import BuildDescription, NodeDescription, ConfigDescription, ProtocolDescription
+from zuper_ipce.json2cbor import read_cbor_or_json_objects
+
 from contracts import indent
-from zuper_json import read_cbor_or_json_objects
-from zuper_json.ipce import ipce_to_object
+from zuper_nodes import InteractionProtocol
+from zuper_nodes_wrapper.meta_protocol import (BuildDescription, ConfigDescription, NodeDescription,
+                                               ProtocolDescription,
+                                               cast)
 from . import logger
+
 
 def identify_main():
     usage = None
@@ -59,6 +62,7 @@ def describe_bd(nd: BuildDescription):
 
 def describe_cd(nd: ConfigDescription):
     s = []
+    # noinspection PyDataclass
     for f in dataclasses.fields(nd.config):
         # for k, v in nd.config.__annotations__.items():
         s.append('%20s: %s = %s' % (f.name, f.type, f.default))
@@ -119,16 +123,16 @@ def identify_command(command) -> NodeInfo:
 
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    pd: ProtocolDescription = ipce_to_object(res['data'], {}, {}, expect_type=ProtocolDescription)
+    pd = cast(ProtocolDescription, object_from_ipce(res['data'], ProtocolDescription))
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    cd: ConfigDescription = ipce_to_object(res['data'], {}, {}, expect_type=ConfigDescription)
+    cd = cast(ConfigDescription, object_from_ipce(res['data'],   ConfigDescription))
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    nd: NodeDescription = ipce_to_object(res['data'], {}, {}, expect_type=NodeDescription)
+    nd = cast(NodeDescription, object_from_ipce(res['data'], NodeDescription))
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    bd: BuildDescription = ipce_to_object(res['data'], {}, {}, expect_type=BuildDescription)
+    bd = cast(BuildDescription, object_from_ipce(res['data'], BuildDescription))
     logger.debug(yaml.dump(res))
     return NodeInfo(pd, nd, bd, cd)
 

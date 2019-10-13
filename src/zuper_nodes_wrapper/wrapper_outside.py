@@ -3,10 +3,12 @@ from io import BufferedReader
 from typing import *
 
 import cbor2 as cbor
+from zuper_ipce.json2cbor import read_next_cbor
+
+from zuper_ipce import IESO, ipce_from_object, object_from_ipce
 
 from zuper_commons.text import indent
-from zuper_json.ipce import object_to_ipce, ipce_to_object
-from zuper_json.json2cbor import read_next_cbor
+
 from zuper_nodes import InteractionProtocol, ExternalProtocolViolation
 from zuper_nodes.compatibility import check_compatible_protocol
 from zuper_nodes.structures import TimingInfo, RemoteNodeAborted, ExternalNodeDidNotUnderstand
@@ -109,16 +111,14 @@ class ComponentInterface:
         if self.node_protocol:
             if topic in self.node_protocol.inputs:
                 suggest_type = self.node_protocol.inputs[topic]
-
-        ipce = object_to_ipce(data,
-                              {},
-                              with_schema=with_schema,
-                              suggest_type=suggest_type)
+        ieso = IESO(with_schema=with_schema)
+        ieso_true = IESO(with_schema=True)
+        ipce = ipce_from_object(data, suggest_type, ieso=ieso)
 
         # try to re-read
         if suggest_type:
             try:
-                _ = ipce_to_object(ipce, {}, expect_type=suggest_type)
+                _ = object_from_ipce(ipce, suggest_type)
             except BaseException as e:
                 msg = f'While attempting to write on topic "{topic}", cannot ' \
                     f'interpret the value as {suggest_type}.\nValue: {data}'
@@ -132,7 +132,7 @@ class ComponentInterface:
         self._write(j)
         # make sure we write the schema when we copy it
         if not with_schema:
-            msg[FIELD_DATA] = object_to_ipce(data, {}, with_schema=True)
+            msg[FIELD_DATA] = ipce_from_object(data, ieso=ieso_true)
             j = self._serialize(msg)
 
         if self._cc:
@@ -209,10 +209,10 @@ class ComponentInterface:
                         raise ExternalProtocolViolation(msg)
                     else:
                         klass = self.expect_protocol.outputs[topic]
-            data = ipce_to_object(msg[FIELD_DATA], {}, expect_type=klass)
-
+            data = object_from_ipce(msg[FIELD_DATA], klass)
+            ieso_true = IESO(with_schema=True)
             if self._cc:
-                msg[FIELD_DATA] = object_to_ipce(data, {}, with_schema=True)
+                msg[FIELD_DATA] = ipce_from_object(data, ieso=ieso_true)
                 msg_b = self._serialize(msg)
                 self._cc.write(msg_b)
                 self._cc.flush()
@@ -220,7 +220,7 @@ class ComponentInterface:
             if FIELD_TIMING not in msg:
                 timing = TimingInfo()
             else:
-                timing = ipce_to_object(msg[FIELD_TIMING], {}, expect_type=TimingInfo)
+                timing = object_from_ipce(msg[FIELD_TIMING],  TimingInfo)
             self.nreceived += 1
             return MsgReceived[klass](topic, data, timing)
 

@@ -1,6 +1,6 @@
-from abc import abstractmethod, ABCMeta
+from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Tuple, Dict, Iterator, Optional, Union
+from typing import Dict, Iterator, Optional, Tuple
 
 # Events
 

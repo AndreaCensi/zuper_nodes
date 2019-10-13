@@ -2,8 +2,10 @@ import select
 import time
 from typing import *
 
+from zuper_ipce.json2cbor import read_next_cbor
+
 from zuper_commons.text import indent
-from zuper_json.json2cbor import read_next_cbor
+
 from zuper_nodes.structures import ExternalTimeout
 from zuper_nodes_wrapper.struct import interpret_control_message, RawTopicMessage, ControlMessage
 from . import logger
