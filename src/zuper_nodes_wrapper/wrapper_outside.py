@@ -3,18 +3,16 @@ from io import BufferedReader
 from typing import *
 
 import cbor2 as cbor
-from zuper_ipce.json2cbor import read_next_cbor
-
-from zuper_ipce import IESO, ipce_from_object, object_from_ipce
 
 from zuper_commons.text import indent
-
-from zuper_nodes import InteractionProtocol, ExternalProtocolViolation
+from zuper_ipce import IESO, ipce_from_object, object_from_ipce
+from zuper_ipce.json2cbor import read_next_cbor
+from zuper_nodes import ExternalProtocolViolation, InteractionProtocol
 from zuper_nodes.compatibility import check_compatible_protocol
-from zuper_nodes.structures import TimingInfo, RemoteNodeAborted, ExternalNodeDidNotUnderstand
-from zuper_nodes_wrapper.meta_protocol import ProtocolDescription, basic_protocol
+from zuper_nodes.structures import ExternalNodeDidNotUnderstand, RemoteNodeAborted, TimingInfo
+from zuper_nodes_wrapper.meta_protocol import basic_protocol, ProtocolDescription
 from zuper_nodes_wrapper.streams import wait_for_creation
-from zuper_nodes_wrapper.struct import MsgReceived, interpret_control_message, WireMessage
+from zuper_nodes_wrapper.struct import interpret_control_message, MsgReceived, WireMessage
 from . import logger, logger_interaction
 from .constants import *
 
@@ -51,10 +49,12 @@ class ComponentInterface:
         """ CC-s everything that is read or written to this file. """
         self._cc = f
 
-    def _get_node_protocol(self, timeout=None):
+    def _get_node_protocol(self, timeout: float = None):
         self.my_capabilities = {'z2': {CAPABILITY_PROTOCOL_REFLECTION: True}}
-        msg = {FIELD_CONTROL: CTRL_CAPABILITIES,
-               FIELD_DATA: self.my_capabilities}
+        msg = {
+            FIELD_CONTROL: CTRL_CAPABILITIES,
+            FIELD_DATA: self.my_capabilities
+        }
 
         j = self._serialize(msg)
         self._write(j)
@@ -86,16 +86,16 @@ class ComponentInterface:
             if self.expect_protocol is not None:
                 check_compatible_protocol(self.node_protocol, self.expect_protocol)
 
-    def write_topic_and_expect(self, topic, data=None, with_schema=False,
-                               timeout=None,
+    def write_topic_and_expect(self, topic: str, data=None, with_schema: bool = False,
+                               timeout: float = None,
                                timing=None,
-                               expect=None) -> MsgReceived:
+                               expect: str = None) -> MsgReceived:
         timeout = timeout or self.timeout
         self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
         ob: MsgReceived = self.read_one(expect_topic=expect, timeout=timeout)
         return ob
 
-    def write_topic_and_expect_zero(self, topic, data=None, with_schema=False,
+    def write_topic_and_expect_zero(self, topic: str, data=None, with_schema=False,
                                     timeout=None,
                                     timing=None):
         timeout = timeout or self.timeout
@@ -121,13 +121,15 @@ class ComponentInterface:
                 _ = object_from_ipce(ipce, suggest_type)
             except BaseException as e:
                 msg = f'While attempting to write on topic "{topic}", cannot ' \
-                    f'interpret the value as {suggest_type}.\nValue: {data}'
+                      f'interpret the value as {suggest_type}.\nValue: {data}'
                 raise Exception(msg) from e  # XXX
 
-        msg = {FIELD_COMPAT: [CUR_PROTOCOL],
-               FIELD_TOPIC: topic,
-               FIELD_DATA: ipce,
-               FIELD_TIMING: timing}
+        msg = {
+            FIELD_COMPAT: [CUR_PROTOCOL],
+            FIELD_TOPIC: topic,
+            FIELD_DATA: ipce,
+            FIELD_TIMING: timing
+        }
         j = self._serialize(msg)
         self._write(j)
         # make sure we write the schema when we copy it
@@ -148,7 +150,7 @@ class ComponentInterface:
             self.fpin.flush()
         except BrokenPipeError as e:
             msg = f'While attempting to write to node "{self.nickname}", ' \
-                f'I reckon that the pipe is closed and the node exited.'
+                  f'I reckon that the pipe is closed and the node exited.'
             try:
                 received = self.read_one(expect_topic=TOPIC_ABORTED)
                 if received.topic == TOPIC_ABORTED:
@@ -162,7 +164,7 @@ class ComponentInterface:
         j = cbor.dumps(msg)
         return j
 
-    def read_one(self, expect_topic=None, timeout=None) -> MsgReceived:
+    def read_one(self, expect_topic: str = None, timeout: float = None) -> MsgReceived:
         timeout = timeout or self.timeout
         try:
             if expect_topic:
@@ -220,7 +222,7 @@ class ComponentInterface:
             if FIELD_TIMING not in msg:
                 timing = TimingInfo()
             else:
-                timing = object_from_ipce(msg[FIELD_TIMING],  TimingInfo)
+                timing = object_from_ipce(msg[FIELD_TIMING], TimingInfo)
             self.nreceived += 1
             return MsgReceived[klass](topic, data, timing)
 
