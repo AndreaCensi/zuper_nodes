@@ -107,7 +107,7 @@ class ComponentInterface:
             raise ExternalProtocolViolation(msg)
 
     def _write_topic(self, topic, data=None, with_schema=False, timing=None):
-        suggest_type = None
+        suggest_type = object
         if self.node_protocol:
             if topic in self.node_protocol.inputs:
                 suggest_type = self.node_protocol.inputs[topic]
@@ -116,7 +116,7 @@ class ComponentInterface:
         ipce = ipce_from_object(data, suggest_type, ieso=ieso)
 
         # try to re-read
-        if suggest_type:
+        if suggest_type is not object:
             try:
                 _ = object_from_ipce(ipce, suggest_type)
             except BaseException as e:
