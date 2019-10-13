@@ -1,4 +1,4 @@
-__version__ = '5.0.2'
+__version__ = '5.0.3'
 
 from .col_logging import logging
 logger = logging.getLogger('zuper-nodes')
