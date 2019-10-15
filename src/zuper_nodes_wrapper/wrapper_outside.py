@@ -5,6 +5,7 @@ from typing import *
 import cbor2 as cbor
 
 from zuper_commons.text import indent
+from zuper_commons.types import ZException
 from zuper_ipce import IESO, ipce_from_object, object_from_ipce
 from zuper_ipce.json2cbor import read_next_cbor
 from zuper_nodes import ExternalProtocolViolation, InteractionProtocol
@@ -122,7 +123,7 @@ class ComponentInterface:
             except BaseException as e:
                 msg = f'While attempting to write on topic "{topic}", cannot ' \
                       f'interpret the value as {suggest_type}.\nValue: {data}'
-                raise Exception(msg) from e  # XXX
+                raise ZException(msg, data=data, ipce=ipce, suggest_type=suggest_type) from e  # XXX
 
         msg = {
             FIELD_COMPAT: [CUR_PROTOCOL],
