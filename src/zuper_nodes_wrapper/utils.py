@@ -1,5 +1,6 @@
 import inspect
 
+from zuper_commons.types import ZTypeError
 from . import logger
 
 
@@ -17,6 +18,5 @@ def call_if_fun_exists(ob, fname, **kwargs):
     try:
         f(**kwargs)
     except TypeError as e:
-        msg = f'Cannot call function {f} with arguments {kwargs}.'
-        msg += f'\n\nargspec: {a}'
-        raise TypeError(msg) from e
+        msg = f'Cannot call function {f}.'
+        raise ZTypeError(msg, f=f, args=kwargs, argspec=a) from e
