@@ -1,6 +1,8 @@
 __version__ = '5.0.7'
 
 from .col_logging import logging
+# noinspection PyUnresolvedReferences
+from zuper_ipce import __version__ as _v
 logger = logging.getLogger('zuper-nodes')
 logger.setLevel(logging.DEBUG)
 logger.info(f'zuper-nodes {__version__}')

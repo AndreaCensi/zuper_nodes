@@ -39,7 +39,7 @@ setup(
             'compmake',
             'pyparsing',
             'PyContracts',
-            'networkx',
+            'networkx<=2.2',
             'termcolor',
             'zuper-ipce-z5',
             'cbor2',

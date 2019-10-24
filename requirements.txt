@@ -2,7 +2,7 @@ zuper-typing-z5
 compmake
 pyparsing
 PyContracts
-networkx
+networkx<=2.2
 termcolor
 
 # testing
