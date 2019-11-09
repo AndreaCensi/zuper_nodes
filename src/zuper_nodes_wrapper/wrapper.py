@@ -155,7 +155,7 @@ def check_variables():
 from .constants import *
 
 
-def run_loop(node, protocol: InteractionProtocol, args: Optional[List[str]] = None):
+def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None):
     parser = argparse.ArgumentParser()
 
     check_variables()

@@ -1,6 +1,6 @@
 import sys
 from abc import ABCMeta, abstractmethod
-from typing import *
+from typing import List, Optional
 
 from zuper_nodes.structures import TimingInfo
 
@@ -25,7 +25,7 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
 class Context(metaclass=ABCMeta):
 
     @abstractmethod
-    def write(self, topic: str, data: Any, timing: TimingInfo = None, with_schema: bool = False):
+    def write(self, topic: str, data: object, timing: TimingInfo = None, with_schema: bool = False):
         pass
 
     @abstractmethod

@@ -1,6 +1,6 @@
 import select
 import time
-from typing import *
+from typing import Optional, Union, Iterator
 
 from zuper_ipce.json2cbor import read_next_cbor
 
