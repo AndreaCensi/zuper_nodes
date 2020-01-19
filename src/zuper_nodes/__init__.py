@@ -1,4 +1,4 @@
-__version__ = '5.0.9'
+__version__ = '6.0.0'
 
 from .col_logging import logging
 # noinspection PyUnresolvedReferences
