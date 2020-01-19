@@ -7,7 +7,7 @@ termcolor
 
 # testing
 comptests==1.4.33
-coverage
+coverage==4.5.4
 
 cbor2
 base58
