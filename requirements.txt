@@ -1,4 +1,5 @@
-zuper-typing-z5
+zuper-typing-z6
+zuper-ipce-z6
 compmake
 pyparsing
 PyContracts
