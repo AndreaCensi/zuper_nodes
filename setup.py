@@ -23,7 +23,7 @@ def get_version(filename):
 
 
 version = get_version(filename='src/zuper_nodes/__init__.py')
-line = 'z5'
+line = 'z6'
 setup(
         name=f'zuper-nodes-{line}',
         version=version,
