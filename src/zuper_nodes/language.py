@@ -2,7 +2,8 @@ from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Iterator, Optional, Tuple
 
-# Events
+
+__all__ = ['InteractionProtocol']
 
 ChannelName = str
 
@@ -27,7 +28,11 @@ class Language(metaclass=ABCMeta):
 
     @abstractmethod
     def collect_simple_events(self) -> Iterator[Event]:
-        pass
+        ...
+
+    @abstractmethod
+    def opposite(self) -> "Language":
+        ...
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -37,6 +42,9 @@ class ExpectInputReceived(Language):
     def collect_simple_events(self):
         yield InputReceived(self.channel)
 
+    def opposite(self) -> "Language":
+        return ExpectOutputProduced(self.channel)
+
 
 @dataclass(frozen=True, unsafe_hash=True)
 class ExpectOutputProduced(Language):
@@ -44,6 +52,9 @@ class ExpectOutputProduced(Language):
 
     def collect_simple_events(self):
         yield OutputProduced(self.channel)
+
+    def opposite(self) -> "Language":
+        return ExpectInputReceived(self.channel)
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -54,6 +65,10 @@ class InSequence(Language):
         for l in self.ls:
             yield from l.collect_simple_events()
 
+    def opposite(self) -> "Language":
+        ls = tuple(_.opposite() for _ in self.ls)
+        return InSequence(ls)
+
 
 @dataclass(frozen=True, unsafe_hash=True)
 class ZeroOrOne(Language):
@@ -61,6 +76,9 @@ class ZeroOrOne(Language):
 
     def collect_simple_events(self):
         yield from self.l.collect_simple_events()
+
+    def opposite(self) -> "Language":
+        return ZeroOrOne(self.l.opposite())
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -70,6 +88,9 @@ class ZeroOrMore(Language):
     def collect_simple_events(self):
         yield from self.l.collect_simple_events()
 
+    def opposite(self) -> "Language":
+        return ZeroOrMore(self.l.opposite())
+
 
 @dataclass(frozen=True, unsafe_hash=True)
 class OneOrMore(Language):
@@ -77,6 +98,9 @@ class OneOrMore(Language):
 
     def collect_simple_events(self):
         yield from self.l.collect_simple_events()
+
+    def opposite(self) -> "Language":
+        return OneOrMore(self.l.opposite())
 
 
 @dataclass(frozen=True, unsafe_hash=True)
@@ -87,8 +111,10 @@ class Either(Language):
         for l in self.ls:
             yield from l.collect_simple_events()
 
-
-# Interaction protocol
+    def opposite(self) -> "Language":
+        ls = tuple(_.opposite() for _ in self.ls)
+        return Either(ls)
+    # Interaction protocol
 
 
 @dataclass
@@ -120,6 +146,19 @@ class InteractionProtocol:
                     raise ValueError(msg)
 
         self.language = language_to_str(self.interaction)
+
+
+def opposite(ip: InteractionProtocol) -> InteractionProtocol:
+    from .language_parse import language_to_str, parse_language
+
+    outputs = ip.inputs  # switch
+    inputs = ip.outputs  # switch
+    l = parse_language(ip.language)
+    l_op = l.opposite()
+    language = language_to_str(l_op)
+    description = ip.description
+    return InteractionProtocol(outputs=outputs, inputs=inputs,
+                               language=language, description=description)
 
 
 def particularize(ip: InteractionProtocol,

@@ -1,10 +1,10 @@
 from nose.tools import assert_equal
 
-from zuper_nodes import Language, ExpectInputReceived, ExpectOutputProduced, InSequence, ZeroOrMore, ZeroOrOne, \
-    OneOrMore, Either
-from zuper_nodes.language_parse import Syntax
 from comptests import comptest
 from contracts import check_isinstance
+from zuper_nodes import (Either, ExpectInputReceived, ExpectOutputProduced, InSequence, Language, OneOrMore, ZeroOrMore,
+                         ZeroOrOne)
+from zuper_nodes.language_parse import Syntax
 
 
 def parse_language(s: str) -> Language:
@@ -25,6 +25,7 @@ def expect_parse(expr, s, expected):
     if expected:
         assert_equal(res, expected)
 
+
 @comptest
 def test_parse_language_01():
     s = "in:name"
@@ -32,11 +33,13 @@ def test_parse_language_01():
     expect_parse(Syntax.input_received, s, e)
     expect_parse(Syntax.language, s, e)
 
+
 @comptest
 def test_parse_language_02():
     s = "out:name"
     e = ExpectOutputProduced("name")
     expect_parse(Syntax.output_produced, s, e)
+
 
 @comptest
 def test_parse_language_03():
@@ -45,11 +48,13 @@ def test_parse_language_03():
                     ExpectInputReceived("second")))
     expect_parse(Syntax.language, s, e)
 
+
 @comptest
 def test_parse_language_04():
     s = "(out:first)*"
     e = ZeroOrMore(ExpectOutputProduced("first"))
     expect_parse(Syntax.language, s, e)
+
 
 @comptest
 def test_parse_language_05():
@@ -57,11 +62,13 @@ def test_parse_language_05():
     e = ZeroOrOne(ExpectOutputProduced("first"))
     expect_parse(Syntax.language, s, e)
 
+
 @comptest
 def test_parse_language_06():
     s = "(out:first)+"
     e = OneOrMore(ExpectOutputProduced("first"))
     expect_parse(Syntax.language, s, e)
+
 
 @comptest
 def test_parse_language_07():
@@ -71,6 +78,7 @@ def test_parse_language_07():
 
     s2 = "(out:first | out:second)"
     expect_parse(Syntax.language, s2, e)
+
 
 @comptest
 def test_parse_language_08():
@@ -85,6 +93,24 @@ def test_parse_language_08():
             """
 
     expect_parse(Syntax.language, s, None)
+
+
+@comptest
+def test_parse_language_09():
+    s = """
+                (
+                    in:next_episode ; (
+                        out:no_episodes | 
+                        (out:episode_start ;
+                            (in:next_image ; (out:image | out:episode_end))*)
+                    )
+                )*            
+            """
+
+    language = parse_language(s)
+    op1 = language.opposite()
+    op2 = op1.opposite()
+    assert op2 == language
 
 #
 # def test_parse_language_08():
