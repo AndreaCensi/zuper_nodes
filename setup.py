@@ -29,7 +29,7 @@ install_requires = [
     "networkx<=2.2",
     "termcolor",
     "zuper-ipce-z6",
-    "base58",
+    "base58<2.0,>=1.0.2",
 ]
 
 tests_require = [
