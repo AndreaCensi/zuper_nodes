@@ -7,7 +7,7 @@ from . import logger
 def call_if_fun_exists(ob, fname, **kwargs):
     kwargs = dict(kwargs)
     if not hasattr(ob, fname):
-        msg = f'Missing function {fname}() for {type(ob)}'
+        msg = f"Missing function {fname}() for {type(ob)}"
         logger.warning(msg)
         return
     f = getattr(ob, fname)
@@ -18,5 +18,5 @@ def call_if_fun_exists(ob, fname, **kwargs):
     try:
         f(**kwargs)
     except TypeError as e:
-        msg = f'Cannot call function {f}.'
+        msg = f"Cannot call function {f}."
         raise ZTypeError(msg, f=f, args=kwargs, argspec=a) from e

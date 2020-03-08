@@ -12,11 +12,13 @@ from comptests import comptest, run_module_tests, get_comptests_output_dir
 from zuper_nodes_wrapper.meta_protocol import basic_protocol
 
 
-def assert_seq(s: Union[str, Language], seq: List[Event], expect: Sequence[type], final: type):
+def assert_seq(
+    s: Union[str, Language], seq: List[Event], expect: Sequence[type], final: type
+):
     if isinstance(s, str):
-        s = s.replace('\n', ' ').strip()
-        while '  ' in s:
-            s = s.replace('  ', ' ')
+        s = s.replace("\n", " ").strip()
+        while "  " in s:
+            s = s.replace("  ", " ")
         l = parse_language(s)
     else:
         l = s
@@ -28,33 +30,33 @@ def assert_seq(s: Union[str, Language], seq: List[Event], expect: Sequence[type]
     assert l == l2, (s, s2)
 
     pc = LanguageChecker(l)
-    logger.info(f'Active start: {pc.get_active_states_names()}')
+    logger.info(f"Active start: {pc.get_active_states_names()}")
 
     dn = get_comptests_output_dir()
-    fn = os.path.join(dn, 'language.dot')
+    fn = os.path.join(dn, "language.dot")
     make_sure_dir_exists(fn)
     write_dot(pc.g, fn)
-    logger.info(f'Written to {fn}')
+    logger.info(f"Written to {fn}")
 
     # all except last
     for i, (e, r) in enumerate(zip(seq, expect)):
-        logger.info(f'Active before: {pc.get_active_states_names()}')
-        logger.info(f'Event {e}')
+        logger.info(f"Active before: {pc.get_active_states_names()}")
+        logger.info(f"Event {e}")
         res = pc.push(e)
-        logger.info(f'Active after: {pc.get_active_states_names()}')
+        logger.info(f"Active after: {pc.get_active_states_names()}")
         if not isinstance(res, r):
-            msg = f'Input {i} ({e}) response was {type(res).__name__} instead of {r.__name__}'
-            msg += f'\n entire sequence: {seq}'
-            msg += f'\n language: {l}'
-            msg += f'\n language string: {s2}'
+            msg = f"Input {i} ({e}) response was {type(res).__name__} instead of {r.__name__}"
+            msg += f"\n entire sequence: {seq}"
+            msg += f"\n language: {l}"
+            msg += f"\n language string: {s2}"
             raise Exception(msg)
 
     res = pc.finish()
     if not isinstance(res, final):
-        msg = f'finish response was {type(res).__name__} instead of {final.__name__}'
-        msg += f'\n entire sequence: {seq}'
-        msg += f'\n language: {l}'
-        msg += f'\n language string: {s2}'
+        msg = f"finish response was {type(res).__name__} instead of {final.__name__}"
+        msg += f"\n entire sequence: {seq}"
+        msg += f"\n language: {l}"
+        msg += f"\n language string: {s2}"
         raise Exception(msg)
 
 
@@ -243,8 +245,7 @@ def test_protocol_complex1_1():
                )
 
        """
-    seq = [InputReceived("next_episode"),
-           OutputProduced("episode_start")]
+    seq = [InputReceived("next_episode"), OutputProduced("episode_start")]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
@@ -259,11 +260,12 @@ def test_protocol_complex1_2():
                )
 
        """
-    seq = [InputReceived("next_episode"),
-           OutputProduced("episode_start"),
-           InputReceived("next_image"),
-           OutputProduced("image"),
-           ]
+    seq = [
+        InputReceived("next_episode"),
+        OutputProduced("episode_start"),
+        InputReceived("next_image"),
+        OutputProduced("image"),
+    ]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
@@ -280,7 +282,6 @@ def test_protocol_complex1_3():
             """
     seq = [
         InputReceived("next_image"),
-
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -298,7 +299,6 @@ def test_protocol_complex1_3b():
             """
     seq = [
         InputReceived("next_image"),
-
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -316,7 +316,6 @@ def test_protocol_complex1_3c():
             """
     seq = [
         InputReceived("next_image"),
-
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -334,7 +333,6 @@ def test_protocol_complex1_3e():
             """
     seq = [
         InputReceived("next_image"),
-
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -352,7 +350,6 @@ def test_protocol_complex1_3d():
             """
     seq = [
         InputReceived("next_image"),
-
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -376,5 +373,5 @@ def test_basic_protocol1():
     assert_seq(l0, seq, (NeedMore,), NeedMore)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run_module_tests()

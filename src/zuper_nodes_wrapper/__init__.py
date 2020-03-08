@@ -1,6 +1,6 @@
 import logging
 
-logger = logging.getLogger('znw')
+logger = logging.getLogger("znw")
 logger.setLevel(logging.DEBUG)
 
 logger_interaction = logger.getChild("interaction")

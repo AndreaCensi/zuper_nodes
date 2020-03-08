@@ -1,12 +1,28 @@
-from pyparsing import Suppress, Literal, Keyword, ParserElement, pyparsing_common, opAssoc, operatorPrecedence
+from pyparsing import (
+    Suppress,
+    Literal,
+    Keyword,
+    ParserElement,
+    pyparsing_common,
+    opAssoc,
+    operatorPrecedence,
+)
 
-from .language import ExpectInputReceived, ExpectOutputProduced, InSequence, ZeroOrMore, ZeroOrOne, Either, Language, \
-    OneOrMore
+from .language import (
+    ExpectInputReceived,
+    ExpectOutputProduced,
+    InSequence,
+    ZeroOrMore,
+    ZeroOrOne,
+    Either,
+    Language,
+    OneOrMore,
+)
 
 __all__ = [
-    'parse_language',
-    'language_to_str',
-    'Syntax',
+    "parse_language",
+    "language_to_str",
+    "Syntax",
 ]
 
 ParserElement.enablePackrat()
@@ -24,8 +40,8 @@ def parse_language(s: str) -> Language:
 
 def language_to_str(l: Language):
     def quote_if(s):
-        if ';' in s or '|' in s:
-            return "(" + s + ')'
+        if ";" in s or "|" in s:
+            return "(" + s + ")"
         else:
             return s
 
@@ -38,11 +54,11 @@ def language_to_str(l: Language):
     if isinstance(l, Either):
         return " | ".join(quote_if(language_to_str(_)) for _ in l.ls)
     if isinstance(l, ZeroOrMore):
-        return "(" + language_to_str(l.l) + ")" + '*'
+        return "(" + language_to_str(l.l) + ")" + "*"
     if isinstance(l, OneOrMore):
-        return "(" + language_to_str(l.l) + ")" + '+'
+        return "(" + language_to_str(l.l) + ")" + "+"
     if isinstance(l, ZeroOrOne):
-        return "(" + language_to_str(l.l) + ")" + '?'
+        return "(" + language_to_str(l.l) + ")" + "?"
     raise NotImplementedError(type(l))
 
 
@@ -80,14 +96,16 @@ class Syntax:
 
     basic = input_received | output_produced
 
-    language = operatorPrecedence(basic,
-                                  [
-                                      (S(L('*')), 1, opAssoc.LEFT, on_zero_or_more),
-                                      (S(L('+')), 1, opAssoc.LEFT, on_one_or_more),
-                                      (S(L('?')), 1, opAssoc.LEFT, on_zero_or_one),
-                                      (S(L(';')), 2, opAssoc.LEFT, on_in_sequence),
-                                      (S(L('|')), 2, opAssoc.LEFT, on_either),
-                                  ])
+    language = operatorPrecedence(
+        basic,
+        [
+            (S(L("*")), 1, opAssoc.LEFT, on_zero_or_more),
+            (S(L("+")), 1, opAssoc.LEFT, on_one_or_more),
+            (S(L("?")), 1, opAssoc.LEFT, on_zero_or_one),
+            (S(L(";")), 2, opAssoc.LEFT, on_in_sequence),
+            (S(L("|")), 2, opAssoc.LEFT, on_either),
+        ],
+    )
 
     input_received.setParseAction(on_input_received)
     output_produced.setParseAction(on_output_produced)

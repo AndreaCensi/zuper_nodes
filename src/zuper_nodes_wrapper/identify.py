@@ -7,15 +7,18 @@ from io import BufferedReader, BytesIO
 
 import cbor2
 import yaml
+
+from zuper_commons.text import indent
 from zuper_ipce import object_from_ipce
-
 from zuper_ipce.json2cbor import read_cbor_or_json_objects
-
-from contracts import indent
 from zuper_nodes import InteractionProtocol
-from zuper_nodes_wrapper.meta_protocol import (BuildDescription, ConfigDescription, NodeDescription,
-                                               ProtocolDescription,
-                                               cast)
+from .meta_protocol import (
+    BuildDescription,
+    cast,
+    ConfigDescription,
+    NodeDescription,
+    ProtocolDescription,
+)
 from . import logger
 
 
@@ -23,9 +26,9 @@ def identify_main():
     usage = None
     parser = argparse.ArgumentParser(usage=usage)
 
-    parser.add_argument('--image', default=None)
+    parser.add_argument("--image", default=None)
 
-    parser.add_argument('--command', default=None)
+    parser.add_argument("--command", default=None)
 
     parsed = parser.parse_args()
 
@@ -36,20 +39,20 @@ def identify_main():
         command = parsed.command.split()
         ni: NodeInfo = identify_command(command)
     else:
-        msg = 'Please specify either --image or --command'
+        msg = "Please specify either --image or --command"
         logger.error(msg)
         sys.exit(1)
 
-    print('\n\n')
-    print(indent(describe_nd(ni.nd), '', 'desc: '))
-    print('\n\n')
-    print(indent(describe_bd(ni.bd), '', 'build: '))
-    print('\n\n')
-    print(indent(describe_cd(ni.cd), '', 'config: '))
-    print('\n\n')
-    print(indent(describe(ni.pd.data), '', 'data: '))
-    print('\n\n')
-    print(indent(describe(ni.pd.meta), '', 'meta: '))
+    print("\n\n")
+    print(indent(describe_nd(ni.nd), "", "desc: "))
+    print("\n\n")
+    print(indent(describe_bd(ni.bd), "", "build: "))
+    print("\n\n")
+    print(indent(describe_cd(ni.cd), "", "config: "))
+    print("\n\n")
+    print(indent(describe(ni.pd.data), "", "data: "))
+    print("\n\n")
+    print(indent(describe(ni.pd.meta), "", "meta: "))
 
 
 def describe_nd(nd: NodeDescription):
@@ -65,11 +68,11 @@ def describe_cd(nd: ConfigDescription):
     # noinspection PyDataclass
     for f in dataclasses.fields(nd.config):
         # for k, v in nd.config.__annotations__.items():
-        s.append('%20s: %s = %s' % (f.name, f.type, f.default))
+        s.append("%20s: %s = %s" % (f.name, f.type, f.default))
     if not s:
-        return 'No configuration switches available.'
+        return "No configuration switches available."
 
-    if hasattr(nd.config, '__doc__'):
+    if hasattr(nd.config, "__doc__"):
         s.insert(0, nd.config.__doc__)
     return "\n".join(s)
 
@@ -77,19 +80,19 @@ def describe_cd(nd: ConfigDescription):
 def describe(ip: InteractionProtocol):
     s = "InteractionProtocol"
 
-    s += '\n\n' + '* Description:'
-    s += '\n\n' + indent(ip.description.strip(), '    ')
+    s += "\n\n" + "* Description:"
+    s += "\n\n" + indent(ip.description.strip(), "    ")
 
-    s += '\n\n' + '* Inputs:'
+    s += "\n\n" + "* Inputs:"
     for name, type_ in ip.inputs.items():
-        s += '\n  %25s: %s' % (name, type_)
+        s += "\n  %25s: %s" % (name, type_)
 
-    s += '\n\n' + '* Outputs:'
+    s += "\n\n" + "* Outputs:"
     for name, type_ in ip.outputs.items():
-        s += '\n  %25s: %s' % (name, type_)
+        s += "\n  %25s: %s" % (name, type_)
 
-    s += '\n\n' + '* Language:'
-    s += '\n\n' + ip.language
+    s += "\n\n" + "* Language:"
+    s += "\n\n" + ip.language
 
     return s
 
@@ -103,43 +106,45 @@ class NodeInfo:
 
 
 def identify_command(command) -> NodeInfo:
-    d = [{'topic': 'wrapper.describe_protocol'},
-         {'topic': 'wrapper.describe_config'},
-         {'topic': 'wrapper.describe_node'},
-         {'topic': 'wrapper.describe_build'}
-         ]
-    to_send = b''
+    d = [
+        {"topic": "wrapper.describe_protocol"},
+        {"topic": "wrapper.describe_config"},
+        {"topic": "wrapper.describe_node"},
+        {"topic": "wrapper.describe_build"},
+    ]
+    to_send = b""
     for p in d:
-        p['compat'] = ['aido2']
+        p["compat"] = ["aido2"]
         # to_send += (json.dumps(p) + '\n').encode('utf-8')
         to_send += cbor2.dumps(p)
     cp = subprocess.run(command, input=to_send, capture_output=True)
-    s = cp.stderr.decode('utf-8')
+    s = cp.stderr.decode("utf-8")
 
-    sys.stderr.write(indent(s.strip(), '|', ' stderr: |') + '\n\n')
+    sys.stderr.write(indent(s.strip(), "|", " stderr: |") + "\n\n")
     # noinspection PyTypeChecker
     f = BufferedReader(BytesIO(cp.stdout))
     stream = read_cbor_or_json_objects(f)
 
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    pd = cast(ProtocolDescription, object_from_ipce(res['data'], ProtocolDescription))
+    pd = cast(ProtocolDescription, object_from_ipce(res["data"], ProtocolDescription))
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    cd = cast(ConfigDescription, object_from_ipce(res['data'],   ConfigDescription))
+    cd = cast(ConfigDescription, object_from_ipce(res["data"], ConfigDescription))
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    nd = cast(NodeDescription, object_from_ipce(res['data'], NodeDescription))
+    nd = cast(NodeDescription, object_from_ipce(res["data"], NodeDescription))
     res = stream.__next__()
     logger.debug(yaml.dump(res))
-    bd = cast(BuildDescription, object_from_ipce(res['data'], BuildDescription))
+    bd = cast(BuildDescription, object_from_ipce(res["data"], BuildDescription))
     logger.debug(yaml.dump(res))
     return NodeInfo(pd, nd, bd, cd)
 
 
 def identify_image2(image) -> NodeInfo:
-    cmd = ['docker', 'run', '--rm', '-i', image]
+    cmd = ["docker", "run", "--rm", "-i", image]
     return identify_command(cmd)
+
 
 # def identify_image(image):
 #     import docker

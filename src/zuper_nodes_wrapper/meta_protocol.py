@@ -59,30 +59,22 @@ class NodeHealth:
 LogEntry = str
 
 basic_protocol = InteractionProtocol(
-        description="""\
+    description="""\
 
 Basic interaction protocol for nodes spoken by the node wrapper.
 
     """,
-        inputs={
-            "describe_config": type(None),
-
-            "set_config": SetConfig,
-
-            "describe_protocol": type(None),
-
-            "describe_node": type(None),
-
-            "describe_build": type(None),
-
-            "get_state": type(None),
-
-            "set_state": Any,
-
-            "get_logs": type(None),
-        },
-
-        language="""\
+    inputs={
+        "describe_config": type(None),
+        "set_config": SetConfig,
+        "describe_protocol": type(None),
+        "describe_node": type(None),
+        "describe_build": type(None),
+        "get_state": type(None),
+        "set_state": Any,
+        "get_logs": type(None),
+    },
+    language="""\
     (
         (in:describe_config ;  out:config_description) |
         
@@ -102,25 +94,17 @@ Basic interaction protocol for nodes spoken by the node wrapper.
         out:aborted
     )*
 """,
-        outputs={
-            "config_description": ConfigDescription,
-
-            'set_config_ack': type(None),
-            'set_config_error': str,
-
-            'protocol_description': ProtocolDescription,
-
-            'node_description': NodeDescription,
-
-            'build_description': BuildDescription,
-
-            'node_state': Any,
-
-            'set_state_ack': type(None),
-            'set_state_error': str,
-
-            'logs': List[LogEntry],
-
-            'aborted': str,
-
-        })
+    outputs={
+        "config_description": ConfigDescription,
+        "set_config_ack": type(None),
+        "set_config_error": str,
+        "protocol_description": ProtocolDescription,
+        "node_description": NodeDescription,
+        "build_description": BuildDescription,
+        "node_state": Any,
+        "set_state_ack": type(None),
+        "set_state_error": str,
+        "logs": List[LogEntry],
+        "aborted": str,
+    },
+)

@@ -1,9 +1,20 @@
 from dataclasses import dataclass
 from typing import Union, Tuple, Optional, Set
 
-from .language import Language, OutputProduced, InputReceived, Event, ExpectInputReceived, ExpectOutputProduced, \
-    InSequence, ZeroOrMore, Either, OneOrMore, ZeroOrOne
-from contracts.utils import indent
+from .language import (
+    Language,
+    OutputProduced,
+    InputReceived,
+    Event,
+    ExpectInputReceived,
+    ExpectOutputProduced,
+    InSequence,
+    ZeroOrMore,
+    Either,
+    OneOrMore,
+    ZeroOrOne,
+)
+from zuper_commons.text import indent
 
 
 class Result:
@@ -20,7 +31,7 @@ class Unexpected(Result):
     msg: str
 
     def __repr__(self):
-        return 'Unexpected:' + indent(self.msg, '  ')
+        return "Unexpected:" + indent(self.msg, "  ")
 
 
 @dataclass
@@ -37,50 +48,87 @@ class Always:
     pass
 
 
-def get_nfa(g: Optional[nx.DiGraph], start_node: NodeName, accept_node: NodeName, l: Language,
-            prefix: Tuple[str, ...] = ()):
+def get_nfa(
+    g: Optional[nx.DiGraph],
+    start_node: NodeName,
+    accept_node: NodeName,
+    l: Language,
+    prefix: Tuple[str, ...] = (),
+):
     # assert start_node != accept_node
     if not start_node in g:
         g.add_node(start_node, label="/".join(start_node))
     if not accept_node in g:
         g.add_node(accept_node, label="/".join(accept_node))
     if isinstance(l, ExpectOutputProduced):
-        g.add_edge(start_node, accept_node, event_match=l, label=f'out/{l.channel}')
+        g.add_edge(start_node, accept_node, event_match=l, label=f"out/{l.channel}")
     elif isinstance(l, ExpectInputReceived):
-        g.add_edge(start_node, accept_node, event_match=l, label=f'in/{l.channel}')
+        g.add_edge(start_node, accept_node, event_match=l, label=f"in/{l.channel}")
     elif isinstance(l, InSequence):
         current = start_node
         for i, li in enumerate(l.ls):
             # if i == len(l.ls) - 1:
             #     n = accept_node
             # else:
-            n = prefix + (f'after{i}',)
+            n = prefix + (f"after{i}",)
             g.add_node(n)
             # logger.debug(f'sequence {i} start {current} to {n}')
-            get_nfa(g, start_node=current, accept_node=n, prefix=prefix + (f'{i}',), l=li)
+            get_nfa(
+                g, start_node=current, accept_node=n, prefix=prefix + (f"{i}",), l=li
+            )
             current = n
 
-        g.add_edge(current, accept_node, event_match=Always(), label='always')
+        g.add_edge(current, accept_node, event_match=Always(), label="always")
 
     elif isinstance(l, ZeroOrMore):
         # logger.debug(f'zeroormore {start_node} -> {accept_node}')
 
-        g.add_edge(start_node, accept_node, event_match=Always(), label='always')
-        get_nfa(g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ('zero_or_more',))
+        g.add_edge(start_node, accept_node, event_match=Always(), label="always")
+        get_nfa(
+            g,
+            start_node=accept_node,
+            accept_node=accept_node,
+            l=l.l,
+            prefix=prefix + ("zero_or_more",),
+        )
 
     elif isinstance(l, OneOrMore):
         # start to accept
-        get_nfa(g, start_node=start_node, accept_node=accept_node, l=l.l, prefix=prefix + ('one_or_more', '1'))
+        get_nfa(
+            g,
+            start_node=start_node,
+            accept_node=accept_node,
+            l=l.l,
+            prefix=prefix + ("one_or_more", "1"),
+        )
         # accept to accept
-        get_nfa(g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ('one_or_more', '2'))
+        get_nfa(
+            g,
+            start_node=accept_node,
+            accept_node=accept_node,
+            l=l.l,
+            prefix=prefix + ("one_or_more", "2"),
+        )
 
     elif isinstance(l, ZeroOrOne):
-        g.add_edge(start_node, accept_node, event_match=Always(), label='always')
-        get_nfa(g, start_node=start_node, accept_node=accept_node, l=l.l, prefix=prefix + ('zero_or_one',))
+        g.add_edge(start_node, accept_node, event_match=Always(), label="always")
+        get_nfa(
+            g,
+            start_node=start_node,
+            accept_node=accept_node,
+            l=l.l,
+            prefix=prefix + ("zero_or_one",),
+        )
 
     elif isinstance(l, Either):
         for i, li in enumerate(l.ls):
-            get_nfa(g, start_node=start_node, accept_node=accept_node, l=li, prefix=prefix + (f'either{i}',))
+            get_nfa(
+                g,
+                start_node=start_node,
+                accept_node=accept_node,
+                l=li,
+                prefix=prefix + (f"either{i}",),
+            )
     else:
         assert False, type(l)
 
@@ -97,8 +145,8 @@ def event_matches(l: Language, event: Event):
     raise NotImplementedError(l)
 
 
-START = ('start',)
-ACCEPT = ('accept',)
+START = ("start",)
+ACCEPT = ("accept",)
 
 
 class LanguageChecker:
@@ -109,21 +157,27 @@ class LanguageChecker:
         self.g = nx.MultiDiGraph()
         self.start_node = START
         self.accept_node = ACCEPT
-        get_nfa(g=self.g, l=language, start_node=self.start_node, accept_node=self.accept_node, prefix=())
+        get_nfa(
+            g=self.g,
+            l=language,
+            start_node=self.start_node,
+            accept_node=self.accept_node,
+            prefix=(),
+        )
         # for (a, b, data) in self.g.out_edges(data=True):
         #     print(f'{a} -> {b} {data["event_match"]}')
         a = 2
         for n in self.g:
             if n not in [START, ACCEPT]:
                 # noinspection PyUnresolvedReferences
-                self.g.node[n]['label'] = f'S{a}'
+                self.g.nodes[n]["label"] = f"S{a}"
                 a += 1
             elif n == START:
                 # noinspection PyUnresolvedReferences
-                self.g.node[n]['label'] = 'start'
+                self.g.nodes[n]["label"] = "start"
             elif n == ACCEPT:
                 # noinspection PyUnresolvedReferences
-                self.g.node[n]['label'] = 'accept'
+                self.g.nodes[n]["label"] = "accept"
 
         self.active = {self.start_node}
         # logger.debug(f'active {self.active}')
@@ -137,7 +191,7 @@ class LanguageChecker:
                 nother = 0
                 for (_, neighbor, data) in self.g.out_edges([node], data=True):
                     # print(f'-> {neighbor} {data["event_match"]}')
-                    if isinstance(data['event_match'], Always):
+                    if isinstance(data["event_match"], Always):
                         now_active.add(neighbor)
                         nalways += 1
                     else:
@@ -155,7 +209,7 @@ class LanguageChecker:
         # print(f'push: considering {event}')
         for node in self.active:
             for (_, neighbor, data) in self.g.out_edges([node], data=True):
-                if event_matches(data['event_match'], event):
+                if event_matches(data["event_match"], event):
                     # print(f'now activating {neighbor}')
                     now_active.add(neighbor)
                 # else:
@@ -173,19 +227,19 @@ class LanguageChecker:
     def finish(self) -> Union[NeedMore, Enough, Unexpected]:
         # print(f'finish: active is {self.active}')
         if not self.active:
-            return Unexpected('no active')
+            return Unexpected("no active")
         if self.accept_node in self.active:
             return Enough()
         return NeedMore()
 
     def get_active_states_names(self):
-        return [self.g.nodes[_]['label'] for _ in self.active]
+        return [self.g.nodes[_]["label"] for _ in self.active]
 
     def get_expected_events(self) -> Set:
         events = set()
         for state in self.active:
             for (_, neighbor, data) in self.g.out_edges([state], data=True):
-                em = data['event_match']
+                em = data["event_match"]
                 if not isinstance(em, Always):
                     events.add(em)
         return events

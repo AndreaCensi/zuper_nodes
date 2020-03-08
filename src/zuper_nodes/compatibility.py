@@ -1,4 +1,4 @@
-from contracts import indent
+from zuper_commons.text import indent
 
 from zuper_nodes import InteractionProtocol
 from zuper_typing.subcheck import can_be_used_as2
@@ -37,7 +37,7 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
                 raise IncompatibleProtocol(msg)
             # XXX: to finish
     except IncompatibleProtocol as e:
-        msg = 'Cannot say that p1 is a sub-protocol of p2'
-        msg += '\n' + indent(p1, '|', 'p1: |')
-        msg += '\n' + indent(p2, '|', 'p2: |')
+        msg = "Cannot say that p1 is a sub-protocol of p2"
+        msg += "\n" + indent(p1, "|", "p1: |")
+        msg += "\n" + indent(p2, "|", "p2: |")
         raise IncompatibleProtocol(msg) from e

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, Optional, Tuple
 
 
-__all__ = ['InteractionProtocol']
+__all__ = ["InteractionProtocol", "particularize", "opposite"]
 
 ChannelName = str
 
@@ -24,8 +24,8 @@ class OutputProduced(Event):
 
 # Language over events
 
-class Language(metaclass=ABCMeta):
 
+class Language(metaclass=ABCMeta):
     @abstractmethod
     def collect_simple_events(self) -> Iterator[Event]:
         ...
@@ -114,6 +114,7 @@ class Either(Language):
     def opposite(self) -> "Language":
         ls = tuple(_.opposite() for _ in self.ls)
         return Either(ls)
+
     # Interaction protocol
 
 
@@ -131,6 +132,7 @@ class InteractionProtocol:
 
     def __post_init__(self):
         from .language_parse import parse_language, language_to_str
+
         self.interaction = parse_language(self.language)
 
         simple_events = list(self.interaction.collect_simple_events())
@@ -157,14 +159,17 @@ def opposite(ip: InteractionProtocol) -> InteractionProtocol:
     l_op = l.opposite()
     language = language_to_str(l_op)
     description = ip.description
-    return InteractionProtocol(outputs=outputs, inputs=inputs,
-                               language=language, description=description)
+    return InteractionProtocol(
+        outputs=outputs, inputs=inputs, language=language, description=description
+    )
 
 
-def particularize(ip: InteractionProtocol,
-                  description: Optional[str] = None,
-                  inputs: Optional[Dict[str, type]] = None,
-                  outputs: Optional[Dict[str, type]] = None) -> InteractionProtocol:
+def particularize(
+    ip: InteractionProtocol,
+    description: Optional[str] = None,
+    inputs: Optional[Dict[str, type]] = None,
+    outputs: Optional[Dict[str, type]] = None,
+) -> InteractionProtocol:
     inputs2 = dict(ip.inputs)
     inputs2.update(inputs or {})
     outputs2 = dict(ip.outputs)
@@ -174,5 +179,6 @@ def particularize(ip: InteractionProtocol,
     protocol2 = InteractionProtocol(description, inputs2, outputs2, language)
 
     from .compatibility import check_compatible_protocol
+
     check_compatible_protocol(protocol2, ip)
     return protocol2

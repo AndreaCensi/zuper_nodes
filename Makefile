@@ -24,7 +24,7 @@ upload:
 
 
 test:
-	$(MAKE) tests-coverage
+	$(MAKE) tests 
 
 
 coverage_run=coverage run

@@ -10,13 +10,27 @@ from typing import *
 import yaml
 from zuper_ipce import object_from_ipce, ipce_from_object, IESO
 
-from contracts.utils import format_obs
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance
 
-from zuper_nodes import InteractionProtocol, InputReceived, OutputProduced, Unexpected, LanguageChecker
-from zuper_nodes.structures import TimingInfo, local_time, TimeSpec, timestamp_from_seconds, DecodingError, \
-    ExternalProtocolViolation, NotConforming, ExternalTimeout, InternalProblem
+from zuper_nodes import (
+    InteractionProtocol,
+    InputReceived,
+    OutputProduced,
+    Unexpected,
+    LanguageChecker,
+)
+from zuper_nodes.structures import (
+    TimingInfo,
+    local_time,
+    TimeSpec,
+    timestamp_from_seconds,
+    DecodingError,
+    ExternalProtocolViolation,
+    NotConforming,
+    ExternalTimeout,
+    InternalProblem,
+)
 from .reading import inputs
 from .streams import open_for_read, open_for_write
 from .struct import RawTopicMessage, ControlMessage
@@ -24,16 +38,27 @@ from .utils import call_if_fun_exists
 from .writing import Sink
 from . import logger, logger_interaction
 from .interface import Context
-from .meta_protocol import basic_protocol, SetConfig, ProtocolDescription, ConfigDescription, \
-    BuildDescription, NodeDescription
+from .meta_protocol import (
+    basic_protocol,
+    SetConfig,
+    ProtocolDescription,
+    ConfigDescription,
+    BuildDescription,
+    NodeDescription,
+)
 
 
 class ConcreteContext(Context):
     protocol: InteractionProtocol
     to_write: List[RawTopicMessage]
 
-    def __init__(self, sink: Sink, protocol: InteractionProtocol,
-                 node_name: str, tout: Dict[str, str]):
+    def __init__(
+        self,
+        sink: Sink,
+        protocol: InteractionProtocol,
+        node_name: str,
+        tout: Dict[str, str],
+    ):
         self.sink = sink
         self.protocol = protocol
         self.pc = LanguageChecker(protocol.interaction)
@@ -64,7 +89,7 @@ class ConcreteContext(Context):
         event = OutputProduced(topic)
         res = self.pc.push(event)
         if isinstance(res, Unexpected):
-            msg = f'Unexpected output {topic}: {res}'
+            msg = f"Unexpected output {topic}: {res}"
             logger.error(msg)
             return
 
@@ -83,10 +108,12 @@ class ConcreteContext(Context):
                 time1 = timestamp_from_seconds(s)
             else:
                 time1 = timing.received.time
-            processed = TimeSpec(time=time1,
-                                 time2=timestamp_from_seconds(s),
-                                 frame='epoch',
-                                 clock=socket.gethostname())
+            processed = TimeSpec(
+                time=time1,
+                time2=timestamp_from_seconds(s),
+                frame="epoch",
+                clock=socket.gethostname(),
+            )
             timing.processed[self.node_name] = processed
             timing.received = None
 
@@ -110,35 +137,35 @@ class ConcreteContext(Context):
         return res
 
     def log(self, s):
-        prefix = f'{self.hostname}:{self.node_name}: '
+        prefix = f"{self.hostname}:{self.node_name}: "
         logger.info(prefix + s)
 
     def info(self, s):
-        prefix = f'{self.hostname}:{self.node_name}: '
+        prefix = f"{self.hostname}:{self.node_name}: "
         logger.info(prefix + s)
 
     def debug(self, s):
-        prefix = f'{self.hostname}:{self.node_name}: '
+        prefix = f"{self.hostname}:{self.node_name}: "
         logger.debug(prefix + s)
 
     def warning(self, s):
-        prefix = f'{self.hostname}:{self.node_name}: '
+        prefix = f"{self.hostname}:{self.node_name}: "
         logger.warning(prefix + s)
 
     def error(self, s):
-        prefix = f'{self.hostname}:{self.node_name}: '
+        prefix = f"{self.hostname}:{self.node_name}: "
         logger.error(prefix + s)
 
 
 def get_translation_table(t: str) -> Tuple[Dict[str, str], Dict[str, str]]:
     tout = {}
     tin = {}
-    for t in t.split(','):
-        ts = t.split(':')
-        if ts[0] == 'in':
+    for t in t.split(","):
+        ts = t.split(":")
+        if ts[0] == "in":
             tin[ts[1]] = ts[2]
 
-        if ts[0] == 'out':
+        if ts[0] == "out":
             tout[ts[1]] = ts[2]
 
     return tin, tout
@@ -146,33 +173,35 @@ def get_translation_table(t: str) -> Tuple[Dict[str, str], Dict[str, str]]:
 
 def check_variables():
     for k, v in os.environ.items():
-        if k.startswith('AIDO') and k not in KNOWN:
+        if k.startswith("AIDO") and k not in KNOWN:
             msg = f'I do not expect variable "{k}" set in environment with value "{v}".'
-            msg += ' I expect: %s' % ", ".join(KNOWN)
+            msg += " I expect: %s" % ", ".join(KNOWN)
             logger.warn(msg)
 
 
 from .constants import *
 
 
-def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None):
+def run_loop(
+    node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None
+):
     parser = argparse.ArgumentParser()
 
     check_variables()
 
-    data_in = os.environ.get(ENV_DATA_IN, '/dev/stdin')
-    data_out = os.environ.get(ENV_DATA_OUT, '/dev/stdout')
+    data_in = os.environ.get(ENV_DATA_IN, "/dev/stdin")
+    data_out = os.environ.get(ENV_DATA_OUT, "/dev/stdout")
     default_name = os.environ.get(ENV_NAME, None)
-    translate = os.environ.get(ENV_TRANSLATE, '')
-    config = os.environ.get(ENV_CONFIG, '{}')
+    translate = os.environ.get(ENV_TRANSLATE, "")
+    config = os.environ.get(ENV_CONFIG, "{}")
 
-    parser.add_argument('--data-in', default=data_in)
-    parser.add_argument('--data-out', default=data_out)
+    parser.add_argument("--data-in", default=data_in)
+    parser.add_argument("--data-out", default=data_out)
 
-    parser.add_argument('--name', default=default_name)
-    parser.add_argument('--config', default=config)
-    parser.add_argument('--translate', default=translate)
-    parser.add_argument('--loose', default=False, action='store_true')
+    parser.add_argument("--name", default=default_name)
+    parser.add_argument("--config", default=config)
+    parser.add_argument("--translate", default=translate)
+    parser.add_argument("--loose", default=False, action="store_true")
 
     parsed = parser.parse_args(args)
 
@@ -192,11 +221,10 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
 
     config = yaml.load(config, Loader=yaml.SafeLoader)
     try:
-        loop(node_name, fi, fo, node, protocol, tin, tout,
-             config=config)
+        loop(node_name, fi, fo, node, protocol, tin, tout, config=config)
     except BaseException as e:
-        msg = f'Error in node {node_name}'
-        logger.error(f'Error in node {node_name}: \n{traceback.format_exc()}')
+        msg = f"Error in node {node_name}"
+        logger.error(f"Error in node {node_name}: \n{traceback.format_exc()}")
         raise Exception(msg) from e
     finally:
         fo.flush()
@@ -204,22 +232,32 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
         fi.close()
 
 
-def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict):
-    logger.info(f'Starting reading')
+def loop(
+    node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict
+):
+    logger.info(f"Starting reading")
     initialized = False
     context_data = None
     sink = Sink(fo)
     try:
-        context_data = ConcreteContext(sink=sink, protocol=protocol,
-                                       node_name=node_name, tout=tout)
-        context_meta = ConcreteContext(sink=sink, protocol=basic_protocol,
-                                       node_name=node_name + '.wrapper', tout=tout)
+        context_data = ConcreteContext(
+            sink=sink, protocol=protocol, node_name=node_name, tout=tout
+        )
+        context_meta = ConcreteContext(
+            sink=sink,
+            protocol=basic_protocol,
+            node_name=node_name + ".wrapper",
+            tout=tout,
+        )
 
         wrapper = MetaHandler(node, protocol)
         for k, v in config.items():
             wrapper.set_config(k, v)
 
-        waiting_for = 'Expecting control message or one of:  %s' % context_data.pc.get_expected_events()
+        waiting_for = (
+            "Expecting control message or one of:  %s"
+            % context_data.pc.get_expected_events()
+        )
 
         for parsed in inputs(fi, waiting_for=waiting_for):
             if isinstance(parsed, ControlMessage):
@@ -231,11 +269,7 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
                 else:
 
                     if parsed.code == CTRL_CAPABILITIES:
-                        my_capabilities = {
-                            'z2': {
-                                CAPABILITY_PROTOCOL_REFLECTION: True
-                            }
-                        }
+                        my_capabilities = {"z2": {CAPABILITY_PROTOCOL_REFLECTION: True}}
                         sink.write_control_message(CTRL_UNDERSTOOD)
                         sink.write_control_message(CTRL_CAPABILITIES, my_capabilities)
                         sink.write_control_message(CTRL_OVER)
@@ -246,8 +280,8 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
 
                 parsed.topic = tin.get(parsed.topic, parsed.topic)
                 logger_interaction.info(f'Received message of topic "{parsed.topic}".')
-                if parsed.topic.startswith('wrapper.'):
-                    parsed.topic = parsed.topic.replace('wrapper.', '')
+                if parsed.topic.startswith("wrapper."):
+                    parsed.topic = parsed.topic.replace("wrapper.", "")
                     receiver0 = wrapper
                     context0 = context_meta
 
@@ -257,17 +291,17 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
 
                 if receiver0 is node and not initialized:
                     try:
-                        call_if_fun_exists(node, 'init', context=context_data)
+                        call_if_fun_exists(node, "init", context=context_data)
                     except BaseException as e:
                         msg = "Exception while calling the node's init() function."
-                        msg += '\n\n' + indent(traceback.format_exc(), '| ')
-                        context_meta.write('aborted', msg)
+                        msg += "\n\n" + indent(traceback.format_exc(), "| ")
+                        context_meta.write("aborted", msg)
                         raise Exception(msg) from e
                     initialized = True
 
                 if parsed.topic not in context0.protocol.inputs:
                     msg = f'Input channel "{parsed.topic}" not found in protocol. '
-                    msg += f'\n\nKnown channels: {sorted(context0.protocol.inputs)}'
+                    msg += f"\n\nKnown channels: {sorted(context0.protocol.inputs)}"
                     sink.write_control_message(CTRL_NOT_UNDERSTOOD, msg)
                     sink.write_control_message(CTRL_OVER)
                     raise ExternalProtocolViolation(msg)
@@ -282,8 +316,10 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
                         sink.write_topic_message(rtm.topic, rtm.data, rtm.timing)
                     sink.write_control_message(CTRL_OVER)
                 except BaseException as e:
-                    msg = f'Exception while handling a message on topic "{parsed.topic}".'
-                    msg += '\n\n' + indent(traceback.format_exc(), '| ')
+                    msg = (
+                        f'Exception while handling a message on topic "{parsed.topic}".'
+                    )
+                    msg += "\n\n" + indent(traceback.format_exc(), "| ")
                     sink.write_control_message(CTRL_ABORTED, msg)
                     sink.write_control_message(CTRL_OVER)
                     raise InternalProblem(msg) from e  # XXX
@@ -292,26 +328,26 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
 
         res = context_data.pc.finish()
         if isinstance(res, Unexpected):
-            msg = f'Protocol did not finish: {res}'
+            msg = f"Protocol did not finish: {res}"
             logger_interaction.error(msg)
 
         if initialized:
             try:
-                call_if_fun_exists(node, 'finish', context=context_data)
+                call_if_fun_exists(node, "finish", context=context_data)
             except BaseException as e:
                 msg = "Exception while calling the node's finish() function."
-                msg += '\n\n' + indent(traceback.format_exc(), '| ')
-                context_meta.write('aborted', msg)
+                msg += "\n\n" + indent(traceback.format_exc(), "| ")
+                context_meta.write("aborted", msg)
                 raise Exception(msg) from e
 
     except BrokenPipeError:
-        msg = 'The other side closed communication.'
+        msg = "The other side closed communication."
         logger.info(msg)
         return
     except ExternalTimeout as e:
-        msg = 'Could not receive any other messages.'
+        msg = "Could not receive any other messages."
         if context_data:
-            msg += '\n Expecting one of:  %s' % context_data.pc.get_expected_events()
+            msg += "\n Expecting one of:  %s" % context_data.pc.get_expected_events()
         sink.write_control_message(CTRL_ABORTED, msg)
         sink.write_control_message(CTRL_OVER)
         raise ExternalTimeout(msg) from e
@@ -319,7 +355,7 @@ def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout,
         raise
     except BaseException as e:
         msg = f"Unexpected error:"
-        msg += '\n\n' + indent(traceback.format_exc(), '| ')
+        msg += "\n\n" + indent(traceback.format_exc(), "| ")
         sink.write_control_message(CTRL_ABORTED, msg)
         sink.write_control_message(CTRL_OVER)
         raise InternalProblem(msg) from e  # XXX
@@ -336,7 +372,7 @@ class MetaHandler:
             if hasattr(config, key):
                 setattr(self.node.config, key, value)
             else:
-                msg = f'Could not find config key {key}'
+                msg = f"Could not find config key {key}"
                 raise ValueError(msg)
 
         else:
@@ -350,20 +386,21 @@ class MetaHandler:
         try:
             self.set_config(key, value)
         except ValueError as e:
-            context.write('set_config_error', str(e))
+            context.write("set_config_error", str(e))
         else:
-            context.write('set_config_ack', None)
+            context.write("set_config_ack", None)
 
     def on_received_describe_protocol(self, context):
         desc = ProtocolDescription(data=self.protocol, meta=basic_protocol)
-        context.write('protocol_description', desc)
+        context.write("protocol_description", desc)
 
     def on_received_describe_config(self, context):
         K = type(self.node)
-        if hasattr(K, '__annotations__') and ATT_CONFIG in K.__annotations__:
+        if hasattr(K, "__annotations__") and ATT_CONFIG in K.__annotations__:
             config_type = K.__annotations__[ATT_CONFIG]
             config_current = getattr(self.node, ATT_CONFIG)
         else:
+
             @dataclass
             class NoConfig:
                 pass
@@ -371,21 +408,20 @@ class MetaHandler:
             config_type = NoConfig
             config_current = NoConfig()
         desc = ConfigDescription(config=config_type, current=config_current)
-        context.write('config_description', desc, with_schema=True)
+        context.write("config_description", desc, with_schema=True)
 
     def on_received_describe_node(self, context):
         desc = NodeDescription(self.node.__doc__)
 
-        context.write('node_description', desc, with_schema=True)
+        context.write("node_description", desc, with_schema=True)
 
     def on_received_describe_build(self, context):
         desc = BuildDescription()
 
-        context.write('build_description', desc, with_schema=True)
+        context.write("build_description", desc, with_schema=True)
 
 
-def handle_message_node(parsed: RawTopicMessage,
-                        agent, context: ConcreteContext):
+def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext):
     protocol = context.protocol
     topic = parsed.topic
     data = parsed.data
@@ -393,18 +429,18 @@ def handle_message_node(parsed: RawTopicMessage,
 
     klass = protocol.inputs[topic]
     try:
-        ob = object_from_ipce(data,  klass)
+        ob = object_from_ipce(data, klass)
     except BaseException as e:
         msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
         try:
             parsed = json.dumps(parsed, indent=2)
         except:
             parsed = str(parsed)
-        msg += '\n\n' + indent(parsed, '|', 'parsed: |')
+        msg += "\n\n" + indent(parsed, "|", "parsed: |")
         raise DecodingError(msg) from e
 
     if parsed.timing is not None:
-        timing = object_from_ipce(parsed.timing,  TimingInfo)
+        timing = object_from_ipce(parsed.timing, TimingInfo)
     else:
         timing = TimingInfo()
 
@@ -422,27 +458,29 @@ def handle_message_node(parsed: RawTopicMessage,
     # logger.info(f'After push of {event}: result \n{res} active {names}' )
     if isinstance(res, Unexpected):
         msg = f'Unexpected input "{topic}": {res}'
-        msg += f'\nI expected: {expected}'
-        msg += '\n' + format_obs(dict(pc=pc))
+        msg += f"\nI expected: {expected}"
+        msg += f"\n {pc}"
         logger.error(msg)
         raise ExternalProtocolViolation(msg)
     else:
-        expect_fn = f'on_received_{topic}'
+        expect_fn = f"on_received_{topic}"
         call_if_fun_exists(agent, expect_fn, data=ob, context=context, timing=timing)
 
 
 def check_implementation(node, protocol: InteractionProtocol):
-    logger.info('checking implementation')
+    logger.info("checking implementation")
     for n in protocol.inputs:
-        expect_fn = f'on_received_{n}'
+        expect_fn = f"on_received_{n}"
         if not hasattr(node, expect_fn):
-            msg = f'Missing function {expect_fn}'
-            msg += f'\nI know {sorted(type(node).__dict__)}'
+            msg = f"Missing function {expect_fn}"
+            msg += f"\nI know {sorted(type(node).__dict__)}"
             raise NotConforming(msg)
 
     for x in type(node).__dict__:
-        if x.startswith('on_received_'):
-            input_name = x.replace('on_received_', '')
+        if x.startswith("on_received_"):
+            input_name = x.replace("on_received_", "")
             if input_name not in protocol.inputs:
-                msg = f'The node has function "{x}" but there is no input "{input_name}".'
+                msg = (
+                    f'The node has function "{x}" but there is no input "{input_name}".'
+                )
                 raise NotConforming(msg)

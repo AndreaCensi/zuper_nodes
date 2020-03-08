@@ -29,4 +29,3 @@ class Sink:
         j = cbor2.dumps(m)
         self.of.write(j)
         self.of.flush()
-

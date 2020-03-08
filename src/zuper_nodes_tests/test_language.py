@@ -1,9 +1,17 @@
 from nose.tools import assert_equal
 
 from comptests import comptest
-from contracts import check_isinstance
-from zuper_nodes import (Either, ExpectInputReceived, ExpectOutputProduced, InSequence, Language, OneOrMore, ZeroOrMore,
-                         ZeroOrOne)
+from zuper_commons.types import check_isinstance
+from zuper_nodes import (
+    Either,
+    ExpectInputReceived,
+    ExpectOutputProduced,
+    InSequence,
+    Language,
+    OneOrMore,
+    ZeroOrMore,
+    ZeroOrOne,
+)
 from zuper_nodes.language_parse import Syntax
 
 
@@ -20,8 +28,8 @@ def expect_parse(expr, s, expected):
     res = expr.parseString(s, parseAll=True)
 
     res = res[0]
-    print(f'Obtained: {res}')
-    print(f'Expected: {expected}')
+    print(f"Obtained: {res}")
+    print(f"Expected: {expected}")
     if expected:
         assert_equal(res, expected)
 
@@ -44,8 +52,7 @@ def test_parse_language_02():
 @comptest
 def test_parse_language_03():
     s = "out:first ; in:second"
-    e = InSequence((ExpectOutputProduced("first"),
-                    ExpectInputReceived("second")))
+    e = InSequence((ExpectOutputProduced("first"), ExpectInputReceived("second")))
     expect_parse(Syntax.language, s, e)
 
 
@@ -111,6 +118,7 @@ def test_parse_language_09():
     op1 = language.opposite()
     op2 = op1.opposite()
     assert op2 == language
+
 
 #
 # def test_parse_language_08():

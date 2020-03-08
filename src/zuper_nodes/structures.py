@@ -6,20 +6,20 @@ from typing import Optional, Dict
 import numpy as np
 
 __all__ = [
-    'AIDONodesException',
-    'ProtocolViolation',
-    'ExternalProtocolViolation',
-    'InternalProtocolViolation',
-    'DecodingError',
-    'EncodingError',
-    'Timestamp',
-    'timestamp_from_seconds',
-    'TimeSpec',
-    'local_time',
-    'TimingInfo',
-    'EnvironmentError',
-    'NotConforming',
-    'ExternalTimeout',
+    "AIDONodesException",
+    "ProtocolViolation",
+    "ExternalProtocolViolation",
+    "InternalProtocolViolation",
+    "DecodingError",
+    "EncodingError",
+    "Timestamp",
+    "timestamp_from_seconds",
+    "TimeSpec",
+    "local_time",
+    "TimingInfo",
+    "EnvironmentError",
+    "NotConforming",
+    "ExternalTimeout",
 ]
 
 
@@ -65,11 +65,13 @@ class EncodingError(AIDONodesException):
 
 class NotConforming(AIDONodesException):
     """ The node is not conforming to the protocol. """
+
     pass
 
 
 class EnvironmentError(AIDONodesException):
     """ Things such as files not existing. """
+
     pass
 
 
@@ -98,9 +100,7 @@ class TimeSpec:
 def local_time() -> TimeSpec:
     s = time.time()
     hostname = socket.gethostname()
-    return TimeSpec(time=timestamp_from_seconds(s),
-                    frame='epoch',
-                    clock=hostname)
+    return TimeSpec(time=timestamp_from_seconds(s), frame="epoch", clock=hostname)
 
 
 @dataclass
