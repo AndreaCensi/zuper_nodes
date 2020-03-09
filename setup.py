@@ -26,7 +26,7 @@ def get_version(filename):
 install_requires = [
     "pyparsing",
     "PyContracts",
-    "networkx<=2.2",
+    "networkx<3",
     "termcolor",
     "zuper-ipce-z6",
     "base58<2.0,>=1.0.2",

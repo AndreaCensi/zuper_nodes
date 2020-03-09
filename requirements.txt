@@ -3,7 +3,7 @@ zuper-ipce-z6
 compmake
 pyparsing
 PyContracts
-networkx<=2.2
+networkx<=3
 termcolor
 
 # testing
