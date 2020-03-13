@@ -1,6 +1,6 @@
 import os
 from io import BufferedReader
-from typing import *
+from typing import List, cast
 
 import cbor2 as cbor
 
@@ -15,15 +15,16 @@ from zuper_nodes.structures import (
     RemoteNodeAborted,
     TimingInfo,
 )
-from zuper_nodes_wrapper.meta_protocol import basic_protocol, ProtocolDescription
-from zuper_nodes_wrapper.streams import wait_for_creation
-from zuper_nodes_wrapper.struct import (
+from . import logger, logger_interaction
+from .constants import (CAPABILITY_PROTOCOL_REFLECTION, CTRL_ABORTED, CTRL_CAPABILITIES, CTRL_NOT_UNDERSTOOD, CTRL_OVER,
+                        CTRL_UNDERSTOOD, CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING,
+                        FIELD_TOPIC, TOPIC_ABORTED)
+from .meta_protocol import basic_protocol, ProtocolDescription
+from .streams import wait_for_creation
+from .struct import (
     interpret_control_message,
     MsgReceived,
-    WireMessage,
-)
-from . import logger, logger_interaction
-from .constants import *
+    WireMessage)
 
 
 class ComponentInterface:
@@ -270,7 +271,7 @@ class ComponentInterface:
             raise TimeoutError(msg) from e
 
 
-def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
+def read_reply(fpout, nickname: str, timeout=None, waiting_for=None, ) -> List:
     """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
      Raises:
          TimeoutError
@@ -278,9 +279,10 @@ def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
          ExternalNodeDidNotUnderstand
          ExternalProtocolViolation otherwise. """
     try:
-        wm: WireMessage = read_next_cbor(
+        c =  read_next_cbor(
             fpout, timeout=timeout, waiting_for=waiting_for
         )
+        wm = cast(WireMessage, c)
         # logger.debug(f'{nickname} sent {wm}')
     except StopIteration:
         msg = "Remote node closed communication (%s)" % waiting_for
@@ -311,9 +313,10 @@ def read_until_over(fpout, timeout, nickname) -> List[WireMessage]:
     waiting_for = f"Reading reply of {nickname}."
     while True:
         try:
-            wm: WireMessage = read_next_cbor(
+            c = read_next_cbor(
                 fpout, timeout=timeout, waiting_for=waiting_for
             )
+            wm = cast(WireMessage, c)
             if wm.get(FIELD_CONTROL, "") == CTRL_ABORTED:
                 m = f'External node "{nickname}" aborted:'
                 m += "\n\n" + indent(

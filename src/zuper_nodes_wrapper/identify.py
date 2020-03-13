@@ -4,6 +4,7 @@ import subprocess
 import sys
 from dataclasses import dataclass
 from io import BufferedReader, BytesIO
+from typing import cast
 
 import cbor2
 import yaml
@@ -12,14 +13,14 @@ from zuper_commons.text import indent
 from zuper_ipce import object_from_ipce
 from zuper_ipce.json2cbor import read_cbor_or_json_objects
 from zuper_nodes import InteractionProtocol
+from . import logger
 from .meta_protocol import (
     BuildDescription,
-    cast,
+
     ConfigDescription,
     NodeDescription,
     ProtocolDescription,
 )
-from . import logger
 
 
 def identify_main():
@@ -144,7 +145,6 @@ def identify_command(command) -> NodeInfo:
 def identify_image2(image) -> NodeInfo:
     cmd = ["docker", "run", "--rm", "-i", image]
     return identify_command(cmd)
-
 
 # def identify_image(image):
 #     import docker

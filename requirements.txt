@@ -10,7 +10,6 @@ termcolor==1.1.0
 comptests==1.4.34
 coverage==5.0.3
 
-cbor2<5
 base58<2.0,>=1.0.2
 codecov==2.0.16
 pydot==1.4.1

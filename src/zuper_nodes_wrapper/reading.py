@@ -11,7 +11,7 @@ from zuper_nodes_wrapper.struct import (
     interpret_control_message,
     RawTopicMessage,
     ControlMessage,
-)
+    WireMessage)
 from . import logger
 from .constants import *
 
@@ -36,7 +36,7 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                 continue
 
             if FIELD_CONTROL in parsed:
-                m = interpret_control_message(parsed)
+                m = interpret_control_message(WireMessage(parsed))
                 yield m
             elif FIELD_TOPIC in parsed:
 

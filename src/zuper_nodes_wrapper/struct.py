@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from typing import *
-from .constants import *
+from typing import Generic, NewType, Optional, TypeVar
+
 from zuper_nodes.structures import TimingInfo
+from .constants import FIELD_CONTROL, FIELD_DATA
 
 X = TypeVar("X")
 

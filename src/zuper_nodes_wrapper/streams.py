@@ -8,14 +8,14 @@ from . import logger_interaction
 from . import logger
 
 
-def wait_for_creation(fn):
+def wait_for_creation(fn: str):
     while not os.path.exists(fn):
         msg = "waiting for creation of %s" % fn
         logger.info(msg)
         time.sleep(1)
 
 
-def open_for_read(fin, timeout=None):
+def open_for_read(fin: str, timeout: float=None):
     t0 = time.time()
     # first open reader file in case somebody is waiting for it
     while not os.path.exists(fin):
