@@ -4,8 +4,7 @@ import time
 from io import BufferedReader
 
 from zuper_commons.fs import make_sure_dir_exists
-from . import logger_interaction
-from . import logger
+from . import logger, logger_interaction
 
 
 def wait_for_creation(fn: str):
@@ -15,13 +14,13 @@ def wait_for_creation(fn: str):
         time.sleep(1)
 
 
-def open_for_read(fin: str, timeout: float=None):
+def open_for_read(fin: str, timeout: float = None):
     t0 = time.time()
     # first open reader file in case somebody is waiting for it
     while not os.path.exists(fin):
         delta = time.time() - t0
         if timeout is not None and (delta > timeout):
-            msg = f"The file {fin} was not created before {timeout} seconds. I give up."
+            msg = f"The file {fin!r} was not created before {timeout:.1f} seconds. I give up."
             raise EnvironmentError(msg)
         logger_interaction.info(f"waiting for file {fin} to be created")
         time.sleep(1)
@@ -33,7 +32,7 @@ def open_for_read(fin: str, timeout: float=None):
     return fi
 
 
-def open_for_write(fout):
+def open_for_write(fout: str):
     if fout == "/dev/stdout":
         return open("/dev/stdout", "wb", buffering=0)
     else:

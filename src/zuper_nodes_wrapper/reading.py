@@ -1,19 +1,13 @@
 import select
 import time
-from typing import Optional, Union, Iterator
-
-from zuper_ipce.json2cbor import read_next_cbor
+from typing import Iterator, Optional, Union
 
 from zuper_commons.text import indent
-
+from zuper_ipce.json2cbor import read_next_cbor
 from zuper_nodes.structures import ExternalTimeout
-from zuper_nodes_wrapper.struct import (
-    interpret_control_message,
-    RawTopicMessage,
-    ControlMessage,
-    WireMessage)
 from . import logger
-from .constants import *
+from .constants import CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC
+from .struct import (ControlMessage, interpret_control_message, RawTopicMessage, WireMessage)
 
 M = Union[RawTopicMessage, ControlMessage]
 

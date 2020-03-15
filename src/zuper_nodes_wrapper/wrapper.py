@@ -13,6 +13,7 @@ from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance
 from zuper_ipce import IESO, ipce_from_object, object_from_ipce
 from zuper_nodes import (InputReceived, InteractionProtocol, LanguageChecker, OutputProduced, Unexpected)
+from zuper_nodes.language import ChannelName
 from zuper_nodes.structures import (DecodingError, ExternalProtocolViolation, ExternalTimeout, InternalProblem,
                                     local_time, NotConforming, TimeSpec, timestamp_from_seconds, TimingInfo)
 from . import logger, logger_interaction
@@ -53,7 +54,7 @@ class ConcreteContext(Context):
     def get_hostname(self):
         return self.hostname
 
-    def write(self, topic, data, timing=None, with_schema=False):
+    def write(self, topic: ChannelName, data: object, timing=None, with_schema: bool = False):
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
@@ -198,8 +199,10 @@ def run_loop(
 
     logger.name = node_name
 
-    config = yaml.load(config, Loader=yaml.SafeLoader)
+
     try:
+        config = yaml.load(config, Loader=yaml.SafeLoader)
+
         loop(node_name, fi, fo, node, protocol, tin, tout, config=config)
     except BaseException as e:
         msg = f"Error in node {node_name}"
@@ -263,7 +266,6 @@ def loop(
                     parsed.topic = parsed.topic.replace("wrapper.", "")
                     receiver0 = wrapper
                     context0 = context_meta
-
                 else:
                     receiver0 = node
                     context0 = context_data
