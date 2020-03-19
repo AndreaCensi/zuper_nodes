@@ -6,7 +6,7 @@ import cbor2 as cbor
 
 from zuper_commons.text import indent
 from zuper_commons.types import ZException
-from zuper_ipce import IESO, ipce_from_object, object_from_ipce
+from zuper_ipce import IESO, ipce_from_object, object_from_ipce, IEDO
 from zuper_ipce.json2cbor import read_next_cbor
 from zuper_nodes import ExternalProtocolViolation, InteractionProtocol
 from zuper_nodes.compatibility import check_compatible_protocol
@@ -26,6 +26,7 @@ from .struct import (
     MsgReceived,
     WireMessage)
 
+iedo = IEDO(True, True)
 
 class ComponentInterface:
     def __init__(
@@ -138,7 +139,7 @@ class ComponentInterface:
         # try to re-read
         if suggest_type is not object:
             try:
-                _ = object_from_ipce(ipce, suggest_type)
+                _ = object_from_ipce(ipce, suggest_type, iedo=iedo)
             except BaseException as e:
                 msg = (
                     f'While attempting to write on topic "{topic}", cannot '
@@ -241,7 +242,7 @@ class ComponentInterface:
                         raise ExternalProtocolViolation(msg)
                     else:
                         klass = self.expect_protocol.outputs[topic]
-            data = object_from_ipce(msg[FIELD_DATA], klass)
+            data = object_from_ipce(msg[FIELD_DATA], klass, iedo=iedo)
             ieso_true = IESO(with_schema=True)
             if self._cc:
                 msg[FIELD_DATA] = ipce_from_object(data, ieso=ieso_true)
@@ -252,7 +253,7 @@ class ComponentInterface:
             if FIELD_TIMING not in msg:
                 timing = TimingInfo()
             else:
-                timing = object_from_ipce(msg[FIELD_TIMING], TimingInfo)
+                timing = object_from_ipce(msg[FIELD_TIMING], TimingInfo, iedo=iedo)
             self.nreceived += 1
             return MsgReceived[klass](topic, data, timing)
 

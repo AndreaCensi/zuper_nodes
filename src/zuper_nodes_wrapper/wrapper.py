@@ -11,7 +11,7 @@ import yaml
 
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance
-from zuper_ipce import IESO, ipce_from_object, object_from_ipce
+from zuper_ipce import IESO, ipce_from_object, object_from_ipce, IEDO
 from zuper_nodes import (InputReceived, InteractionProtocol, LanguageChecker, OutputProduced, Unexpected)
 from zuper_nodes.language import ChannelName
 from zuper_nodes.structures import (DecodingError, ExternalProtocolViolation, ExternalTimeout, InternalProblem,
@@ -26,6 +26,7 @@ from .struct import ControlMessage, RawTopicMessage
 from .utils import call_if_fun_exists
 from .writing import Sink
 
+iedo = IEDO(True, True)
 
 class ConcreteContext(Context):
     protocol: InteractionProtocol
@@ -76,7 +77,7 @@ class ConcreteContext(Context):
 
         if isinstance(data, dict):
             # noinspection PyTypeChecker
-            data = object_from_ipce(data, klass)
+            data = object_from_ipce(data, klass, iedo=iedo)
 
         if timing is None:
             timing = self.last_timing
@@ -411,7 +412,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
     klass = protocol.inputs[topic]
     try:
         # noinspection PyTypeChecker
-        ob = object_from_ipce(data, klass)
+        ob = object_from_ipce(data, klass, iedo=iedo)
     except BaseException as e:
         msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
         try:
@@ -422,7 +423,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
         raise DecodingError(msg) from e
 
     if parsed.timing is not None:
-        timing = object_from_ipce(parsed.timing, TimingInfo)
+        timing = object_from_ipce(parsed.timing, TimingInfo, iedo=iedo)
     else:
         timing = TimingInfo()
 
