@@ -9,11 +9,17 @@ from . import logger, logger_interaction
 
 def wait_for_creation(fn: str):
     t0 = time.time()
+    if os.path.exists(fn):
+        logger.info(f'Found {fn} right away.')
+        return
     while not os.path.exists(fn):
         dt = int(time.time()-t0)
         msg = f"Waiting for creation of {fn} since {dt} seconds."
         logger.info(msg)
         time.sleep(1)
+
+    dt = int(time.time() - t0)
+    logger.info(f'Found {fn} after {dt} seconds waiting.')
 
 
 def open_for_read(fin: str, timeout: float = None):

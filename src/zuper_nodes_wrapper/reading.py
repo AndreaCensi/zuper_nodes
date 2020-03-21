@@ -71,5 +71,5 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                 )
                 if waiting_for:
                     msg += "\n" + indent(waiting_for, "> ")
-                msg = "I will warn again in %.1f seconds." % intermediate_timeout
+                msg += "\n I will warn again in %.1f seconds." % intermediate_timeout
                 logger.warning(msg)
