@@ -227,7 +227,7 @@ def run_loop(
 def loop(
     node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict
 ):
-    logger.info(f"Starting reading")
+    logger.info(f"Node {node_name} starting reading")
     initialized = False
     context_data = None
     sink = Sink(fo)

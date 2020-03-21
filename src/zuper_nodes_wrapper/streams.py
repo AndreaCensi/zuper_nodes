@@ -8,8 +8,10 @@ from . import logger, logger_interaction
 
 
 def wait_for_creation(fn: str):
+    t0 = time.time()
     while not os.path.exists(fn):
-        msg = "waiting for creation of %s" % fn
+        dt = int(time.time()-t0)
+        msg = f"Waiting for creation of {fn} since {dt} seconds."
         logger.info(msg)
         time.sleep(1)
 
@@ -22,7 +24,7 @@ def open_for_read(fin: str, timeout: float = None):
         if timeout is not None and (delta > timeout):
             msg = f"The file {fin!r} was not created before {timeout:.1f} seconds. I give up."
             raise EnvironmentError(msg)
-        logger_interaction.info(f"waiting for file {fin} to be created")
+        logger_interaction.info(f"waiting for file {fin} to be created since {int(delta)} seconds.")
         time.sleep(1)
 
     logger_interaction.info(f"Opening input {fin}")
