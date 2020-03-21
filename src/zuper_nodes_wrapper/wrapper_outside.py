@@ -28,6 +28,8 @@ from .struct import (
 
 iedo = IEDO(True, True)
 
+__all__ = ['ComponentInterface']
+
 class ComponentInterface:
     def __init__(
         self,

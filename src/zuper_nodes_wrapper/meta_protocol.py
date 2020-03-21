@@ -58,6 +58,7 @@ class NodeHealth:
 
 LogEntry = str
 
+
 basic_protocol = InteractionProtocol(
     description="""\
 

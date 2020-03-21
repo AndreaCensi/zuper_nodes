@@ -10,13 +10,16 @@ from typing import Dict, List, Optional, Tuple
 import yaml
 
 from zuper_commons.text import indent
+from zuper_commons.timing import timeit_wall
 from zuper_commons.types import check_isinstance
-from zuper_ipce import IESO, ipce_from_object, object_from_ipce, IEDO
-from zuper_nodes import (InputReceived, InteractionProtocol, LanguageChecker, OutputProduced, Unexpected)
-from zuper_nodes.language import ChannelName
+from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
+from zuper_nodes import ChannelName, InputReceived, InteractionProtocol, LanguageChecker, OutputProduced, Unexpected
 from zuper_nodes.structures import (DecodingError, ExternalProtocolViolation, ExternalTimeout, InternalProblem,
                                     local_time, NotConforming, TimeSpec, timestamp_from_seconds, TimingInfo)
 from . import logger, logger_interaction
+from .constants import (ATT_CONFIG, CAPABILITY_PROTOCOL_REFLECTION, CTRL_ABORTED, CTRL_CAPABILITIES,
+                        CTRL_NOT_UNDERSTOOD, CTRL_OVER, CTRL_UNDERSTOOD, ENV_CONFIG, ENV_DATA_IN, ENV_DATA_OUT,
+                        ENV_NAME, ENV_TRANSLATE, KNOWN)
 from .interface import Context
 from .meta_protocol import (basic_protocol, BuildDescription, ConfigDescription, NodeDescription, ProtocolDescription,
                             SetConfig)
@@ -28,9 +31,14 @@ from .writing import Sink
 
 iedo = IEDO(True, True)
 
+
 class ConcreteContext(Context):
     protocol: InteractionProtocol
     to_write: List[RawTopicMessage]
+    pc: LanguageChecker
+    node_name: str
+    hostname: str
+    tout: Dict[str, str]
 
     def __init__(
         self,
@@ -55,7 +63,12 @@ class ConcreteContext(Context):
     def get_hostname(self):
         return self.hostname
 
-    def write(self, topic: ChannelName, data: object, timing=None, with_schema: bool = False):
+    def write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False):
+        with timeit_wall(f'serializing to {topic} - schema {with_schema}', logger=logger):
+            self._write(topic, data, timing, with_schema)
+
+    def _write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None,
+               with_schema: bool = False) -> None:
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
@@ -103,8 +116,8 @@ class ConcreteContext(Context):
         data = ipce_from_object(data, ieso=ieso)
 
         if timing is not None:
-            ieso = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
-            timing_o = ipce_from_object(timing, ieso=ieso)
+            ieso2 = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
+            timing_o = ipce_from_object(timing, ieso=ieso2)
         else:
             timing_o = None
 
@@ -117,23 +130,23 @@ class ConcreteContext(Context):
         self.to_write = []
         return res
 
-    def log(self, s):
+    def log(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.info(prefix + s)
 
-    def info(self, s):
+    def info(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.info(prefix + s)
 
-    def debug(self, s):
+    def debug(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.debug(prefix + s)
 
-    def warning(self, s):
+    def warning(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.warning(prefix + s)
 
-    def error(self, s):
+    def error(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.error(prefix + s)
 
@@ -158,9 +171,6 @@ def check_variables():
             msg = f'I do not expect variable "{k}" set in environment with value "{v}".'
             msg += " I expect: %s" % ", ".join(KNOWN)
             logger.warn(msg)
-
-
-from .constants import *
 
 
 def run_loop(
@@ -199,7 +209,6 @@ def run_loop(
     node_name = parsed.name or type(node).__name__
 
     logger.name = node_name
-
 
     try:
         config = yaml.load(config, Loader=yaml.SafeLoader)

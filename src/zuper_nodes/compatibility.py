@@ -1,7 +1,8 @@
 from zuper_commons.types import ZException
-
-from zuper_nodes import InteractionProtocol
 from zuper_typing.subcheck import can_be_used_as2
+from .language import InteractionProtocol
+
+__all__ = ['IncompatibleProtocol', 'check_compatible_protocol']
 
 
 class IncompatibleProtocol(ZException):
