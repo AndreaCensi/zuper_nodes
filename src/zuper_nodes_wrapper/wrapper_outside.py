@@ -1,20 +1,15 @@
 import os
 from io import BufferedReader
-from typing import List, cast
+from typing import cast, List, Optional
 
 import cbor2 as cbor
 
 from zuper_commons.text import indent
 from zuper_commons.types import ZException
-from zuper_ipce import IESO, ipce_from_object, object_from_ipce, IEDO
+from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
 from zuper_ipce.json2cbor import read_next_cbor
-from zuper_nodes import ExternalProtocolViolation, InteractionProtocol
-from zuper_nodes.compatibility import check_compatible_protocol
-from zuper_nodes.structures import (
-    ExternalNodeDidNotUnderstand,
-    RemoteNodeAborted,
-    TimingInfo,
-)
+from zuper_nodes import (check_compatible_protocol, ExternalNodeDidNotUnderstand, ExternalProtocolViolation,
+                         InteractionProtocol, RemoteNodeAborted, TimingInfo)
 from . import logger, logger_interaction
 from .constants import (CAPABILITY_PROTOCOL_REFLECTION, CTRL_ABORTED, CTRL_CAPABILITIES, CTRL_NOT_UNDERSTOOD, CTRL_OVER,
                         CTRL_UNDERSTOOD, CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING,
@@ -30,12 +25,18 @@ iedo = IEDO(True, True)
 
 __all__ = ['ComponentInterface']
 
+
 class ComponentInterface:
+    node_protocol: Optional[InteractionProtocol]
+    data_protocol: Optional[InteractionProtocol]
+    nreceived: int
+    expect_protocol: Optional[InteractionProtocol]
+
     def __init__(
         self,
         fnin: str,
         fnout: str,
-        expect_protocol: InteractionProtocol,
+        expect_protocol: Optional[InteractionProtocol],
         nickname: str,
         timeout=None,
     ):
@@ -247,6 +248,7 @@ class ComponentInterface:
             data = object_from_ipce(msg[FIELD_DATA], klass, iedo=iedo)
             ieso_true = IESO(with_schema=True)
             if self._cc:
+                # need to revisit this
                 msg[FIELD_DATA] = ipce_from_object(data, ieso=ieso_true)
                 msg_b = self._serialize(msg)
                 self._cc.write(msg_b)
@@ -282,7 +284,7 @@ def read_reply(fpout, nickname: str, timeout=None, waiting_for=None, ) -> List:
          ExternalNodeDidNotUnderstand
          ExternalProtocolViolation otherwise. """
     try:
-        c =  read_next_cbor(
+        c = read_next_cbor(
             fpout, timeout=timeout, waiting_for=waiting_for
         )
         wm = cast(WireMessage, c)

@@ -19,3 +19,4 @@ from .language_parse import *
 from .language_recognize import *
 
 from .structures import *
+from .compatibility import *

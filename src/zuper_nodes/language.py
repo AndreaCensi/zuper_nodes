@@ -2,7 +2,17 @@ from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Iterator, Optional, Tuple
 
-__all__ = ["InteractionProtocol", "particularize", "opposite", 'ChannelName']
+__all__ = ["InteractionProtocol", "particularize", "opposite", 'ChannelName',
+           'Either',
+           'ExpectInputReceived',
+           'ExpectOutputProduced',
+           'InSequence',
+           'Language','ZeroOrOne',
+           'OneOrMore',
+           'ZeroOrMore',
+'OutputProduced','InputReceived', 'Event',
+
+           ]
 
 # ChannelName = NewType('ChannelName', str)
 ChannelName = str
