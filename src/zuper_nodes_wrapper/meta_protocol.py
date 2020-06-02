@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from typing import *
 
+from typing import Any, Dict, List
 from zuper_nodes import InteractionProtocol
 
 
@@ -57,6 +57,7 @@ class NodeHealth:
 
 
 LogEntry = str
+
 
 basic_protocol = InteractionProtocol(
     description="""\

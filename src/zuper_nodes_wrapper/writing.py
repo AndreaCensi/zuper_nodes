@@ -1,14 +1,15 @@
 import cbor2
 
+from .constants import (CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC)
 
-from .constants import *
+__all__ = ['Sink']
 
 
 class Sink:
     def __init__(self, of):
         self.of = of
 
-    def write_topic_message(self, topic, data, timing):
+    def write_topic_message(self, topic: str, data: object, timing):
         """ Can raise BrokenPipeError"""
         m = {}
         m[FIELD_COMPAT] = [CUR_PROTOCOL]
@@ -17,7 +18,7 @@ class Sink:
         m[FIELD_TIMING] = timing
         self._write_raw(m)
 
-    def write_control_message(self, code, data=None):
+    def write_control_message(self, code, data: object = None):
         """ Can raise BrokenPipeError"""
         m = {}
         m[FIELD_CONTROL] = code

@@ -1,19 +1,13 @@
 import select
 import time
-from typing import Optional, Union, Iterator
-
-from zuper_ipce.json2cbor import read_next_cbor
+from typing import Iterator, Optional, Union
 
 from zuper_commons.text import indent
-
+from zuper_ipce.json2cbor import read_next_cbor
 from zuper_nodes.structures import ExternalTimeout
-from zuper_nodes_wrapper.struct import (
-    interpret_control_message,
-    RawTopicMessage,
-    ControlMessage,
-)
 from . import logger
-from .constants import *
+from .constants import CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC
+from .struct import (ControlMessage, interpret_control_message, RawTopicMessage, WireMessage)
 
 M = Union[RawTopicMessage, ControlMessage]
 
@@ -36,7 +30,7 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                 continue
 
             if FIELD_CONTROL in parsed:
-                m = interpret_control_message(parsed)
+                m = interpret_control_message(WireMessage(parsed))
                 yield m
             elif FIELD_TOPIC in parsed:
 
@@ -77,5 +71,5 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                 )
                 if waiting_for:
                     msg += "\n" + indent(waiting_for, "> ")
-                msg = "I will warn again in %.1f seconds." % intermediate_timeout
+                msg += "\n I will warn again in %.1f seconds." % intermediate_timeout
                 logger.warning(msg)

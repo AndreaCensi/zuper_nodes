@@ -3,6 +3,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Optional
 
 from zuper_nodes.structures import TimingInfo
+from zuper_commons.logs import monkeypatch_findCaller
 
 __all__ = [
     "Context",
@@ -14,7 +15,6 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
     if args is None:
         args = sys.argv[1:]
 
-    from zuper_commons.logs import monkeypatch_findCaller
     from zuper_nodes_wrapper.wrapper import check_implementation, run_loop
 
     monkeypatch_findCaller()

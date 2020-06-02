@@ -2,9 +2,19 @@ from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Iterator, Optional, Tuple
 
+__all__ = ["InteractionProtocol", "particularize", "opposite", 'ChannelName',
+           'Either',
+           'ExpectInputReceived',
+           'ExpectOutputProduced',
+           'InSequence',
+           'Language','ZeroOrOne',
+           'OneOrMore',
+           'ZeroOrMore',
+'OutputProduced','InputReceived', 'Event',
 
-__all__ = ["InteractionProtocol", "particularize", "opposite"]
+           ]
 
+# ChannelName = NewType('ChannelName', str)
 ChannelName = str
 
 
@@ -167,8 +177,8 @@ def opposite(ip: InteractionProtocol) -> InteractionProtocol:
 def particularize(
     ip: InteractionProtocol,
     description: Optional[str] = None,
-    inputs: Optional[Dict[str, type]] = None,
-    outputs: Optional[Dict[str, type]] = None,
+    inputs: Optional[Dict[ChannelName, type]] = None,
+    outputs: Optional[Dict[ChannelName, type]] = None,
 ) -> InteractionProtocol:
     inputs2 = dict(ip.inputs)
     inputs2.update(inputs or {})

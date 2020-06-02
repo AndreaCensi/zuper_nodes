@@ -11,7 +11,7 @@ from zuper_nodes import (
     OneOrMore,
     ZeroOrMore,
     ZeroOrOne,
-)
+    ChannelName)
 from zuper_nodes.language_parse import Syntax
 
 
@@ -37,7 +37,7 @@ def expect_parse(expr, s, expected):
 @comptest
 def test_parse_language_01():
     s = "in:name"
-    e = ExpectInputReceived("name")
+    e = ExpectInputReceived(ChannelName("name"))
     expect_parse(Syntax.input_received, s, e)
     expect_parse(Syntax.language, s, e)
 
@@ -45,42 +45,42 @@ def test_parse_language_01():
 @comptest
 def test_parse_language_02():
     s = "out:name"
-    e = ExpectOutputProduced("name")
+    e = ExpectOutputProduced(ChannelName("name"))
     expect_parse(Syntax.output_produced, s, e)
 
 
 @comptest
 def test_parse_language_03():
     s = "out:first ; in:second"
-    e = InSequence((ExpectOutputProduced("first"), ExpectInputReceived("second")))
+    e = InSequence((ExpectOutputProduced(ChannelName("first")), ExpectInputReceived(ChannelName("second"))))
     expect_parse(Syntax.language, s, e)
 
 
 @comptest
 def test_parse_language_04():
     s = "(out:first)*"
-    e = ZeroOrMore(ExpectOutputProduced("first"))
+    e = ZeroOrMore(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
 @comptest
 def test_parse_language_05():
     s = "(out:first)?"
-    e = ZeroOrOne(ExpectOutputProduced("first"))
+    e = ZeroOrOne(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
 @comptest
 def test_parse_language_06():
     s = "(out:first)+"
-    e = OneOrMore(ExpectOutputProduced("first"))
+    e = OneOrMore(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
 @comptest
 def test_parse_language_07():
     s = "out:first | out:second"
-    e = Either((ExpectOutputProduced("first"), ExpectOutputProduced("second")))
+    e = Either((ExpectOutputProduced(ChannelName("first")), ExpectOutputProduced(ChannelName("second"))))
     expect_parse(Syntax.language, s, e)
 
     s2 = "(out:first | out:second)"

@@ -1,4 +1,4 @@
-__version__ = "6.0.11"
+__version__ = "6.0.24"
 
 import logging
 
@@ -19,3 +19,4 @@ from .language_parse import *
 from .language_recognize import *
 
 from .structures import *
+from .compatibility import *

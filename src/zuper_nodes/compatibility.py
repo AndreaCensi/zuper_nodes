@@ -1,10 +1,11 @@
-from zuper_commons.text import indent
+from zuper_commons.types import ZException
+from zuper_typing import can_be_used_as2
+from .language import InteractionProtocol
 
-from zuper_nodes import InteractionProtocol
-from zuper_typing.subcheck import can_be_used_as2
+__all__ = ['IncompatibleProtocol', 'check_compatible_protocol']
 
 
-class IncompatibleProtocol(Exception):
+class IncompatibleProtocol(ZException):
     pass
 
 
@@ -38,6 +39,4 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
             # XXX: to finish
     except IncompatibleProtocol as e:
         msg = "Cannot say that p1 is a sub-protocol of p2"
-        msg += "\n" + indent(p1, "|", "p1: |")
-        msg += "\n" + indent(p2, "|", "p2: |")
-        raise IncompatibleProtocol(msg) from e
+        raise IncompatibleProtocol(msg, p1=p1, p2=p2) from e

@@ -5,52 +5,40 @@ import socket
 import time
 import traceback
 from dataclasses import dataclass
-from typing import *
+from typing import Dict, List, Optional, Tuple
 
 import yaml
-from zuper_ipce import object_from_ipce, ipce_from_object, IESO
 
 from zuper_commons.text import indent
+from zuper_commons.timing import timeit_wall
 from zuper_commons.types import check_isinstance
-
-from zuper_nodes import (
-    InteractionProtocol,
-    InputReceived,
-    OutputProduced,
-    Unexpected,
-    LanguageChecker,
-)
-from zuper_nodes.structures import (
-    TimingInfo,
-    local_time,
-    TimeSpec,
-    timestamp_from_seconds,
-    DecodingError,
-    ExternalProtocolViolation,
-    NotConforming,
-    ExternalTimeout,
-    InternalProblem,
-)
+from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
+from zuper_nodes import ChannelName, InputReceived, InteractionProtocol, LanguageChecker, OutputProduced, Unexpected
+from zuper_nodes.structures import (DecodingError, ExternalProtocolViolation, ExternalTimeout, InternalProblem,
+                                    local_time, NotConforming, TimeSpec, timestamp_from_seconds, TimingInfo)
+from . import logger, logger_interaction
+from .constants import (ATT_CONFIG, CAPABILITY_PROTOCOL_REFLECTION, CTRL_ABORTED, CTRL_CAPABILITIES,
+                        CTRL_NOT_UNDERSTOOD, CTRL_OVER, CTRL_UNDERSTOOD, ENV_CONFIG, ENV_DATA_IN, ENV_DATA_OUT,
+                        ENV_NAME, ENV_TRANSLATE, KNOWN)
+from .interface import Context
+from .meta_protocol import (basic_protocol, BuildDescription, ConfigDescription, NodeDescription, ProtocolDescription,
+                            SetConfig)
 from .reading import inputs
 from .streams import open_for_read, open_for_write
-from .struct import RawTopicMessage, ControlMessage
+from .struct import ControlMessage, RawTopicMessage
 from .utils import call_if_fun_exists
 from .writing import Sink
-from . import logger, logger_interaction
-from .interface import Context
-from .meta_protocol import (
-    basic_protocol,
-    SetConfig,
-    ProtocolDescription,
-    ConfigDescription,
-    BuildDescription,
-    NodeDescription,
-)
+
+iedo = IEDO(True, True)
 
 
 class ConcreteContext(Context):
     protocol: InteractionProtocol
     to_write: List[RawTopicMessage]
+    pc: LanguageChecker
+    node_name: str
+    hostname: str
+    tout: Dict[str, str]
 
     def __init__(
         self,
@@ -75,7 +63,12 @@ class ConcreteContext(Context):
     def get_hostname(self):
         return self.hostname
 
-    def write(self, topic, data, timing=None, with_schema=False):
+    def write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False):
+        with timeit_wall(f'serializing to {topic} - schema {with_schema}', logger=logger):
+            self._write(topic, data, timing, with_schema)
+
+    def _write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None,
+               with_schema: bool = False) -> None:
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
@@ -96,7 +89,8 @@ class ConcreteContext(Context):
         klass = self.protocol.outputs[topic]
 
         if isinstance(data, dict):
-            data = object_from_ipce(data, klass)
+            # noinspection PyTypeChecker
+            data = object_from_ipce(data, klass, iedo=iedo)
 
         if timing is None:
             timing = self.last_timing
@@ -122,8 +116,8 @@ class ConcreteContext(Context):
         data = ipce_from_object(data, ieso=ieso)
 
         if timing is not None:
-            ieso = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
-            timing_o = ipce_from_object(timing, ieso=ieso)
+            ieso2 = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
+            timing_o = ipce_from_object(timing, ieso=ieso2)
         else:
             timing_o = None
 
@@ -136,23 +130,23 @@ class ConcreteContext(Context):
         self.to_write = []
         return res
 
-    def log(self, s):
+    def log(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.info(prefix + s)
 
-    def info(self, s):
+    def info(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.info(prefix + s)
 
-    def debug(self, s):
+    def debug(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.debug(prefix + s)
 
-    def warning(self, s):
+    def warning(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.warning(prefix + s)
 
-    def error(self, s):
+    def error(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
         logger.error(prefix + s)
 
@@ -177,9 +171,6 @@ def check_variables():
             msg = f'I do not expect variable "{k}" set in environment with value "{v}".'
             msg += " I expect: %s" % ", ".join(KNOWN)
             logger.warn(msg)
-
-
-from .constants import *
 
 
 def run_loop(
@@ -219,8 +210,9 @@ def run_loop(
 
     logger.name = node_name
 
-    config = yaml.load(config, Loader=yaml.SafeLoader)
     try:
+        config = yaml.load(config, Loader=yaml.SafeLoader)
+
         loop(node_name, fi, fo, node, protocol, tin, tout, config=config)
     except BaseException as e:
         msg = f"Error in node {node_name}"
@@ -235,7 +227,7 @@ def run_loop(
 def loop(
     node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict
 ):
-    logger.info(f"Starting reading")
+    logger.info(f"Node {node_name} starting reading")
     initialized = False
     context_data = None
     sink = Sink(fo)
@@ -284,7 +276,6 @@ def loop(
                     parsed.topic = parsed.topic.replace("wrapper.", "")
                     receiver0 = wrapper
                     context0 = context_meta
-
                 else:
                     receiver0 = node
                     context0 = context_data
@@ -429,7 +420,8 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
 
     klass = protocol.inputs[topic]
     try:
-        ob = object_from_ipce(data, klass)
+        # noinspection PyTypeChecker
+        ob = object_from_ipce(data, klass, iedo=iedo)
     except BaseException as e:
         msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
         try:
@@ -440,7 +432,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
         raise DecodingError(msg) from e
 
     if parsed.timing is not None:
-        timing = object_from_ipce(parsed.timing, TimingInfo)
+        timing = object_from_ipce(parsed.timing, TimingInfo, iedo=iedo)
     else:
         timing = TimingInfo()
 

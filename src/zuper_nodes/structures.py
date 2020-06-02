@@ -20,6 +20,8 @@ __all__ = [
     "EnvironmentError",
     "NotConforming",
     "ExternalTimeout",
+    'ExternalNodeDidNotUnderstand',
+    'RemoteNodeAborted',
 ]
 
 

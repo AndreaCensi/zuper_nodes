@@ -3,7 +3,7 @@ from typing import Sequence, List, Union
 
 from networkx.drawing.nx_pydot import write_dot
 
-from zuper_nodes import OutputProduced, InputReceived, Event, Language, logger
+from zuper_nodes import OutputProduced, InputReceived, Event, Language, logger, ChannelName
 
 from zuper_nodes.language_parse import parse_language, language_to_str
 from zuper_nodes.language_recognize import LanguageChecker, Enough, Unexpected, NeedMore
@@ -62,61 +62,61 @@ def assert_seq(
 
 @comptest
 def test_proto_out1():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_in1():
-    seq = [InputReceived("a")]
+    seq = [InputReceived(ChannelName("a"))]
     assert_seq("in:a", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto3():
-    seq = [InputReceived("a")]
+    seq = [InputReceived(ChannelName("a"))]
     assert_seq("out:a", seq, (Unexpected,), Unexpected)
 
 
 @comptest
 def test_proto4():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
 @comptest
 def test_proto05():
-    seq = [InputReceived("b")]
+    seq = [InputReceived(ChannelName("b"))]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
 @comptest
 def test_proto06():
-    seq = [OutputProduced("b")]
+    seq = [OutputProduced(ChannelName("b"))]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
 @comptest
 def test_proto07():
-    seq = [OutputProduced("a"), OutputProduced("b")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b"))]
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough), Enough)
 
 
 @comptest
 def test_proto08():
-    seq = [OutputProduced("a"), OutputProduced("b")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b"))]
     assert_seq("out:a ; out:b ; out:b", seq, (NeedMore, NeedMore), NeedMore)
 
 
 @comptest
 def test_proto09():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a ; out:b", seq, (NeedMore,), NeedMore)
 
 
 @comptest
 def test_proto10():
-    seq = [OutputProduced("a"), OutputProduced("b"), OutputProduced("c")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b")), OutputProduced(ChannelName("c"))]
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough, Unexpected), Unexpected)
 
 
@@ -128,43 +128,43 @@ def test_proto_zom_01():
 
 @comptest
 def test_proto_zom_02():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a *", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_zom_03():
-    seq = [OutputProduced("a"), OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("a"))]
     assert_seq("out:a *", seq, (Enough, Enough), Enough)
 
 
 @comptest
 def test_proto_either_01():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a | out:b ", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_either_02():
-    seq = [OutputProduced("b")]
+    seq = [OutputProduced(ChannelName("b"))]
     assert_seq("out:a | out:b ", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_either_03():
-    seq = [OutputProduced("c")]
+    seq = [OutputProduced(ChannelName("c"))]
     assert_seq("out:a | out:b | out:c ", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_either_04():
-    seq = [OutputProduced("a"), OutputProduced("b")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b"))]
     assert_seq("(out:a ; out:b) | (out:b ; out:a) ", seq, (NeedMore, Enough), Enough)
 
 
 @comptest
 def test_proto_either_05():
-    seq = [OutputProduced("b"), OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("b")), OutputProduced(ChannelName("a"))]
     assert_seq("(out:a ; out:b) | (out:b ; out:a) ", seq, (NeedMore, Enough,), Enough)
 
 
@@ -176,13 +176,13 @@ def test_proto_oom_01():
 
 @comptest
 def test_proto_oom_02():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a +", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_oom_03():
-    seq = [OutputProduced("a"), OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("a"))]
     assert_seq("out:a +", seq, (Enough, Enough), Enough)
 
 
@@ -194,13 +194,13 @@ def test_proto_zoom_01():
 
 @comptest
 def test_proto_zoom_02():
-    seq = [OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a ?", seq, (Enough,), Enough)
 
 
 @comptest
 def test_proto_zoom_03():
-    seq = [OutputProduced("a"), OutputProduced("a")]
+    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("a"))]
     assert_seq("out:a ?", seq, (Enough, Unexpected), Unexpected)
 
 
@@ -215,7 +215,7 @@ def test_protocol_complex1():
             )
         )*            
     """
-    seq = [InputReceived("next_episode"), OutputProduced("episode_start")]
+    seq = [InputReceived(ChannelName("next_episode")), OutputProduced(ChannelName("episode_start"))]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
@@ -230,7 +230,7 @@ def test_protocol_complex1_0():
             )
                     
     """
-    seq = [InputReceived("next_episode"), OutputProduced("no_more_episodes")]
+    seq = [InputReceived(ChannelName("next_episode")), OutputProduced(ChannelName("no_more_episodes"))]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
@@ -245,7 +245,7 @@ def test_protocol_complex1_1():
                )
 
        """
-    seq = [InputReceived("next_episode"), OutputProduced("episode_start")]
+    seq = [InputReceived(ChannelName("next_episode")), OutputProduced(ChannelName("episode_start"))]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
@@ -261,10 +261,10 @@ def test_protocol_complex1_2():
 
        """
     seq = [
-        InputReceived("next_episode"),
-        OutputProduced("episode_start"),
-        InputReceived("next_image"),
-        OutputProduced("image"),
+        InputReceived(ChannelName("next_episode")),
+        OutputProduced(ChannelName("episode_start")),
+        InputReceived(ChannelName("next_image")),
+        OutputProduced(ChannelName("image")),
     ]
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
@@ -281,7 +281,7 @@ def test_protocol_complex1_3():
                 )*            
             """
     seq = [
-        InputReceived("next_image"),
+        InputReceived(ChannelName("next_image")),
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -298,7 +298,7 @@ def test_protocol_complex1_3b():
                 )*            
             """
     seq = [
-        InputReceived("next_image"),
+        InputReceived(ChannelName("next_image")),
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -315,7 +315,7 @@ def test_protocol_complex1_3c():
                 )*            
             """
     seq = [
-        InputReceived("next_image"),
+        InputReceived(ChannelName("next_image")),
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -332,7 +332,7 @@ def test_protocol_complex1_3e():
                 )         
             """
     seq = [
-        InputReceived("next_image"),
+        InputReceived(ChannelName("next_image")),
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -349,7 +349,7 @@ def test_protocol_complex1_3d():
                 )*            
             """
     seq = [
-        InputReceived("next_image"),
+        InputReceived(ChannelName("next_image")),
     ]
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
@@ -362,14 +362,14 @@ def test_protocol_complex1_3v():
             (in:next_image ; (out:image | out:no_more_images))*
 
         """
-    seq = [OutputProduced("episode_start")]
+    seq = [OutputProduced(ChannelName("episode_start"))]
     assert_seq(l0, seq, (Enough,), Enough)
 
 
 @comptest
 def test_basic_protocol1():
     l0 = basic_protocol.language
-    seq = [InputReceived("set_config")]
+    seq = [InputReceived(ChannelName("set_config"))]
     assert_seq(l0, seq, (NeedMore,), NeedMore)
 
 

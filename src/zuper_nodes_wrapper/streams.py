@@ -4,37 +4,50 @@ import time
 from io import BufferedReader
 
 from zuper_commons.fs import make_sure_dir_exists
-from . import logger_interaction
-from . import logger
+from . import logger, logger_interaction
 
 
-def wait_for_creation(fn):
+def wait_for_creation(fn: str):
+    t0 = time.time()
+    if os.path.exists(fn):
+        logger.info(f'Found {fn} right away.')
+        return
     while not os.path.exists(fn):
-        msg = "waiting for creation of %s" % fn
+        dt = int(time.time()-t0)
+        msg = f"Waiting for creation of {fn} since {dt} seconds."
         logger.info(msg)
         time.sleep(1)
 
+    dt = int(time.time() - t0)
+    logger.info(f'Found {fn} after {dt} seconds waiting.')
 
-def open_for_read(fin, timeout=None):
+
+def open_for_read(fin: str, timeout: float = None):
     t0 = time.time()
     # first open reader file in case somebody is waiting for it
-    while not os.path.exists(fin):
+    if os.path.exists(fin):
+        logger_interaction.info(f'Found file {fin} right away')
+    else:
+        while not os.path.exists(fin):
+            delta = time.time() - t0
+            if timeout is not None and (delta > timeout):
+                msg = f"The file {fin!r} was not created before {timeout:.1f} seconds. I give up."
+                raise EnvironmentError(msg)
+            logger_interaction.info(f"waiting for file {fin} to be created since {int(delta)} seconds.")
+            time.sleep(1)
         delta = time.time() - t0
-        if timeout is not None and (delta > timeout):
-            msg = f"The file {fin} was not created before {timeout} seconds. I give up."
-            raise EnvironmentError(msg)
-        logger_interaction.info(f"waiting for file {fin} to be created")
-        time.sleep(1)
+        logger_interaction.info(f'Waited for file {fin} for a total of {int(delta)} seconds')
 
-    logger_interaction.info(f"Opening input {fin}")
+    logger_interaction.info(f"Opening input {fin} for reading.")
     fi = open(fin, "rb", buffering=0)
     # noinspection PyTypeChecker
     fi = BufferedReader(fi, buffer_size=1)
     return fi
 
 
-def open_for_write(fout):
+def open_for_write(fout: str):
     if fout == "/dev/stdout":
+        logger_interaction.info('Opening stdout for writing')
         return open("/dev/stdout", "wb", buffering=0)
     else:
         wants_fifo = fout.startswith("fifo:")
@@ -49,7 +62,7 @@ def open_for_write(fout):
             if wants_fifo:
                 make_sure_dir_exists(fout)
                 os.mkfifo(fout)
-                logger_interaction.info("Fifo created.")
+                logger_interaction.info(f"Fifo {fout} created.")
         else:
             is_fifo = stat.S_ISFIFO(os.stat(fout).st_mode)
             if wants_fifo and not is_fifo:
@@ -59,13 +72,13 @@ def open_for_write(fout):
 
         if wants_fifo:
             logger_interaction.info(
-                "Fifo detected. Opening will block until a reader appears."
+                f"Fifo {fout} created. Opening will block until a reader appears."
             )
 
         make_sure_dir_exists(fout)
         fo = open(fout, "wb", buffering=0)
 
         if wants_fifo:
-            logger_interaction.info("Reader has connected to my fifo")
+            logger_interaction.info(f"A reader has connected to my fifo {fout}")
 
         return fo
