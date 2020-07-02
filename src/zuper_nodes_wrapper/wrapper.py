@@ -64,8 +64,7 @@ class ConcreteContext(Context):
         return self.hostname
 
     def write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False):
-        with timeit_wall(f'serializing to {topic} - schema {with_schema}', logger=logger):
-            self._write(topic, data, timing, with_schema)
+        self._write(topic, data, timing, with_schema)
 
     def _write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None,
                with_schema: bool = False) -> None:
