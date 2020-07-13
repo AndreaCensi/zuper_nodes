@@ -25,7 +25,7 @@ def get_version(filename):
 
 install_requires = [
     "pyparsing",
-    "PyContracts",
+    "PyContracts3",
     "networkx>=2,<3",
     "termcolor",
     "zuper-ipce-z6",
@@ -33,7 +33,7 @@ install_requires = [
 ]
 
 tests_require = [
-    "compmake",
+    "compmake-z6",
 ]
 
 version = get_version(filename="src/zuper_nodes/__init__.py")
