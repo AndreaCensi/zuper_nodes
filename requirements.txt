@@ -13,3 +13,4 @@ coverage==5.0.3
 base58<2.0,>=1.0.2
 codecov==2.0.16
 pydot==1.4.1
+pipdeptree
