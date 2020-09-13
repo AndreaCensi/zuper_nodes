@@ -5,8 +5,13 @@ from pyparsing import (
     ParserElement,
     pyparsing_common,
     opAssoc,
-    operatorPrecedence,
 )
+try:
+    from pyparsing import operatorPrecedence
+except ImportError:
+    from pyparsing import infixNotation as operatorPrecedence
+
+
 
 from .language import (
     ExpectInputReceived,

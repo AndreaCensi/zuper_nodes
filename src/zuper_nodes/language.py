@@ -1,21 +1,23 @@
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, Iterator, Optional, Tuple
+from typing import Dict, Iterator, NewType, Optional, Tuple, TYPE_CHECKING
 
 __all__ = ["InteractionProtocol", "particularize", "opposite", 'ChannelName',
            'Either',
            'ExpectInputReceived',
            'ExpectOutputProduced',
            'InSequence',
-           'Language','ZeroOrOne',
+           'Language', 'ZeroOrOne',
            'OneOrMore',
            'ZeroOrMore',
-'OutputProduced','InputReceived', 'Event',
+           'OutputProduced', 'InputReceived', 'Event',
 
            ]
 
-# ChannelName = NewType('ChannelName', str)
-ChannelName = str
+# if TYPE_CHECKING:
+ChannelName = NewType('ChannelName', str)
+# else:
+#     ChannelName = str
 
 
 class Event:
@@ -128,7 +130,7 @@ class Either(Language):
     # Interaction protocol
 
 
-@dataclass
+@dataclass(unsafe_hash=True)
 class InteractionProtocol:
     # Description
     description: str

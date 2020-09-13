@@ -3,11 +3,12 @@ from typing import Sequence, List, Union
 
 from networkx.drawing.nx_pydot import write_dot
 
+from zuper_commons.fs import make_sure_dir_exists
 from zuper_nodes import OutputProduced, InputReceived, Event, Language, logger, ChannelName
 
 from zuper_nodes.language_parse import parse_language, language_to_str
 from zuper_nodes.language_recognize import LanguageChecker, Enough, Unexpected, NeedMore
-from compmake.utils import make_sure_dir_exists
+
 from comptests import comptest, run_module_tests, get_comptests_output_dir
 from zuper_nodes_wrapper.meta_protocol import basic_protocol
 

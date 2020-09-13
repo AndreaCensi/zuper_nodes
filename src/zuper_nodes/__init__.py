@@ -11,7 +11,7 @@ logging.basicConfig()
 setup_logging()
 logger = logging.getLogger("zuper-nodes")
 logger.setLevel(logging.DEBUG)
-logger.info(f"zuper-nodes {__version__}")
+logger.info(f"nodes {__version__}")
 
 from .language import *
 
