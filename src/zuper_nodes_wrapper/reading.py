@@ -7,7 +7,7 @@ from zuper_ipce.json2cbor import read_next_cbor
 from zuper_nodes.structures import ExternalTimeout
 from . import logger
 from .constants import CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC
-from .struct import (ControlMessage, interpret_control_message, RawTopicMessage, WireMessage)
+from .struct import ControlMessage, interpret_control_message, RawTopicMessage, WireMessage
 
 M = Union[RawTopicMessage, ControlMessage]
 
@@ -51,9 +51,7 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                     continue
 
                 rtm = RawTopicMessage(
-                    parsed[FIELD_TOPIC],
-                    parsed.get(FIELD_DATA, None),
-                    parsed.get(FIELD_TIMING, None),
+                    parsed[FIELD_TOPIC], parsed.get(FIELD_DATA, None), parsed.get(FIELD_TIMING, None),
                 )
                 yield rtm
 
@@ -66,9 +64,7 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                 raise ExternalTimeout(msg)
             else:
                 intermediate_timeout *= intermediate_timeout_multiplier
-                msg = (
-                    f"Input channel not ready after %.1f seconds. Will re-try." % delta
-                )
+                msg = f"Input channel not ready after %.1f seconds. Will re-try." % delta
                 if waiting_for:
                     msg += "\n" + indent(waiting_for, "> ")
                 msg += "\n I will warn again in %.1f seconds." % intermediate_timeout

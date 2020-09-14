@@ -10,23 +10,23 @@ from . import logger, logger_interaction
 def wait_for_creation(fn: str):
     t0 = time.time()
     if os.path.exists(fn):
-        logger.info(f'Found {fn} right away.')
+        logger.info(f"Found {fn} right away.")
         return
     while not os.path.exists(fn):
-        dt = int(time.time()-t0)
+        dt = int(time.time() - t0)
         msg = f"Waiting for creation of {fn} since {dt} seconds."
         logger.info(msg)
         time.sleep(1)
 
     dt = int(time.time() - t0)
-    logger.info(f'Found {fn} after {dt} seconds waiting.')
+    logger.info(f"Found {fn} after {dt} seconds waiting.")
 
 
 def open_for_read(fin: str, timeout: float = None):
     t0 = time.time()
     # first open reader file in case somebody is waiting for it
     if os.path.exists(fin):
-        logger_interaction.info(f'Found file {fin} right away')
+        logger_interaction.info(f"Found file {fin} right away")
     else:
         while not os.path.exists(fin):
             delta = time.time() - t0
@@ -36,7 +36,7 @@ def open_for_read(fin: str, timeout: float = None):
             logger_interaction.info(f"waiting for file {fin} to be created since {int(delta)} seconds.")
             time.sleep(1)
         delta = time.time() - t0
-        logger_interaction.info(f'Waited for file {fin} for a total of {int(delta)} seconds')
+        logger_interaction.info(f"Waited for file {fin} for a total of {int(delta)} seconds")
 
     logger_interaction.info(f"Opening input {fin} for reading.")
     fi = open(fin, "rb", buffering=0)
@@ -47,15 +47,13 @@ def open_for_read(fin: str, timeout: float = None):
 
 def open_for_write(fout: str):
     if fout == "/dev/stdout":
-        logger_interaction.info('Opening stdout for writing')
+        logger_interaction.info("Opening stdout for writing")
         return open("/dev/stdout", "wb", buffering=0)
     else:
         wants_fifo = fout.startswith("fifo:")
         fout = fout.replace("fifo:", "")
 
-        logger_interaction.info(
-            f"Opening output file {fout} (wants fifo: {wants_fifo})"
-        )
+        logger_interaction.info(f"Opening output file {fout} (wants fifo: {wants_fifo})")
 
         if not os.path.exists(fout):
 
@@ -71,9 +69,7 @@ def open_for_write(fout: str):
                 os.mkfifo(fout)
 
         if wants_fifo:
-            logger_interaction.info(
-                f"Fifo {fout} created. Opening will block until a reader appears."
-            )
+            logger_interaction.info(f"Fifo {fout} created. Opening will block until a reader appears.")
 
         make_sure_dir_exists(fout)
         fo = open(fout, "wb", buffering=0)

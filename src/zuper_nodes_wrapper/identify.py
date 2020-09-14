@@ -16,7 +16,6 @@ from zuper_nodes import InteractionProtocol
 from . import logger
 from .meta_protocol import (
     BuildDescription,
-
     ConfigDescription,
     NodeDescription,
     ProtocolDescription,
@@ -145,6 +144,7 @@ def identify_command(command) -> NodeInfo:
 def identify_image2(image) -> NodeInfo:
     cmd = ["docker", "run", "--rm", "-i", image]
     return identify_command(cmd)
+
 
 # def identify_image(image):
 #     import docker

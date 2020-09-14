@@ -3,7 +3,8 @@ import inspect
 from zuper_commons.types import ZTypeError
 from . import logger
 
-__all__ = ['call_if_fun_exists']
+__all__ = ["call_if_fun_exists"]
+
 
 def call_if_fun_exists(ob, fname, **kwargs):
     kwargs = dict(kwargs)

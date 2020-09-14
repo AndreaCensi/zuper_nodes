@@ -16,7 +16,8 @@ from .language import (
 )
 from zuper_commons.text import indent
 
-__all__ = ['Enough', 'Unexpected', 'Always', 'LanguageChecker', 'NeedMore']
+__all__ = ["Enough", "Unexpected", "Always", "LanguageChecker", "NeedMore"]
+
 
 class Result:
     pass
@@ -74,9 +75,7 @@ def get_nfa(
             n = prefix + (f"after{i}",)
             g.add_node(n)
             # logger.debug(f'sequence {i} start {current} to {n}')
-            get_nfa(
-                g, start_node=current, accept_node=n, prefix=prefix + (f"{i}",), l=li
-            )
+            get_nfa(g, start_node=current, accept_node=n, prefix=prefix + (f"{i}",), l=li)
             current = n
 
         g.add_edge(current, accept_node, event_match=Always(), label="always")
@@ -86,49 +85,29 @@ def get_nfa(
 
         g.add_edge(start_node, accept_node, event_match=Always(), label="always")
         get_nfa(
-            g,
-            start_node=accept_node,
-            accept_node=accept_node,
-            l=l.l,
-            prefix=prefix + ("zero_or_more",),
+            g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ("zero_or_more",),
         )
 
     elif isinstance(l, OneOrMore):
         # start to accept
         get_nfa(
-            g,
-            start_node=start_node,
-            accept_node=accept_node,
-            l=l.l,
-            prefix=prefix + ("one_or_more", "1"),
+            g, start_node=start_node, accept_node=accept_node, l=l.l, prefix=prefix + ("one_or_more", "1"),
         )
         # accept to accept
         get_nfa(
-            g,
-            start_node=accept_node,
-            accept_node=accept_node,
-            l=l.l,
-            prefix=prefix + ("one_or_more", "2"),
+            g, start_node=accept_node, accept_node=accept_node, l=l.l, prefix=prefix + ("one_or_more", "2"),
         )
 
     elif isinstance(l, ZeroOrOne):
         g.add_edge(start_node, accept_node, event_match=Always(), label="always")
         get_nfa(
-            g,
-            start_node=start_node,
-            accept_node=accept_node,
-            l=l.l,
-            prefix=prefix + ("zero_or_one",),
+            g, start_node=start_node, accept_node=accept_node, l=l.l, prefix=prefix + ("zero_or_one",),
         )
 
     elif isinstance(l, Either):
         for i, li in enumerate(l.ls):
             get_nfa(
-                g,
-                start_node=start_node,
-                accept_node=accept_node,
-                l=li,
-                prefix=prefix + (f"either{i}",),
+                g, start_node=start_node, accept_node=accept_node, l=li, prefix=prefix + (f"either{i}",),
             )
     else:
         assert False, type(l)
@@ -159,11 +138,7 @@ class LanguageChecker:
         self.start_node = START
         self.accept_node = ACCEPT
         get_nfa(
-            g=self.g,
-            l=language,
-            start_node=self.start_node,
-            accept_node=self.accept_node,
-            prefix=(),
+            g=self.g, l=language, start_node=self.start_node, accept_node=self.accept_node, prefix=(),
         )
         # for (a, b, data) in self.g.out_edges(data=True):
         #     print(f'{a} -> {b} {data["event_match"]}')

@@ -1,8 +1,8 @@
 import cbor2
 
-from .constants import (CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC)
+from .constants import CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC
 
-__all__ = ['Sink']
+__all__ = ["Sink"]
 
 
 class Sink:

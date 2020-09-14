@@ -6,11 +6,11 @@ from pyparsing import (
     pyparsing_common,
     opAssoc,
 )
+
 try:
     from pyparsing import operatorPrecedence
 except ImportError:
     from pyparsing import infixNotation as operatorPrecedence
-
 
 
 from .language import (

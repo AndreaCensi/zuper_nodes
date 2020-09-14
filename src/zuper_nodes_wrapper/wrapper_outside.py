@@ -8,22 +8,37 @@ from zuper_commons.text import indent
 from zuper_commons.types import ZException
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
 from zuper_ipce.json2cbor import read_next_cbor
-from zuper_nodes import (check_compatible_protocol, ExternalNodeDidNotUnderstand, ExternalProtocolViolation,
-                         InteractionProtocol, RemoteNodeAborted, TimingInfo)
+from zuper_nodes import (
+    check_compatible_protocol,
+    ExternalNodeDidNotUnderstand,
+    ExternalProtocolViolation,
+    InteractionProtocol,
+    RemoteNodeAborted,
+    TimingInfo,
+)
 from . import logger, logger_interaction
-from .constants import (CAPABILITY_PROTOCOL_REFLECTION, CTRL_ABORTED, CTRL_CAPABILITIES, CTRL_NOT_UNDERSTOOD, CTRL_OVER,
-                        CTRL_UNDERSTOOD, CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING,
-                        FIELD_TOPIC, TOPIC_ABORTED)
+from .constants import (
+    CAPABILITY_PROTOCOL_REFLECTION,
+    CTRL_ABORTED,
+    CTRL_CAPABILITIES,
+    CTRL_NOT_UNDERSTOOD,
+    CTRL_OVER,
+    CTRL_UNDERSTOOD,
+    CUR_PROTOCOL,
+    FIELD_COMPAT,
+    FIELD_CONTROL,
+    FIELD_DATA,
+    FIELD_TIMING,
+    FIELD_TOPIC,
+    TOPIC_ABORTED,
+)
 from .meta_protocol import basic_protocol, ProtocolDescription
 from .streams import wait_for_creation
-from .struct import (
-    interpret_control_message,
-    MsgReceived,
-    WireMessage)
+from .struct import interpret_control_message, MsgReceived, WireMessage
 
 iedo = IEDO(True, True)
 
-__all__ = ['ComponentInterface']
+__all__ = ["ComponentInterface"]
 
 
 class ComponentInterface:
@@ -96,9 +111,7 @@ class ComponentInterface:
         else:
 
             ob: MsgReceived[ProtocolDescription] = self.write_topic_and_expect(
-                "wrapper.describe_protocol",
-                expect="protocol_description",
-                timeout=timeout,
+                "wrapper.describe_protocol", expect="protocol_description", timeout=timeout,
             )
             self.node_protocol = ob.data.data
             self.data_protocol = ob.data.meta
@@ -148,9 +161,7 @@ class ComponentInterface:
                     f'While attempting to write on topic "{topic}", cannot '
                     f"interpret the value as {suggest_type}.\nValue: {data}"
                 )
-                raise ZException(
-                    msg, data=data, ipce=ipce, suggest_type=suggest_type
-                ) from e  # XXX
+                raise ZException(msg, data=data, ipce=ipce, suggest_type=suggest_type) from e  # XXX
 
         msg = {
             FIELD_COMPAT: [CUR_PROTOCOL],
@@ -202,12 +213,7 @@ class ComponentInterface:
             else:
                 waiting_for = None
 
-            msgs = read_reply(
-                self.fpout,
-                timeout=timeout,
-                waiting_for=waiting_for,
-                nickname=self.nickname,
-            )
+            msgs = read_reply(self.fpout, timeout=timeout, waiting_for=waiting_for, nickname=self.nickname,)
 
             if len(msgs) == 0:
                 msg = f'Expected one message from node "{self.nickname}". Got zero.'
@@ -267,16 +273,13 @@ class ComponentInterface:
                 msg += f' Expected topic "{expect_topic}".'
             raise StopIteration(msg) from e
         except TimeoutError as e:
-            msg = "Timeout detected on %s after %d messages." % (
-                self.fnout,
-                self.nreceived,
-            )
+            msg = "Timeout detected on %s after %d messages." % (self.fnout, self.nreceived,)
             if expect_topic:
                 msg += f' Expected topic "{expect_topic}".'
             raise TimeoutError(msg) from e
 
 
-def read_reply(fpout, nickname: str, timeout=None, waiting_for=None, ) -> List:
+def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
     """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
      Raises:
          TimeoutError
@@ -284,9 +287,7 @@ def read_reply(fpout, nickname: str, timeout=None, waiting_for=None, ) -> List:
          ExternalNodeDidNotUnderstand
          ExternalProtocolViolation otherwise. """
     try:
-        c = read_next_cbor(
-            fpout, timeout=timeout, waiting_for=waiting_for
-        )
+        c = read_next_cbor(fpout, timeout=timeout, waiting_for=waiting_for)
         wm = cast(WireMessage, c)
         # logger.debug(f'{nickname} sent {wm}')
     except StopIteration:
@@ -318,15 +319,11 @@ def read_until_over(fpout, timeout, nickname) -> List[WireMessage]:
     waiting_for = f"Reading reply of {nickname}."
     while True:
         try:
-            c = read_next_cbor(
-                fpout, timeout=timeout, waiting_for=waiting_for
-            )
+            c = read_next_cbor(fpout, timeout=timeout, waiting_for=waiting_for)
             wm = cast(WireMessage, c)
             if wm.get(FIELD_CONTROL, "") == CTRL_ABORTED:
                 m = f'External node "{nickname}" aborted:'
-                m += "\n\n" + indent(
-                    wm.get(FIELD_DATA, None), "|", f"error in {nickname} |"
-                )
+                m += "\n\n" + indent(wm.get(FIELD_DATA, None), "|", f"error in {nickname} |")
                 raise RemoteNodeAborted(m)
             if wm.get(FIELD_CONTROL, "") == CTRL_OVER:
                 # logger.info(f'Node "{nickname}" concluded output of %s messages.' % len(res))

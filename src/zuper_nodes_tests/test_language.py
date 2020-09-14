@@ -11,7 +11,8 @@ from zuper_nodes import (
     OneOrMore,
     ZeroOrMore,
     ZeroOrOne,
-    ChannelName)
+    ChannelName,
+)
 from zuper_nodes.language_parse import Syntax
 
 

@@ -2,20 +2,26 @@ from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Iterator, NewType, Optional, Tuple, TYPE_CHECKING
 
-__all__ = ["InteractionProtocol", "particularize", "opposite", 'ChannelName',
-           'Either',
-           'ExpectInputReceived',
-           'ExpectOutputProduced',
-           'InSequence',
-           'Language', 'ZeroOrOne',
-           'OneOrMore',
-           'ZeroOrMore',
-           'OutputProduced', 'InputReceived', 'Event',
-
-           ]
+__all__ = [
+    "InteractionProtocol",
+    "particularize",
+    "opposite",
+    "ChannelName",
+    "Either",
+    "ExpectInputReceived",
+    "ExpectOutputProduced",
+    "InSequence",
+    "Language",
+    "ZeroOrOne",
+    "OneOrMore",
+    "ZeroOrMore",
+    "OutputProduced",
+    "InputReceived",
+    "Event",
+]
 
 if TYPE_CHECKING:
-    ChannelName = NewType('ChannelName', str)
+    ChannelName = NewType("ChannelName", str)
 else:
     ChannelName = str
 
@@ -171,9 +177,7 @@ def opposite(ip: InteractionProtocol) -> InteractionProtocol:
     l_op = l.opposite()
     language = language_to_str(l_op)
     description = ip.description
-    return InteractionProtocol(
-        outputs=outputs, inputs=inputs, language=language, description=description
-    )
+    return InteractionProtocol(outputs=outputs, inputs=inputs, language=language, description=description)
 
 
 def particularize(

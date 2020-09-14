@@ -13,16 +13,50 @@ from zuper_commons.text import indent
 from zuper_commons.timing import timeit_wall
 from zuper_commons.types import check_isinstance
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
-from zuper_nodes import ChannelName, InputReceived, InteractionProtocol, LanguageChecker, OutputProduced, Unexpected
-from zuper_nodes.structures import (DecodingError, ExternalProtocolViolation, ExternalTimeout, InternalProblem,
-                                    local_time, NotConforming, TimeSpec, timestamp_from_seconds, TimingInfo)
+from zuper_nodes import (
+    ChannelName,
+    InputReceived,
+    InteractionProtocol,
+    LanguageChecker,
+    OutputProduced,
+    Unexpected,
+)
+from zuper_nodes.structures import (
+    DecodingError,
+    ExternalProtocolViolation,
+    ExternalTimeout,
+    InternalProblem,
+    local_time,
+    NotConforming,
+    TimeSpec,
+    timestamp_from_seconds,
+    TimingInfo,
+)
 from . import logger, logger_interaction
-from .constants import (ATT_CONFIG, CAPABILITY_PROTOCOL_REFLECTION, CTRL_ABORTED, CTRL_CAPABILITIES,
-                        CTRL_NOT_UNDERSTOOD, CTRL_OVER, CTRL_UNDERSTOOD, ENV_CONFIG, ENV_DATA_IN, ENV_DATA_OUT,
-                        ENV_NAME, ENV_TRANSLATE, KNOWN)
+from .constants import (
+    ATT_CONFIG,
+    CAPABILITY_PROTOCOL_REFLECTION,
+    CTRL_ABORTED,
+    CTRL_CAPABILITIES,
+    CTRL_NOT_UNDERSTOOD,
+    CTRL_OVER,
+    CTRL_UNDERSTOOD,
+    ENV_CONFIG,
+    ENV_DATA_IN,
+    ENV_DATA_OUT,
+    ENV_NAME,
+    ENV_TRANSLATE,
+    KNOWN,
+)
 from .interface import Context
-from .meta_protocol import (basic_protocol, BuildDescription, ConfigDescription, NodeDescription, ProtocolDescription,
-                            SetConfig)
+from .meta_protocol import (
+    basic_protocol,
+    BuildDescription,
+    ConfigDescription,
+    NodeDescription,
+    ProtocolDescription,
+    SetConfig,
+)
 from .reading import inputs
 from .streams import open_for_read, open_for_write
 from .struct import ControlMessage, RawTopicMessage
@@ -41,11 +75,7 @@ class ConcreteContext(Context):
     tout: Dict[str, str]
 
     def __init__(
-        self,
-        sink: Sink,
-        protocol: InteractionProtocol,
-        node_name: str,
-        tout: Dict[str, str],
+        self, sink: Sink, protocol: InteractionProtocol, node_name: str, tout: Dict[str, str],
     ):
         self.sink = sink
         self.protocol = protocol
@@ -63,11 +93,14 @@ class ConcreteContext(Context):
     def get_hostname(self):
         return self.hostname
 
-    def write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False):
+    def write(
+        self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False
+    ):
         self._write(topic, data, timing, with_schema)
 
-    def _write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None,
-               with_schema: bool = False) -> None:
+    def _write(
+        self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False
+    ) -> None:
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
@@ -102,10 +135,7 @@ class ConcreteContext(Context):
             else:
                 time1 = timing.received.time
             processed = TimeSpec(
-                time=time1,
-                time2=timestamp_from_seconds(s),
-                frame="epoch",
-                clock=socket.gethostname(),
+                time=time1, time2=timestamp_from_seconds(s), frame="epoch", clock=socket.gethostname(),
             )
             timing.processed[self.node_name] = processed
             timing.received = None
@@ -172,9 +202,7 @@ def check_variables():
             logger.warn(msg)
 
 
-def run_loop(
-    node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None
-):
+def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None):
     parser = argparse.ArgumentParser()
 
     check_variables()
@@ -223,32 +251,22 @@ def run_loop(
         fi.close()
 
 
-def loop(
-    node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict
-):
+def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict):
     logger.info(f"Node {node_name} starting reading")
     initialized = False
     context_data = None
     sink = Sink(fo)
     try:
-        context_data = ConcreteContext(
-            sink=sink, protocol=protocol, node_name=node_name, tout=tout
-        )
+        context_data = ConcreteContext(sink=sink, protocol=protocol, node_name=node_name, tout=tout)
         context_meta = ConcreteContext(
-            sink=sink,
-            protocol=basic_protocol,
-            node_name=node_name + ".wrapper",
-            tout=tout,
+            sink=sink, protocol=basic_protocol, node_name=node_name + ".wrapper", tout=tout,
         )
 
         wrapper = MetaHandler(node, protocol)
         for k, v in config.items():
             wrapper.set_config(k, v)
 
-        waiting_for = (
-            "Expecting control message or one of:  %s"
-            % context_data.pc.get_expected_events()
-        )
+        waiting_for = "Expecting control message or one of:  %s" % context_data.pc.get_expected_events()
 
         for parsed in inputs(fi, waiting_for=waiting_for):
             if isinstance(parsed, ControlMessage):
@@ -306,9 +324,7 @@ def loop(
                         sink.write_topic_message(rtm.topic, rtm.data, rtm.timing)
                     sink.write_control_message(CTRL_OVER)
                 except BaseException as e:
-                    msg = (
-                        f'Exception while handling a message on topic "{parsed.topic}".'
-                    )
+                    msg = f'Exception while handling a message on topic "{parsed.topic}".'
                     msg += "\n\n" + indent(traceback.format_exc(), "| ")
                     sink.write_control_message(CTRL_ABORTED, msg)
                     sink.write_control_message(CTRL_OVER)
@@ -471,7 +487,5 @@ def check_implementation(node, protocol: InteractionProtocol):
         if x.startswith("on_received_"):
             input_name = x.replace("on_received_", "")
             if input_name not in protocol.inputs:
-                msg = (
-                    f'The node has function "{x}" but there is no input "{input_name}".'
-                )
+                msg = f'The node has function "{x}" but there is no input "{input_name}".'
                 raise NotConforming(msg)

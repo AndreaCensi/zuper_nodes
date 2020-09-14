@@ -13,9 +13,7 @@ from comptests import comptest, run_module_tests, get_comptests_output_dir
 from zuper_nodes_wrapper.meta_protocol import basic_protocol
 
 
-def assert_seq(
-    s: Union[str, Language], seq: List[Event], expect: Sequence[type], final: type
-):
+def assert_seq(s: Union[str, Language], seq: List[Event], expect: Sequence[type], final: type):
     if isinstance(s, str):
         s = s.replace("\n", " ").strip()
         while "  " in s:
@@ -117,7 +115,11 @@ def test_proto09():
 
 @comptest
 def test_proto10():
-    seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b")), OutputProduced(ChannelName("c"))]
+    seq = [
+        OutputProduced(ChannelName("a")),
+        OutputProduced(ChannelName("b")),
+        OutputProduced(ChannelName("c")),
+    ]
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough, Unexpected), Unexpected)
 
 
