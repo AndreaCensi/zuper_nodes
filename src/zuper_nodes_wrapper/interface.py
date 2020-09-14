@@ -2,8 +2,9 @@ import sys
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional
 
-from zuper_nodes.structures import TimingInfo
 from zuper_commons.logs import monkeypatch_findCaller
+from zuper_nodes.structures import TimingInfo
+from zuper_typing import PYTHON_36, PYTHON_37
 
 __all__ = [
     "Context",
@@ -17,7 +18,8 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
 
     from zuper_nodes_wrapper.wrapper import check_implementation, run_loop
 
-    monkeypatch_findCaller()
+    if PYTHON_36 or PYTHON_37:
+        monkeypatch_findCaller()
     check_implementation(node, protocol)
     run_loop(node, protocol, args)
 
