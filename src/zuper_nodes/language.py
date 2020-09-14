@@ -14,10 +14,10 @@ __all__ = ["InteractionProtocol", "particularize", "opposite", 'ChannelName',
 
            ]
 
-# if TYPE_CHECKING:
-ChannelName = NewType('ChannelName', str)
-# else:
-#     ChannelName = str
+if TYPE_CHECKING:
+    ChannelName = NewType('ChannelName', str)
+else:
+    ChannelName = str
 
 
 class Event:
