@@ -1,17 +1,11 @@
 __version__ = "6.0.28"
 
-import logging
+from zuper_commons.logs import ZLogger
 
-from zuper_commons.logs.col_logging import setup_logging
 
-# noinspection PyUnresolvedReferences
-from zuper_ipce import __version__ as _v
+logger = ZLogger(__name__)
 
-logging.basicConfig()
-setup_logging()
-logger = logging.getLogger("zuper-nodes")
-logger.setLevel(logging.DEBUG)
-logger.info(f"nodes {__version__}")
+logger.info(f"version: {__version__}")
 
 from .language import *
 

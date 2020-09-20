@@ -23,21 +23,23 @@ def get_version(filename):
     return version
 
 
+line = "z6"
+
 install_requires = [
     "pyparsing",
     "PyContracts3",
     "networkx>=2,<3",
     "termcolor",
-    "zuper-ipce-z6",
+    f"zuper-ipce-{line}",
     "base58<2.0,>=1.0.2",
 ]
 
 tests_require = [
-    "compmake-z6",
+    f"compmake-{line}",
 ]
 
 version = get_version(filename="src/zuper_nodes/__init__.py")
-line = "z6"
+
 setup(
     name=f"zuper-nodes-{line}",
     version=version,
