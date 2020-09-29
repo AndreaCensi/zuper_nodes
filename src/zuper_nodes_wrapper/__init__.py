@@ -1,6 +1,9 @@
 import logging
 
-logger = logging.getLogger("nodes-wrapper")
+from zuper_commons.logs import ZLogger
+
+logger = ZLogger(__name__)
+
 logger.setLevel(logging.DEBUG)
 
 logger_interaction = logger.getChild("interaction")

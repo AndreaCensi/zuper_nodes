@@ -8,7 +8,6 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 import yaml
-
 from zuper_commons.text import indent
 from zuper_commons.timing import timeit_wall
 from zuper_commons.types import check_isinstance
@@ -32,6 +31,7 @@ from zuper_nodes.structures import (
     timestamp_from_seconds,
     TimingInfo,
 )
+
 from . import logger, logger_interaction
 from .constants import (
     ATT_CONFIG,
