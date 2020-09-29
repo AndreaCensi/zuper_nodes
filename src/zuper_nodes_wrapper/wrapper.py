@@ -230,6 +230,7 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
     fin = parsed.data_in
     fout = parsed.data_out
 
+    logger.info("run_loop", fin=fin, fout=fout)
     fi = open_for_read(fin)
     fo = open_for_write(fout)
 
@@ -240,7 +241,7 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
     try:
         config = yaml.load(config, Loader=yaml.SafeLoader)
 
-        loop(node_name, fi, fo, node, protocol, tin, tout, config=config)
+        loop(node_name, fi, fo, node, protocol, tin, tout, config=config, fi_desc=fin, fo_desc=fout)
     except BaseException as e:
         msg = f"Error in node {node_name}"
         logger.error(f"Error in node {node_name}: \n{traceback.format_exc()}")
@@ -251,8 +252,19 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
         fi.close()
 
 
-def loop(node_name: str, fi, fo, node, protocol: InteractionProtocol, tin, tout, config: dict):
-    logger.info(f"Node {node_name} starting reading")
+def loop(
+    node_name: str,
+    fi,
+    fo,
+    node,
+    protocol: InteractionProtocol,
+    tin,
+    tout,
+    config: dict,
+    fi_desc: str,
+    fo_desc: str,
+):
+    logger.info(f"Node {node_name} starting reading", fi_desc=fi_desc, fo_desc=fo_desc)
     initialized = False
     context_data = None
     sink = Sink(fo)
@@ -489,3 +501,4 @@ def check_implementation(node, protocol: InteractionProtocol):
             if input_name not in protocol.inputs:
                 msg = f'The node has function "{x}" but there is no input "{input_name}".'
                 raise NotConforming(msg)
+    logger.info("checking implementation OK")
