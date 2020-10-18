@@ -19,7 +19,7 @@ upload:
 	git push
 	rm -f dist/*
 	rm -rf src/*.egg-info
-	python setup.py sdist
+	python3 setup.py sdist
 	twine upload dist/*
 
 
@@ -72,6 +72,3 @@ coverage-report:
 coverage-coveralls:
 	# without --nogit, coveralls does not find the source code
 	#COVERALLS_REPO_TOKEN=$(coveralls_repo_token) coveralls
-
-
-
