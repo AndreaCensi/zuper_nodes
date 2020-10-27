@@ -9,7 +9,7 @@ from pyparsing import (
 
 try:
     from pyparsing import operatorPrecedence
-except ImportError:
+except ImportError:  # pragma: no cover
     from pyparsing import infixNotation as operatorPrecedence
 
 

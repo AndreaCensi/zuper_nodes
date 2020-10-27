@@ -1,8 +1,7 @@
 from nose.tools import assert_equal
-
-from comptests import comptest
 from zuper_commons.types import check_isinstance
 from zuper_nodes import (
+    ChannelName,
     Either,
     ExpectInputReceived,
     ExpectOutputProduced,
@@ -11,7 +10,6 @@ from zuper_nodes import (
     OneOrMore,
     ZeroOrMore,
     ZeroOrOne,
-    ChannelName,
 )
 from zuper_nodes.language_parse import Syntax
 
@@ -35,7 +33,6 @@ def expect_parse(expr, s, expected):
         assert_equal(res, expected)
 
 
-@comptest
 def test_parse_language_01():
     s = "in:name"
     e = ExpectInputReceived(ChannelName("name"))
@@ -43,42 +40,36 @@ def test_parse_language_01():
     expect_parse(Syntax.language, s, e)
 
 
-@comptest
 def test_parse_language_02():
     s = "out:name"
     e = ExpectOutputProduced(ChannelName("name"))
     expect_parse(Syntax.output_produced, s, e)
 
 
-@comptest
 def test_parse_language_03():
     s = "out:first ; in:second"
     e = InSequence((ExpectOutputProduced(ChannelName("first")), ExpectInputReceived(ChannelName("second"))))
     expect_parse(Syntax.language, s, e)
 
 
-@comptest
 def test_parse_language_04():
     s = "(out:first)*"
     e = ZeroOrMore(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
-@comptest
 def test_parse_language_05():
     s = "(out:first)?"
     e = ZeroOrOne(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
-@comptest
 def test_parse_language_06():
     s = "(out:first)+"
     e = OneOrMore(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
-@comptest
 def test_parse_language_07():
     s = "out:first | out:second"
     e = Either((ExpectOutputProduced(ChannelName("first")), ExpectOutputProduced(ChannelName("second"))))
@@ -88,31 +79,29 @@ def test_parse_language_07():
     expect_parse(Syntax.language, s2, e)
 
 
-@comptest
 def test_parse_language_08():
     s = """
                 (
                     in:next_episode ; (
-                        out:no_episodes | 
+                        out:no_episodes |
                         (out:episode_start ;
                             (in:next_image ; (out:image | out:episode_end))*)
                     )
-                )*            
+                )*
             """
 
     expect_parse(Syntax.language, s, None)
 
 
-@comptest
 def test_parse_language_09():
     s = """
                 (
                     in:next_episode ; (
-                        out:no_episodes | 
+                        out:no_episodes |
                         (out:episode_start ;
                             (in:next_image ; (out:image | out:episode_end))*)
                     )
-                )*            
+                )*
             """
 
     language = parse_language(s)

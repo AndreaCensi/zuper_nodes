@@ -9,3 +9,6 @@ language.dot
 docs
 dist
 .idea
+.coverage.*.*.*
+cover
+test-results

@@ -1,6 +1,12 @@
 [run]
 
-source = zuper_nodes
+branch = true
+
+disable_warnings =
+    module-not-measured
+    no-data-collected
+    module-not-imported
+
 
 concurrency = multiprocessing
 
@@ -9,8 +15,12 @@ parallel = true
 [report]
 # Regexes for lines to exclude from consideration
 exclude_lines =
+    except KeyboardInterrupt:
+    if PYTHON_36:
     # Have to re-enable the standard pragma
     pragma: no cover
+    if TYPE_CHECKING
+    if enable_type_checking
 
     do_extra_checks()
     # Don't complain if tests don't hit defensive assertion code:
@@ -22,6 +32,11 @@ exclude_lines =
     if 0:
     if False:
     if __name__ == .__main__.:
+    \.\.\.
+
+    IntersectionCache.use_cache:
+
+#\.\.\.
 
 sort = Miss
 

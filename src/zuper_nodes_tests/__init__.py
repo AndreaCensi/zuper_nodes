@@ -1,3 +1,5 @@
-from . import test1
-from . import test_protocol
-from . import test_language
+from zuper_commons.logs import ZLogger
+
+logger = ZLogger(__name__)
+
+from . import test_language, test_protocol

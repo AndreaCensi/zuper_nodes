@@ -18,6 +18,7 @@ __all__ = [
     "OutputProduced",
     "InputReceived",
     "Event",
+    "particularize_no_check",
 ]
 
 if TYPE_CHECKING:
@@ -156,12 +157,12 @@ class InteractionProtocol:
         simple_events = list(self.interaction.collect_simple_events())
         for e in simple_events:
             if isinstance(e, InputReceived):
-                if e.channel not in self.inputs:
+                if e.channel not in self.inputs:  # pragma: no cover
                     msg = f'Could not find input channel "{e.channel}" among {sorted(self.inputs)}.'
                     raise ValueError(msg)
 
             if isinstance(e, OutputProduced):
-                if e.channel not in self.outputs:
+                if e.channel not in self.outputs:  # pragma: no cover
                     msg = f'Could not find output channel "{e.channel}" among {sorted(self.outputs)}.'
                     raise ValueError(msg)
 
@@ -197,4 +198,21 @@ def particularize(
     from .compatibility import check_compatible_protocol
 
     check_compatible_protocol(protocol2, ip)
+    return protocol2
+
+
+def particularize_no_check(
+    ip: InteractionProtocol,
+    description: Optional[str] = None,
+    inputs: Optional[Dict[ChannelName, type]] = None,
+    outputs: Optional[Dict[ChannelName, type]] = None,
+) -> InteractionProtocol:
+    inputs2 = dict(ip.inputs)
+    inputs2.update(inputs or {})
+    outputs2 = dict(ip.outputs)
+    outputs2.update(outputs or {})
+    language = ip.language
+    description = description or ip.description
+    protocol2 = InteractionProtocol(description, inputs2, outputs2, language)
+
     return protocol2
