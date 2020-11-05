@@ -10,7 +10,7 @@ from typing import Dict, List, Optional, Tuple
 import yaml
 from zuper_commons.text import indent
 from zuper_commons.timing import timeit_wall
-from zuper_commons.types import check_isinstance
+from zuper_commons.types import check_isinstance, ZValueError
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
 from zuper_nodes import (
     ChannelName,
@@ -384,14 +384,14 @@ class MetaHandler:
         self.node = node
         self.protocol = protocol
 
-    def set_config(self, key, value):
+    def set_config(self, key: str, value):
         if hasattr(self.node, ATT_CONFIG):
             config = self.node.config
             if hasattr(config, key):
                 setattr(self.node.config, key, value)
             else:
                 msg = f"Could not find config key {key}"
-                raise ValueError(msg)
+                raise ZValueError(msg, config=config)
 
         else:
             msg = 'Node does not have the "config" attribute.'

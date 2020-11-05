@@ -38,7 +38,7 @@ from .struct import interpret_control_message, MsgReceived, WireMessage
 
 iedo = IEDO(True, True)
 
-__all__ = ["ComponentInterface"]
+__all__ = ["ComponentInterface", "MsgReceived", "read_reply"]
 
 
 class ComponentInterface:

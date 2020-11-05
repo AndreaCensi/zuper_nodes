@@ -45,7 +45,7 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
 
             r = can_be_used_as2(v2, v1)
             if not r:
-                msg = f'For input "{k}", cannot use type v2 as v21'
+                msg = f'For input "{k}", cannot use type v2 as v1'
                 raise IncompatibleProtocol(
                     msg, k=k, v1=v1, v2=v2, r=r, p1_inputs=p1.inputs, p2_inputs=p2.inputs
                 )
