@@ -96,15 +96,15 @@ class ComponentInterface:
             nickname=self.nickname,
         )
         self.node_capabilities = msgs[0]["data"]
-        logger.info("My capabilities: %s" % self.my_capabilities)
-        logger.info("Found capabilities: %s" % self.node_capabilities)
+        # logger.info("My capabilities: %s" % self.my_capabilities)
+        # logger.info("Found capabilities: %s" % self.node_capabilities)
         if "z2" not in self.node_capabilities:
             msg = "Incompatible node; capabilities %s" % self.node_capabilities
             raise ExternalProtocolViolation(msg)
 
         z = self.node_capabilities["z2"]
         if not z.get(CAPABILITY_PROTOCOL_REFLECTION, False):
-            logger.info("Node does not support reflection.")
+            logger.debug("Node does not support reflection.")
             if self.expect_protocol is None:
                 msg = "Node does not support reflection - need to provide protocol."
                 raise Exception(msg)

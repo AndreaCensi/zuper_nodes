@@ -7,19 +7,19 @@ from zuper_commons.fs import make_sure_dir_exists
 from . import logger, logger_interaction
 
 
-def wait_for_creation(fn: str):
+def wait_for_creation(fn: str, wait: float = 3.0):
     t0 = time.time()
     if os.path.exists(fn):
-        logger.info(f"Found {fn} right away.")
+        # logger.info(f"Found {fn} right away.")
         return
     while not os.path.exists(fn):
+        time.sleep(wait)
         dt = int(time.time() - t0)
         msg = f"Waiting for creation of {fn} since {dt} seconds."
         logger.info(msg)
-        time.sleep(1)
 
     dt = int(time.time() - t0)
-    logger.info(f"Found {fn} after {dt} seconds waiting.")
+    logger.debug(f"Found {fn} after {dt} seconds waiting.")
 
 
 def open_for_read(fin: str, timeout: float = None):
