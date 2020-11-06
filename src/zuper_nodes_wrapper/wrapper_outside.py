@@ -62,6 +62,7 @@ class ComponentInterface:
         except BaseException as e:
             msg = f"Cannot create fifo {fnin}"
             raise Exception(msg) from e
+        ### FIXME: this is blocking, throw exception
         self.fpin = open(fnin, "wb", buffering=0)
         wait_for_creation(fnout)
         self.fnout = fnout
