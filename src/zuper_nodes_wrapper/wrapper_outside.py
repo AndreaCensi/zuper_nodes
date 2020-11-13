@@ -12,6 +12,7 @@ from zuper_nodes import (
     check_compatible_protocol,
     ExternalNodeDidNotUnderstand,
     ExternalProtocolViolation,
+    ExternalTimeout,
     InteractionProtocol,
     RemoteNodeAborted,
     TimingInfo,
@@ -283,7 +284,7 @@ class ComponentInterface:
 def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
     """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
      Raises:
-         TimeoutError
+         ExternalTimeout
          RemoteNodeAborted
          ExternalNodeDidNotUnderstand
          ExternalProtocolViolation otherwise. """
@@ -291,8 +292,11 @@ def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
         c = read_next_cbor(fpout, timeout=timeout, waiting_for=waiting_for)
         wm = cast(WireMessage, c)
         # logger.debug(f'{nickname} sent {wm}')
+    except TimeoutError:
+        msg = f"Timeout of {timeout} violated while waiting for {waiting_for!r}."
+        raise ExternalTimeout(msg) from None
     except StopIteration:
-        msg = "Remote node closed communication (%s)" % waiting_for
+        msg = f"Remote node closed communication ({waiting_for})"
         raise RemoteNodeAborted(msg) from None
 
     cm = interpret_control_message(wm)

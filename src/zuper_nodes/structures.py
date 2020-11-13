@@ -1,7 +1,7 @@
 import socket
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Dict
+from typing import Dict, Optional
 
 import numpy as np
 
@@ -22,6 +22,7 @@ __all__ = [
     "ExternalTimeout",
     "ExternalNodeDidNotUnderstand",
     "RemoteNodeAborted",
+    "InternalProblem",
 ]
 
 
@@ -41,7 +42,7 @@ class ExternalNodeDidNotUnderstand(ProtocolViolation):
     pass
 
 
-class RemoteNodeAborted(Exception):
+class RemoteNodeAborted(ExternalProtocolViolation):
     pass
 
 
@@ -49,7 +50,7 @@ class ExternalTimeout(ExternalProtocolViolation):
     pass
 
 
-class InternalProblem(Exception):
+class InternalProblem(AIDONodesException):
     pass
 
 
