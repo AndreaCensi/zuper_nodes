@@ -21,7 +21,7 @@ KNOWN = [
     ENV_AIDO_REQUIRE_GPU,
     # ENV_ENCODING,
 ]
-
+TAG_Z2 = "z2"
 
 ATT_CONFIG = "config"
 

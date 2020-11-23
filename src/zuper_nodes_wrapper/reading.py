@@ -56,16 +56,16 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                 yield rtm
 
         elif readyx:
-            logger.warning("Exceptional condition on input channel %s" % readyx)
+            logger.warning(f"Exceptional condition on input channel {readyx}")
         else:
             delta = time.time() - last
             if give_up is not None and (delta > give_up):
-                msg = f"I am giving up after %.1f seconds." % delta
+                msg = f"I am giving up after {delta:.1f} seconds."
                 raise ExternalTimeout(msg)
             else:
                 intermediate_timeout *= intermediate_timeout_multiplier
-                msg = f"Input channel not ready after %.1f seconds. Will re-try." % delta
+                msg = f"Input channel not ready after {delta:.1f} seconds. Will re-try."
                 if waiting_for:
                     msg += "\n" + indent(waiting_for, "> ")
-                msg += "\n I will warn again in %.1f seconds." % intermediate_timeout
+                msg += f"\n I will warn again in {intermediate_timeout:.1f} seconds."
                 logger.warning(msg)

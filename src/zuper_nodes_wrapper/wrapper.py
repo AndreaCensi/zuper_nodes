@@ -9,7 +9,6 @@ from typing import Dict, List, Optional, Tuple
 
 import yaml
 from zuper_commons.text import indent
-from zuper_commons.timing import timeit_wall
 from zuper_commons.types import check_isinstance, ZValueError
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
 from zuper_nodes import (
@@ -198,7 +197,7 @@ def check_variables():
     for k, v in os.environ.items():
         if k.startswith("AIDO") and k not in KNOWN:
             msg = f'I do not expect variable "{k}" set in environment with value "{v}".'
-            msg += " I expect: %s" % ", ".join(KNOWN)
+            msg += f" I expect: {', '.join(KNOWN)}"
             logger.warn(msg)
 
 
@@ -242,6 +241,9 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
         config = yaml.load(config, Loader=yaml.SafeLoader)
 
         loop(node_name, fi, fo, node, protocol, tin, tout, config=config, fi_desc=fin, fo_desc=fout)
+    except RuntimeError as e:
+        if "GPU" in str(e) or "cuda" in str(e):
+            raise SystemExit(138)
     except BaseException as e:
         msg = f"Error in node {node_name}"
         logger.error(f"Error in node {node_name}: \n{traceback.format_exc()}")
@@ -250,6 +252,9 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
         fo.flush()
         fo.close()
         fi.close()
+
+
+TOPIC_ABORTED = "aborted"
 
 
 def loop(
@@ -268,6 +273,7 @@ def loop(
     initialized = False
     context_data = None
     sink = Sink(fo)
+    PASSTHROUGH = (RuntimeError,)
     try:
         context_data = ConcreteContext(sink=sink, protocol=protocol, node_name=node_name, tout=tout)
         context_meta = ConcreteContext(
@@ -278,7 +284,7 @@ def loop(
         for k, v in config.items():
             wrapper.set_config(k, v)
 
-        waiting_for = "Expecting control message or one of:  %s" % context_data.pc.get_expected_events()
+        waiting_for = f"Expecting control message or one of:  {context_data.pc.get_expected_events()}"
 
         for parsed in inputs(fi, waiting_for=waiting_for):
             if isinstance(parsed, ControlMessage):
@@ -312,10 +318,14 @@ def loop(
                 if receiver0 is node and not initialized:
                     try:
                         call_if_fun_exists(node, "init", context=context_data)
+                    except PASSTHROUGH:
+                        context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                        raise
                     except BaseException as e:
+
                         msg = "Exception while calling the node's init() function."
                         msg += "\n\n" + indent(traceback.format_exc(), "| ")
-                        context_meta.write("aborted", msg)
+                        context_meta.write(TOPIC_ABORTED, msg)
                         raise Exception(msg) from e
                     initialized = True
 
@@ -335,6 +345,9 @@ def loop(
                     for rtm in to_write:
                         sink.write_topic_message(rtm.topic, rtm.data, rtm.timing)
                     sink.write_control_message(CTRL_OVER)
+                except PASSTHROUGH:
+                    context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                    raise
                 except BaseException as e:
                     msg = f'Exception while handling a message on topic "{parsed.topic}".'
                     msg += "\n\n" + indent(traceback.format_exc(), "| ")
@@ -352,10 +365,13 @@ def loop(
         if initialized:
             try:
                 call_if_fun_exists(node, "finish", context=context_data)
+            except PASSTHROUGH:
+                context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                raise
             except BaseException as e:
                 msg = "Exception while calling the node's finish() function."
                 msg += "\n\n" + indent(traceback.format_exc(), "| ")
-                context_meta.write("aborted", msg)
+                context_meta.write(TOPIC_ABORTED, msg)
                 raise Exception(msg) from e
 
     except BrokenPipeError:
@@ -365,7 +381,7 @@ def loop(
     except ExternalTimeout as e:
         msg = "Could not receive any other messages."
         if context_data:
-            msg += "\n Expecting one of:  %s" % context_data.pc.get_expected_events()
+            msg += f"\n Expecting one of:  {context_data.pc.get_expected_events()}"
         sink.write_control_message(CTRL_ABORTED, msg)
         sink.write_control_message(CTRL_OVER)
         raise ExternalTimeout(msg) from e

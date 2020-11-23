@@ -68,7 +68,7 @@ def describe_cd(nd: ConfigDescription):
     # noinspection PyDataclass
     for f in dataclasses.fields(nd.config):
         # for k, v in nd.config.__annotations__.items():
-        s.append("%20s: %s = %s" % (f.name, f.type, f.default))
+        s.append(f"{f.name:>20}: {f.type} = {f.default}")
     if not s:
         return "No configuration switches available."
 
@@ -85,11 +85,11 @@ def describe(ip: InteractionProtocol):
 
     s += "\n\n" + "* Inputs:"
     for name, type_ in ip.inputs.items():
-        s += "\n  %25s: %s" % (name, type_)
+        s += f"\n  {name:>25}: {type_}"
 
     s += "\n\n" + "* Outputs:"
     for name, type_ in ip.outputs.items():
-        s += "\n  %25s: %s" % (name, type_)
+        s += f"\n  {name:>25}: {type_}"
 
     s += "\n\n" + "* Language:"
     s += "\n\n" + ip.language

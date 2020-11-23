@@ -3,7 +3,6 @@ from io import BufferedReader
 from typing import cast, List, Optional
 
 import cbor2 as cbor
-
 from zuper_commons.text import indent
 from zuper_commons.types import ZException
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
@@ -17,6 +16,7 @@ from zuper_nodes import (
     RemoteNodeAborted,
     TimingInfo,
 )
+
 from . import logger, logger_interaction
 from .constants import (
     CAPABILITY_PROTOCOL_REFLECTION,
@@ -31,15 +31,15 @@ from .constants import (
     FIELD_DATA,
     FIELD_TIMING,
     FIELD_TOPIC,
+    TAG_Z2,
     TOPIC_ABORTED,
 )
 from .meta_protocol import basic_protocol, ProtocolDescription
 from .streams import wait_for_creation
 from .struct import interpret_control_message, MsgReceived, WireMessage
 
-iedo = IEDO(True, True)
-
 __all__ = ["ComponentInterface", "MsgReceived", "read_reply"]
+iedo = IEDO(True, True)
 
 
 class ComponentInterface:
@@ -85,7 +85,7 @@ class ComponentInterface:
         self._cc = f
 
     def _get_node_protocol(self, timeout: float = None):
-        self.my_capabilities = {"z2": {CAPABILITY_PROTOCOL_REFLECTION: True}}
+        self.my_capabilities = {TAG_Z2: {CAPABILITY_PROTOCOL_REFLECTION: True}}
         msg = {FIELD_CONTROL: CTRL_CAPABILITIES, FIELD_DATA: self.my_capabilities}
 
         j = self._serialize(msg)
@@ -100,19 +100,19 @@ class ComponentInterface:
         self.node_capabilities = msgs[0]["data"]
         # logger.info("My capabilities: %s" % self.my_capabilities)
         # logger.info("Found capabilities: %s" % self.node_capabilities)
-        if "z2" not in self.node_capabilities:
-            msg = "Incompatible node; capabilities %s" % self.node_capabilities
+        if TAG_Z2 not in self.node_capabilities:
+            msg = f"Incompatible node; capabilities {self.node_capabilities}"
             raise ExternalProtocolViolation(msg)
 
-        z = self.node_capabilities["z2"]
+        z = self.node_capabilities[TAG_Z2]
         if not z.get(CAPABILITY_PROTOCOL_REFLECTION, False):
             logger.debug("Node does not support reflection.")
             if self.expect_protocol is None:
                 msg = "Node does not support reflection - need to provide protocol."
                 raise Exception(msg)
         else:
-
-            ob: MsgReceived[ProtocolDescription] = self.write_topic_and_expect(
+            ob: MsgReceived[ProtocolDescription]
+            ob = self.write_topic_and_expect(
                 "wrapper.describe_protocol", expect="protocol_description", timeout=timeout,
             )
             self.node_protocol = ob.data.data
@@ -142,7 +142,7 @@ class ComponentInterface:
         self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
         msgs = read_reply(self.fpout, timeout=timeout, nickname=self.nickname)
         if msgs:
-            msg = "Expecting zero, got %s" % msgs
+            msg = f"Expecting zero, got {msgs}"
             raise ExternalProtocolViolation(msg)
 
     def _write_topic(self, topic, data=None, with_schema=False, timing=None):
@@ -243,7 +243,7 @@ class ComponentInterface:
                 if self.node_protocol:
                     if topic not in self.node_protocol.outputs:
                         msg = f'Cannot find topic "{topic}" in outputs of detected node protocol.'
-                        msg += "\nI know: %s" % sorted(self.node_protocol.outputs)
+                        msg += f"\nI know: {sorted(self.node_protocol.outputs)}"
                         raise ExternalProtocolViolation(msg)
                     else:
                         klass = self.node_protocol.outputs[topic]
@@ -270,18 +270,18 @@ class ComponentInterface:
             return MsgReceived[klass](topic, data, timing)
 
         except StopIteration as e:
-            msg = "EOF detected on %s after %d messages." % (self.fnout, self.nreceived)
+            msg = f"EOF detected on {self.fnout} after {self.nreceived} messages."
             if expect_topic:
                 msg += f' Expected topic "{expect_topic}".'
             raise StopIteration(msg) from e
         except TimeoutError as e:
-            msg = "Timeout detected on %s after %d messages." % (self.fnout, self.nreceived,)
+            msg = f"Timeout detected on {self.fnout} after {self.nreceived} messages."
             if expect_topic:
                 msg += f' Expected topic "{expect_topic}".'
             raise TimeoutError(msg) from e
 
 
-def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
+def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None,) -> List:
     """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
      Raises:
          ExternalTimeout
@@ -306,6 +306,8 @@ def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
     elif cm.code == CTRL_ABORTED:
         msg = f'The remote node "{nickname}" aborted with the following error:'
         msg += "\n\n" + indent(cm.msg, "|", f"error in {nickname} |")
+
+        # if 'RuntimeError: CUDA error: out of memory' in cm.msg:
         # others = self.read_until_over()
         raise RemoteNodeAborted(msg)
     elif cm.code == CTRL_NOT_UNDERSTOOD:
@@ -314,7 +316,7 @@ def read_reply(fpout, nickname: str, timeout=None, waiting_for=None,) -> List:
         msg += "\n\n" + indent(cm.msg, "|", f"reported by {nickname} |")
         raise ExternalNodeDidNotUnderstand(msg)
     else:
-        msg = "Remote node raised unknown code %s: %s" % (cm, cm.code)
+        msg = f"Remote node raised unknown code {cm}: {cm.code}"
         raise ExternalProtocolViolation(msg)
 
 
