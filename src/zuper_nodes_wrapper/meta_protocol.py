@@ -78,20 +78,21 @@ Basic interaction protocol for nodes spoken by the node wrapper.
     language="""\
     (
         (in:describe_config ;  out:config_description) |
-        
+
         (in:set_config      ;  (out:set_config_ack | out:set_config_error)) |
-    
+
         (in:describe_protocol  ;  out:protocol_description) |
-        
+
         (in:describe_node   ;  out:node_description) |
-        
+
         (in:describe_build   ;  out:build_description) |
-        
+
         (in:get_state   ;  out:node_state) |
-        
+
         (in:set_state   ;  (out:set_state_ack| out:set_state_error) ) |
-        
+
         (in:get_logs   ;  out:logs) |
+
         out:aborted
     )*
 """,

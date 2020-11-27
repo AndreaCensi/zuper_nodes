@@ -1,3 +1,4 @@
+import pyparsing
 from pyparsing import (
     Suppress,
     Literal,
@@ -38,7 +39,12 @@ K = Keyword
 
 
 def parse_language(s: str) -> Language:
-    res = Syntax.language.parseString(s, parseAll=True)
+    try:
+        res = Syntax.language.parseString(s, parseAll=True)
+    except pyparsing.ParseException as e:
+        msg = f"Cannot parse the language:\n\n{s}"
+        raise Exception(msg) from e
+
     res = res[0]
     return res
 

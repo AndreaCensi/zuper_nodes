@@ -145,7 +145,7 @@ class ComponentInterface:
             msg = f"Expecting zero, got {msgs}"
             raise ExternalProtocolViolation(msg)
 
-    def _write_topic(self, topic, data=None, with_schema=False, timing=None):
+    def _write_topic(self, topic: str, data=None, with_schema: bool = False, timing=None):
         suggest_type = object
         if self.node_protocol:
             if topic in self.node_protocol.inputs:
@@ -203,7 +203,7 @@ class ComponentInterface:
                 msg += f"\n\nI could not read any aborted message: {e2}"
             raise RemoteNodeAborted(msg) from e
 
-    def _serialize(self, msg) -> bytes:
+    def _serialize(self, msg: object) -> bytes:
         j = cbor.dumps(msg)
         return j
 
@@ -306,9 +306,6 @@ def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = N
     elif cm.code == CTRL_ABORTED:
         msg = f'The remote node "{nickname}" aborted with the following error:'
         msg += "\n\n" + indent(cm.msg, "|", f"error in {nickname} |")
-
-        # if 'RuntimeError: CUDA error: out of memory' in cm.msg:
-        # others = self.read_until_over()
         raise RemoteNodeAborted(msg)
     elif cm.code == CTRL_NOT_UNDERSTOOD:
         _others = read_until_over(fpout, timeout=timeout, nickname=nickname)
@@ -320,7 +317,7 @@ def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = N
         raise ExternalProtocolViolation(msg)
 
 
-def read_until_over(fpout, timeout, nickname) -> List[WireMessage]:
+def read_until_over(fpout, timeout: float, nickname: str) -> List[WireMessage]:
     """ Raises RemoteNodeAborted, TimeoutError """
     res = []
     waiting_for = f"Reading reply of {nickname}."
