@@ -229,7 +229,7 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
     fin = parsed.data_in
     fout = parsed.data_out
 
-    logger.info("run_loop", fin=fin, fout=fout)
+    # logger.info("run_loop", fin=fin, fout=fout)
     fi = open_for_read(fin)
     fo = open_for_write(fout)
 
@@ -242,7 +242,8 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
 
         loop(node_name, fi, fo, node, protocol, tin, tout, config=config, fi_desc=fin, fo_desc=fout)
     except RuntimeError as e:
-        if "GPU" in str(e) or "cuda" in str(e):
+        s = str(e).lower()
+        if "gpu" in s or "cuda" in s:
             raise SystemExit(138)
     except BaseException as e:
         msg = f"Error in node {node_name}"
@@ -257,6 +258,7 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
 TOPIC_ABORTED = "aborted"
 
 
+# noinspection PyBroadException
 def loop(
     node_name: str,
     fi,
@@ -319,21 +321,33 @@ def loop(
                     try:
                         call_if_fun_exists(node, "init", context=context_data)
                     except PASSTHROUGH:
-                        context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                        try:
+                            context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                        except BaseException:
+                            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
+
                         raise
                     except BaseException as e:
 
                         msg = "Exception while calling the node's init() function."
                         msg += "\n\n" + indent(traceback.format_exc(), "| ")
-                        context_meta.write(TOPIC_ABORTED, msg)
+                        try:
+                            context_meta.write(TOPIC_ABORTED, msg)
+                        except BaseException:
+                            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
+
                         raise Exception(msg) from e
                     initialized = True
 
                 if parsed.topic not in context0.protocol.inputs:
                     msg = f'Input channel "{parsed.topic}" not found in protocol. '
                     msg += f"\n\nKnown channels: {sorted(context0.protocol.inputs)}"
-                    sink.write_control_message(CTRL_NOT_UNDERSTOOD, msg)
-                    sink.write_control_message(CTRL_OVER)
+                    try:
+                        sink.write_control_message(CTRL_NOT_UNDERSTOOD, msg)
+                        sink.write_control_message(CTRL_OVER)
+                    except BaseException:
+                        logger.warn("cannot write sink control messages", bt=traceback.format_exc())
+
                     raise ExternalProtocolViolation(msg)
 
                 sink.write_control_message(CTRL_UNDERSTOOD)
@@ -346,13 +360,21 @@ def loop(
                         sink.write_topic_message(rtm.topic, rtm.data, rtm.timing)
                     sink.write_control_message(CTRL_OVER)
                 except PASSTHROUGH:
-                    context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                    try:
+                        context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+                    except BaseException:
+                        logger.warn("cannot write TOPIC_ABORTED on context_meta", bt=traceback.format_exc())
+
                     raise
                 except BaseException as e:
                     msg = f'Exception while handling a message on topic "{parsed.topic}".'
                     msg += "\n\n" + indent(traceback.format_exc(), "| ")
-                    sink.write_control_message(CTRL_ABORTED, msg)
-                    sink.write_control_message(CTRL_OVER)
+                    try:
+                        sink.write_control_message(CTRL_ABORTED, msg)
+                        sink.write_control_message(CTRL_OVER)
+                    except BaseException:
+                        logger.warn("cannot write sink control messages", bt=traceback.format_exc())
+
                     raise InternalProblem(msg) from e  # XXX
             else:
                 assert False
@@ -382,16 +404,23 @@ def loop(
         msg = "Could not receive any other messages."
         if context_data:
             msg += f"\n Expecting one of:  {context_data.pc.get_expected_events()}"
-        sink.write_control_message(CTRL_ABORTED, msg)
-        sink.write_control_message(CTRL_OVER)
+        try:
+            sink.write_control_message(CTRL_ABORTED, msg)
+            sink.write_control_message(CTRL_OVER)
+        except BaseException:
+            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
         raise ExternalTimeout(msg) from e
     except InternalProblem:
         raise
     except BaseException as e:
         msg = f"Unexpected error:"
         msg += "\n\n" + indent(traceback.format_exc(), "| ")
-        sink.write_control_message(CTRL_ABORTED, msg)
-        sink.write_control_message(CTRL_OVER)
+        try:
+            sink.write_control_message(CTRL_ABORTED, msg)
+            sink.write_control_message(CTRL_OVER)
+        except BaseException:
+            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
+
         raise InternalProblem(msg) from e  # XXX
 
 
