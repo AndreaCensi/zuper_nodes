@@ -70,9 +70,11 @@ def open_for_write(fout: str):
 
         if wants_fifo:
             logger_interaction.info(f"Fifo {fout} created. Opening will block until a reader appears.")
+            logger.info(f"Fifo {fout} created. I will block until a reader appears.")
 
         make_sure_dir_exists(fout)
         fo = open(fout, "wb", buffering=0)
+        logger.info(f"Fifo reader appeared for {fout}.")
 
         if wants_fifo:
             logger_interaction.info(f"A reader has connected to my fifo {fout}")
