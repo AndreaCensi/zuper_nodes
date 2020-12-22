@@ -29,7 +29,7 @@ connections=[
 def on_image_received(self, context, data):
     context.send('sub1', 'image', data)
     context.send('sub2', 'image', data)
-    
+
 
 
 inputs={

@@ -532,7 +532,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
 
 
 def check_implementation(node, protocol: InteractionProtocol):
-    logger.info("checking implementation")
+    # logger.info("checking implementation")
     for n in protocol.inputs:
         expect_fn = f"on_received_{n}"
         if not hasattr(node, expect_fn):
@@ -546,4 +546,4 @@ def check_implementation(node, protocol: InteractionProtocol):
             if input_name not in protocol.inputs:
                 msg = f'The node has function "{x}" but there is no input "{input_name}".'
                 raise NotConforming(msg)
-    logger.info("checking implementation OK")
+    # logger.info("checking implementation OK")

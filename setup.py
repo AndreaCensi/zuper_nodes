@@ -23,7 +23,7 @@ def get_version(filename):
     return version
 
 
-line = "z6"
+line = "z7"
 
 install_requires = [
     "pyparsing",

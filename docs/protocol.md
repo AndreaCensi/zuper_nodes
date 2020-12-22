@@ -27,24 +27,24 @@ It should be possible to easily use a module in at least these scenarios:
 * On the robot in real-time.
 * Called as part of other modules ("module decorator").
 * In a simulation, with the simulator both local (same host) or remote.
-* In "batch mode", where the data is supplied from logs. 
+* In "batch mode", where the data is supplied from logs.
 
 It should be possible to run two instances of the same module / system on the same host.
 
 ### Deterministic replay
 
-It should be possible to apply the same module to the same data and obtain the same output. 
+It should be possible to apply the same module to the same data and obtain the same output.
 
 Example violation: current Slimremote protocol runs simulation while it "waits" for the connection from the client.
 The result is then dependent on the network status.
 
-### Deterministic uncertainty. 
+### Deterministic uncertainty.
 
 There should be a clear way for modules to access a seed to use for their random number generators.
 
 ### Protocol checks
 
-It should be explicit what protocol a module uses, and it should be easy to check to avoid incompatibilities. 
+It should be explicit what protocol a module uses, and it should be easy to check to avoid incompatibilities.
 
 Example: Understanding whether I can pipe `p1` into `p2`.
 
@@ -63,7 +63,7 @@ Nice to have some meta information in the module (who wrote, the description, et
 
 ## Non-goals {status=ready}
 
-### Ultimate speed. 
+### Ultimate speed.
 
 We are OK in accepting a performance hit.
 
@@ -94,10 +94,10 @@ We go back to the UNIX philosophy. "AIDO Nodes" or simply "nodes" are executable
 
 The nodes are likely packaged in a Docker container. From our point of view, it does not matter whether
 we are running a naked executable or a containerized executable. In either case, there will be
- a standard input / standard output to write to.   
+ a standard input / standard output to write to.
 
-The data that is moved across these sockets is encoded as JSON-L: each line is a well-formed JSON message. 
-JSON also allows to add binary data, encoded as a base64 string. 
+The data that is moved across these sockets is encoded as JSON-L: each line is a well-formed JSON message.
+JSON also allows to add binary data, encoded as a base64 string.
 
 AIDO Nodes interact according to well-defined protocols that are formally specified.
 There are two levels of formalization:
@@ -108,7 +108,7 @@ There are two levels of formalization:
 
 ## Individual JSON messages
 
-The messages are of the form: 
+The messages are of the form:
 
 ```json
 {"topic": ![topic name], "data": ![data]}
@@ -117,11 +117,11 @@ The messages are of the form:
 A newline delimiter separates the JSON messages.
 
 The "topic name" has the same semantics as in ROS: while there is only one pipe for stdin/stdout,
-there are different logical streams of data that are labeled with a topic name. 
+there are different logical streams of data that are labeled with a topic name.
 
-## Formalizing the protocol 
+## Formalizing the protocol
 
-To define a protocol, we need to specify: 
+To define a protocol, we need to specify:
 
 1. What are the input and output channels.
 2. For each channel, what is the data format.
@@ -162,7 +162,7 @@ As a formal language this can be written as:
 
 ```
 LaneFilterLanguage := in:calibration (in:image ; out:estimate)*
-``` 
+```
 
 This is then a formal description of the protocol; not only the data format, but also of the behavior of the component.
 
@@ -191,12 +191,12 @@ protocol_image_filter = InteractionProtocol(
 ```
 
 Above, `JPGImage` is a regular Python dataclass. The JSON schema description
-will be generated from the Python dataclass annotations. 
+will be generated from the Python dataclass annotations.
 
 ### Creating nodes that follow the protocol
 
 There is an API that allows to easily create a node that follows the protocol while hiding all the complexity of
-JSON decoding/encoding. 
+JSON decoding/encoding.
 
 
 A minimal "image filter" can be realized as follows:
@@ -207,7 +207,7 @@ from aido_schemas import JPGImage, protocol_image_filter, wrap_direct
 class DummyFilter:
 
     protocol = protocol_image_filter
-    
+
     def on_received_image(self, context, data: JPGImage):
         transformed = data # compute here
         context.write("transformed", transformed)
@@ -217,7 +217,7 @@ if __name__ == '__main__':
     wrap_direct(node=node, protocol=node.protocol)
 ```
 
-The user must implement for each input channel `![channel name]` the  function `on_received_![channel name]`. 
+The user must implement for each input channel `![channel name]` the  function `on_received_![channel name]`.
 
 This function will be called with parameters `data`, containing the data received (already translated from
 JSON), and an object `context`. The object `context` provides the methods:
@@ -228,20 +228,20 @@ context.write('channel', data)
 
 # log something
 context.log('log string')
-``` 
+```
 
 If the node implements it, the API will also call the function `init()` at the beginning
-and `finish()` at the end. 
+and `finish()` at the end.
 
 
 ### Guarantees
-    
+
 The node can assume that the sequence of calls will respect the protocol.
 For example, if the protocol is:
 
 ```in:calibration ; (in:image ; out:estimate)```
 
-the node can assume that there is going to be a call to `on_received_calibration` before 
+the node can assume that there is going to be a call to `on_received_calibration` before
 any call to `on_received_image`.
 
 On the other hand, note that the node itself must respect the protocol that has been declared.
@@ -254,7 +254,7 @@ See the folder `minimal` in this repository for the minimal implementation
 of the protocols so far defined.
 
 
-## Extra features: configuration handling 
+## Extra features: configuration handling
 
 If the node has an attribute called `config`, then the API automatically exposes that configuration.
 
@@ -264,22 +264,22 @@ For example, suppose the node is the following:
 from aido_nodes import protocol_image_filter, JPGImage
 
 class MyConfig:
-    num_frames: int = 3 
+    num_frames: int = 3
 
 class MyFilter:
     config: MyConfig = MyConfig()
-    
+
     protocol = protocol_image_filter
-    
+
     def on_received_image(self, context, data: JPGImage):
         ...
-        
+
     def on_updated_config(self, context, key, value):
         context.log(f'Config was updated: {key} = {value!r}')
-    
+
 ```
 
-Then the node will also respond to "control" messages in the channel "`wrapper.set_config`" of the form: 
+Then the node will also respond to "control" messages in the channel "`wrapper.set_config`" of the form:
 
 ```json
 {"topic": "wrapper.set_config",  "data": {"key":  "![config key]", "value": ![config value]}}
@@ -304,21 +304,21 @@ protocol_image_source = InteractionProtocol(
                 "next_episode": type(None)}, # ask for the next episode
         outputs={"image": JPGImage, # the output data
                  "episode_start": EpisodeStart, # marks the start of episode
-                 "no_more_images": type(None), 
+                 "no_more_images": type(None),
                  "no_more_episodes": type(None)},
         interaction=parse_language("""
                 (
                     in:next_episode ; (
-                        out:no_more_episodes | 
+                        out:no_more_episodes |
                         (out:episode_start ;
                             (in:next_image ; (out:image | out:no_more_images))*)
                     )
-                )*            
+                )*
             """),
 )
 ```
 
-`type(None)` means that those messages do not carry any payload. 
+`type(None)` means that those messages do not carry any payload.
 
 The informal description is:
 
@@ -340,11 +340,11 @@ The nondeterministic finite automaton for the language is parsed as in [](#examp
     </figcaption>
 </figure>
 
- 
+
 -->
 
 
-## Gains from formal definition {status=beta} 
+## Gains from formal definition {status=beta}
 
 We can then use the usual machinery of the field of formal languages to reason about composition and extendability.
 
@@ -356,7 +356,7 @@ Imagine that there is a lane filter who can also accept IMU data. But not always
 
 Its language would be:
 
-``` 
+```
 LaneFilterLanguage2 := in:calibration ( (in:image out:estimate) | (in:IMU out:estimate? ))*
 ```
 
@@ -366,7 +366,7 @@ It is possible (with some assumptions) to reason that LaneFilterLanguage1 is a s
 
 Another possibility is where the data type is extended.
 
-Already from JSON schema we have a notion of partial order. 
+Already from JSON schema we have a notion of partial order.
 
 For example imagine a message with two fields:
 
@@ -445,5 +445,3 @@ The second schema is:
 <style>
 img { max-width: 100%; }
 </style>
-
-

@@ -37,15 +37,15 @@ Then there is a sequence of messages, terminated with a sequence marker:
 control: over
 ```
 
-## Get capabilities 
+## Get capabilities
 
 The node might receive a `capabilities` message,
 whose `data` dictionary contains a dictionary.   The semantics
-of these depend on the interaction. 
+of these depend on the interaction.
 
 ```yaml
 control: capabilities
-   data: 
+   data:
       z2:
       protocol-reflection: true
 
@@ -61,7 +61,3 @@ The node must respond with the sequence:
         protocol-reflection: true
 - control: over
 ```
-
-
-
-

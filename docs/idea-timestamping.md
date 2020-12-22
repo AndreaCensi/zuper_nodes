@@ -13,14 +13,14 @@ clock: hostname
 
 ## Uncertainty
 
-Optionally you can specify a second time instant,  
+Optionally you can specify a second time instant,
 successive to the first, which defines the upper bound of the time.
 
 ## Type of timing info
 
 For sensor data:
 
-* "Last acquisition time": timestamp of the last acquired data 
+* "Last acquisition time": timestamp of the last acquired data
 
 * "Computed time": when this data was computed.
 
@@ -38,7 +38,7 @@ For sensor data:
         "acquired": {
           "obstopic1": {},
           "obstopic2": {},
-        }, 
+        },
         "computed": {
           "node1": {},
           "node2": {},
@@ -56,7 +56,7 @@ For sensor data:
 
 ```
 
-## Advancing time 
+## Advancing time
 
 
 
@@ -71,18 +71,18 @@ from typing import *
 class Timestamp:
     s: int
     us: int
-    
+
 class TimeSpec:
     time: Timestamp
     time2: Optional[Timestamp]
     frame: str
     clock: str
-    
+
 class TimingInfo:
     acquired: Optional[Dict[str, TimeSpec]]
     processed: Optional[Dict[str, TimeSpec]]
     received: Optional[TimeSpec]
-    
+
 
 def on_received_topicname(self, context, data, timing: TimingInfo):
     pass
