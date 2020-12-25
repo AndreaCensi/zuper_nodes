@@ -5,7 +5,7 @@ from .language import (
     Language,
     OutputProduced,
     InputReceived,
-    Event,
+    ZEvent,
     ExpectInputReceived,
     ExpectOutputProduced,
     InSequence,
@@ -113,7 +113,7 @@ def get_nfa(
         assert False, type(l)
 
 
-def event_matches(l: Language, event: Event):
+def event_matches(l: Language, event: ZEvent):
     if isinstance(l, ExpectInputReceived):
         return isinstance(event, InputReceived) and event.channel == l.channel
 

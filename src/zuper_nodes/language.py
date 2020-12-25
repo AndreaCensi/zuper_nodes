@@ -17,7 +17,7 @@ __all__ = [
     "ZeroOrMore",
     "OutputProduced",
     "InputReceived",
-    "Event",
+    "ZEvent",
     "particularize_no_check",
 ]
 
@@ -27,17 +27,17 @@ else:
     ChannelName = str
 
 
-class Event:
+class ZEvent:
     pass
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class InputReceived(Event):
+class InputReceived(ZEvent):
     channel: ChannelName
 
 
 @dataclass(frozen=True, unsafe_hash=True)
-class OutputProduced(Event):
+class OutputProduced(ZEvent):
     channel: ChannelName
 
 
@@ -46,7 +46,7 @@ class OutputProduced(Event):
 
 class Language(metaclass=ABCMeta):
     @abstractmethod
-    def collect_simple_events(self) -> Iterator[Event]:
+    def collect_simple_events(self) -> Iterator[ZEvent]:
         ...
 
     @abstractmethod
