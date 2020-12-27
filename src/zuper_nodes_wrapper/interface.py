@@ -18,8 +18,8 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
 
     from zuper_nodes_wrapper.wrapper import check_implementation, run_loop
 
-    if PYTHON_36 or PYTHON_37:
-        monkeypatch_findCaller()
+    # if PYTHON_36 or PYTHON_37:
+    #     monkeypatch_findCaller()
     check_implementation(node, protocol)
     run_loop(node, protocol, args)
 

@@ -1,14 +1,12 @@
 __version__ = "6.1.3"
-
-import os
+__date__ = ""
 
 from zuper_commons.logs import ZLogger
-import pyparsing
 
 logger = ZLogger(__name__)
 
-path = os.path.dirname(os.path.dirname(__file__))
-logger.info(f"version {__version__} path {path} pyparsing {pyparsing.__version__}")
+
+logger.hello_module(name=__name__, filename=__file__, version=__version__, date=__date__)
 
 from .language import *
 
