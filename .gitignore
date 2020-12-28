@@ -12,3 +12,4 @@ dist
 .coverage.*.*.*
 cover
 test-results
+out
