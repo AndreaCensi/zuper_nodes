@@ -165,7 +165,7 @@ class LanguageChecker:
             for node in self.active:
                 nalways = 0
                 nother = 0
-                for (_, neighbor, data) in self.g.out_edges([node], data=True):
+                for (_, neighbor, data) in self.g.out_edges(nbunch=[node], data=True):
                     # print(f'-> {neighbor} {data["event_match"]}')
                     if isinstance(data["event_match"], Always):
                         now_active.add(neighbor)
@@ -184,7 +184,7 @@ class LanguageChecker:
         # print(f'push: active is {self.active}')
         # print(f'push: considering {event}')
         for node in self.active:
-            for (_, neighbor, data) in self.g.out_edges([node], data=True):
+            for (_, neighbor, data) in self.g.out_edges(nbunch=[node], data=True):
                 if event_matches(data["event_match"], event):
                     # print(f'now activating {neighbor}')
                     now_active.add(neighbor)
@@ -214,7 +214,7 @@ class LanguageChecker:
     def get_expected_events(self) -> Set:
         events = set()
         for state in self.active:
-            for (_, neighbor, data) in self.g.out_edges([state], data=True):
+            for (_, neighbor, data) in self.g.out_edges(nbunch=[state], data=True):
                 em = data["event_match"]
                 if not isinstance(em, Always):
                     events.add(em)

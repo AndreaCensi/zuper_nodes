@@ -4,13 +4,13 @@ from typing import List, Sequence, Union
 from comptests import get_comptests_output_dir
 from networkx.drawing.nx_pydot import write_dot
 from zuper_commons.fs import make_sure_dir_exists
-from zuper_nodes import ChannelName, Event, InputReceived, Language, logger, OutputProduced
+from zuper_nodes import ChannelName, ZEvent, InputReceived, Language, logger, OutputProduced
 from zuper_nodes.language_parse import language_to_str, parse_language
 from zuper_nodes.language_recognize import Enough, LanguageChecker, NeedMore, Unexpected
 from zuper_nodes_wrapper.meta_protocol import basic_protocol
 
 
-def assert_seq(s: Union[str, Language], seq: List[Event], expect: Sequence[type], final: type):
+def assert_seq(s: Union[str, Language], seq: List[ZEvent], expect: Sequence[type], final: type):
     if isinstance(s, str):
         s = s.replace("\n", " ").strip()
         while "  " in s:

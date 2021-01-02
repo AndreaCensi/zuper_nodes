@@ -2,9 +2,7 @@ import sys
 from abc import ABCMeta, abstractmethod
 from typing import List, Optional
 
-from zuper_commons.logs import monkeypatch_findCaller
 from zuper_nodes.structures import TimingInfo
-from zuper_typing import PYTHON_36, PYTHON_37
 
 __all__ = [
     "Context",
