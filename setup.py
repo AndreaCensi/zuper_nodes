@@ -1,13 +1,7 @@
-import sys
+from setuptools import find_packages, setup
 
-from setuptools import setup
-
-if not sys.version_info >= (3, 6, 0):
-    msg = "Unsupported version %s" % sys.version
-    raise Exception(msg)
-
-
-def get_version(filename):
+# Read version from the __init__ file
+def get_version_from_source(filename):
     import ast
 
     version = None
@@ -23,29 +17,35 @@ def get_version(filename):
     return version
 
 
-line = "z7"
+import yaml
 
-install_requires = [
-    "pyparsing",
-    "PyContracts3",
-    "networkx>=2,<3",
-    "termcolor",
-    f"zuper-ipce-{line}",
-    "base58<2.0,>=1.0.2",
-]
+with open("project.pp1.yaml") as f:
+    data = yaml.load(f, Loader=yaml.Loader)
 
-tests_require = [
-    f"compmake-{line}",
-]
+install_requires = data["install_requires"]
+tests_require = data["tests_require"]
 
-version = get_version(filename="src/zuper_nodes/__init__.py")
+console_scripts = [f"{k} = {v}" for k, v in data["console_scripts"].items()]
+package_name = data["package_name"]
+packages = data["modules"]
+main_package = packages[0]
+version = get_version_from_source(f"src/{main_package}/__init__.py")
 
-setup(
-    name=f"zuper-nodes-{line}",
-    version=version,
-    keywords="",
-    package_dir={"": "src"},
-    packages=["zuper_nodes", "zuper_nodes_tests", "zuper_nodes_wrapper", "zuper_nodes_wrapper_tests",],
+# setup package
+params = dict(
+    name=package_name,
+    author=data["author"],
+    author_email=data["author_email"],
+    url=data["url"],
+    tests_require=tests_require,
     install_requires=install_requires,
-    entry_points={"console_scripts": ["zuper-node-identify=zuper_nodes_wrapper.identify:identify_main",],},
+    package_dir={"": "src"},
+    packages=find_packages("./src"),
+    long_description="",
+    version=version,
+    entry_points={"console_scripts": console_scripts},
 )
+
+setup(**params)
+
+# sigil 2f717c3d4b5b72c26e2cc7a387610790

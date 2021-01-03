@@ -3,6 +3,7 @@ srcdir: src
 version_file: "1"
 modules:
   - zuper_nodes
+  - zuper_nodes_wrapper
 
 install_requires:
   - zuper-commons-z7
@@ -13,12 +14,15 @@ install_requires:
   - networkx
   - numpy
   - pyparsing
-
+#    "networkx>=2,<3",
+#    "termcolor",
+#    f"zuper-ipce-{line}",
+#    "base58<2.0,>=1.0.2",
 install_conflicts: [ 'PACKAGENAME-*' ]
 tests_require: [ ]
 
 console_scripts:
-  zt-demo: zuper_utils_asyncio:zt_demo
+  zuper-node-identify: zuper_nodes_wrapper.identify:identify_main
 nose:
   modules:
     - "*_tests"
