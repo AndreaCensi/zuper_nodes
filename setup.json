@@ -1,0 +1,30 @@
+{
+  "install_requires": [
+    "PyYAML",
+    "cbor2",
+    "networkx",
+    "numpy",
+    "pyparsing",
+    "zuper-commons-z7",
+    "zuper-ipce-z7",
+    "zuper-typing-z7"
+  ],
+  "tests_require": [],
+  "srcdir": "src",
+  "package_name": "zuper-nodes-z7",
+  "entry_points": {
+    "console_scripts": [
+      "zuper-node-identify = zuper_nodes_wrapper.identify:identify_main"
+    ]
+  },
+  "zip_safe": false,
+  "include_package_data": false,
+  "modules": [
+    "zuper_nodes",
+    "zuper_nodes_wrapper"
+  ],
+  "version": "7.1.2101052340",
+  "author": "",
+  "author_email": "info@zupermind.com",
+  "url": "http://github.com/zupermind/PACKAGENAME"
+}
