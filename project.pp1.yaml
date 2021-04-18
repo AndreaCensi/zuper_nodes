@@ -19,7 +19,9 @@ install_requires:
 #    f"zuper-ipce-{line}",
 #    "base58<2.0,>=1.0.2",
 install_conflicts: [ 'PACKAGENAME-*' ]
-tests_require: [ 'comptests-z7']
+tests_require:
+  - comptests-z7
+  - pydot
 
 console_scripts:
   zuper-node-identify: zuper_nodes_wrapper.identify:identify_main

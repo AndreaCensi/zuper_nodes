@@ -113,7 +113,9 @@ class ComponentInterface:
         else:
             ob: MsgReceived[ProtocolDescription]
             ob = self.write_topic_and_expect(
-                "wrapper.describe_protocol", expect="protocol_description", timeout=timeout,
+                "wrapper.describe_protocol",
+                expect="protocol_description",
+                timeout=timeout,
             )
             self.node_protocol = ob.data.data
             self.data_protocol = ob.data.meta
@@ -215,7 +217,12 @@ class ComponentInterface:
             else:
                 waiting_for = None
 
-            msgs = read_reply(self.fpout, timeout=timeout, waiting_for=waiting_for, nickname=self.nickname,)
+            msgs = read_reply(
+                self.fpout,
+                timeout=timeout,
+                waiting_for=waiting_for,
+                nickname=self.nickname,
+            )
 
             if len(msgs) == 0:
                 msg = f'Expected one message from node "{self.nickname}". Got zero.'
@@ -281,13 +288,18 @@ class ComponentInterface:
             raise TimeoutError(msg) from e
 
 
-def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None,) -> List:
-    """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
-     Raises:
-         ExternalTimeout
-         RemoteNodeAborted
-         ExternalNodeDidNotUnderstand
-         ExternalProtocolViolation otherwise. """
+def read_reply(
+    fpout,
+    nickname: str,
+    timeout: float = None,
+    waiting_for: str = None,
+) -> List:
+    """Reads a control message. Returns if it is CTRL_UNDERSTOOD.
+    Raises:
+        ExternalTimeout
+        RemoteNodeAborted
+        ExternalNodeDidNotUnderstand
+        ExternalProtocolViolation otherwise."""
     try:
         c = read_next_cbor(fpout, timeout=timeout, waiting_for=waiting_for)
         wm = cast(WireMessage, c)

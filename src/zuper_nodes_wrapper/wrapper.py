@@ -74,7 +74,11 @@ class ConcreteContext(Context):
     tout: Dict[str, str]
 
     def __init__(
-        self, sink: Sink, protocol: InteractionProtocol, node_name: str, tout: Dict[str, str],
+        self,
+        sink: Sink,
+        protocol: InteractionProtocol,
+        node_name: str,
+        tout: Dict[str, str],
     ):
         self.sink = sink
         self.protocol = protocol
@@ -134,7 +138,10 @@ class ConcreteContext(Context):
             else:
                 time1 = timing.received.time
             processed = TimeSpec(
-                time=time1, time2=timestamp_from_seconds(s), frame="epoch", clock=socket.gethostname(),
+                time=time1,
+                time2=timestamp_from_seconds(s),
+                frame="epoch",
+                clock=socket.gethostname(),
             )
             timing.processed[self.node_name] = processed
             timing.received = None
@@ -279,7 +286,10 @@ def loop(
     try:
         context_data = ConcreteContext(sink=sink, protocol=protocol, node_name=node_name, tout=tout)
         context_meta = ConcreteContext(
-            sink=sink, protocol=basic_protocol, node_name=node_name + ".wrapper", tout=tout,
+            sink=sink,
+            protocol=basic_protocol,
+            node_name=node_name + ".wrapper",
+            tout=tout,
         )
 
         wrapper = MetaHandler(node, protocol)

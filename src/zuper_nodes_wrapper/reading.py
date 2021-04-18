@@ -51,7 +51,9 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: str = None) -> Itera
                     continue
 
                 rtm = RawTopicMessage(
-                    parsed[FIELD_TOPIC], parsed.get(FIELD_DATA, None), parsed.get(FIELD_TIMING, None),
+                    parsed[FIELD_TOPIC],
+                    parsed.get(FIELD_DATA, None),
+                    parsed.get(FIELD_TIMING, None),
                 )
                 yield rtm
 

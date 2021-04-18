@@ -25,7 +25,11 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
 class Context(metaclass=ABCMeta):
     @abstractmethod
     def write(
-        self, topic: str, data: object, timing: TimingInfo = None, with_schema: bool = False,
+        self,
+        topic: str,
+        data: object,
+        timing: TimingInfo = None,
+        with_schema: bool = False,
     ):
         pass
 

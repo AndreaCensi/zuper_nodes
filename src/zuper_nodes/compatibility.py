@@ -12,10 +12,10 @@ class IncompatibleProtocol(ZException):
 
 def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
     """
-        Checks that p1 is a subprotocol of p2, that is, we can use a p1-node
-        wherever a p2-node fits.
+    Checks that p1 is a subprotocol of p2, that is, we can use a p1-node
+    wherever a p2-node fits.
 
-        :raises: IncompatibleProtocol
+    :raises: IncompatibleProtocol
     """
     try:
         # check input compatibility

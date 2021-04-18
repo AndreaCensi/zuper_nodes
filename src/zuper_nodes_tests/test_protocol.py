@@ -147,7 +147,15 @@ def test_proto_either_04():
 
 def test_proto_either_05():
     seq = [OutputProduced(ChannelName("b")), OutputProduced(ChannelName("a"))]
-    assert_seq("(out:a ; out:b) | (out:b ; out:a) ", seq, (NeedMore, Enough,), Enough)
+    assert_seq(
+        "(out:a ; out:b) | (out:b ; out:a) ",
+        seq,
+        (
+            NeedMore,
+            Enough,
+        ),
+        Enough,
+    )
 
 
 def test_proto_oom_01():
