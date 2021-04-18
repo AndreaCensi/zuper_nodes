@@ -1,5 +1,5 @@
 zuper-typing-z7>=6.0.67
-zuper-ipce-z7==6.0.23
+zuper-ipce-z7>=6.0.23
 compmake-z7
 pyparsing==2.4.6
 PyContracts3>=3.0.2
