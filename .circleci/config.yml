@@ -2,9 +2,9 @@ jobs:
   test-3.8-production:
     docker:
     - {image: python:3.8}
-    environment: {COLUMNS: '160', COVER_PACKAGES: 'zuper_nodes_wrapper_tests,zuper_nodes_tests,zuper_nodes.language_parse,zuper_nodes_wrapper.reading,zuper_nodes_wrapper.types,zuper_nodes_wrapper.utils,zuper_nodes_wrapper.wrapper,zuper_nodes_wrapper.streams,zuper_nodes.language_recognize,zuper_nodes_wrapper.struct,zuper_nodes.compatibility,zuper_nodes_wrapper,zuper_nodes_wrapper.identify,zuper_nodes.language,zuper_nodes.structures,zuper_nodes_wrapper.wrapper_outside,zuper_nodes,zuper_nodes_wrapper.meta_protocol,zuper_nodes_wrapper.constants,zuper_nodes_wrapper.writing,zuper_nodes_wrapper.interface',
+    environment: {COLUMNS: '160', COVER_PACKAGES: 'zuper_nodes_tests,zuper_nodes_wrapper_tests,zuper_nodes.language,zuper_nodes.compatibility,zuper_nodes_wrapper.streams,zuper_nodes_wrapper.wrapper_outside,zuper_nodes_wrapper.constants,zuper_nodes_wrapper,zuper_nodes.structures,zuper_nodes.language_recognize,zuper_nodes_wrapper.writing,zuper_nodes_wrapper.struct,zuper_nodes_wrapper.utils,zuper_nodes,zuper_nodes.language_parse,zuper_nodes_wrapper.types,zuper_nodes_wrapper.meta_protocol,zuper_nodes_wrapper.interface,zuper_nodes_wrapper.identify,zuper_nodes_wrapper.reading,zuper_nodes_wrapper.wrapper',
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin,
-      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests}
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests}
     steps:
     - checkout
     - run: {command: "mkdir -p  build-stats\nenv | tee  build-stats/env.txt\n", name: Build
@@ -33,7 +33,7 @@ jobs:
           \n#              --processes=8 --process-timeout=1000 --process-restartworker\
           \ \\\n# --cover-packages=${COVER_PACKAGES} \\\nnosetests \\\n  --rednose\
           \ --immediate \\\n  --cover-tests --with-coverage \\\n  --with-xunitmp --xunitmp-file=${xunit_output}\
-          \ \\\n  --cover-packages=${COVER_PACKAGES} \\\n  ${TEST_PACKAGES}\n", name: Run
+          \ \\\n  --cover-package=${COVER_PACKAGES} \\\n  ${TEST_PACKAGES}\n", name: Run
           tests}
     - store_test_results: {path: out/test-results, when: always}
     - run: {command: "coverage combine\ncoverage html -d out/coverage\ncoverage xml\n",
@@ -45,9 +45,9 @@ jobs:
   test-3.8-staging:
     docker:
     - {image: python:3.8}
-    environment: {COLUMNS: '160', COVER_PACKAGES: 'zuper_nodes_wrapper_tests,zuper_nodes_tests,zuper_nodes.language_parse,zuper_nodes_wrapper.reading,zuper_nodes_wrapper.types,zuper_nodes_wrapper.utils,zuper_nodes_wrapper.wrapper,zuper_nodes_wrapper.streams,zuper_nodes.language_recognize,zuper_nodes_wrapper.struct,zuper_nodes.compatibility,zuper_nodes_wrapper,zuper_nodes_wrapper.identify,zuper_nodes.language,zuper_nodes.structures,zuper_nodes_wrapper.wrapper_outside,zuper_nodes,zuper_nodes_wrapper.meta_protocol,zuper_nodes_wrapper.constants,zuper_nodes_wrapper.writing,zuper_nodes_wrapper.interface',
+    environment: {COLUMNS: '160', COVER_PACKAGES: 'zuper_nodes_tests,zuper_nodes_wrapper_tests,zuper_nodes.language,zuper_nodes.compatibility,zuper_nodes_wrapper.streams,zuper_nodes_wrapper.wrapper_outside,zuper_nodes_wrapper.constants,zuper_nodes_wrapper,zuper_nodes.structures,zuper_nodes.language_recognize,zuper_nodes_wrapper.writing,zuper_nodes_wrapper.struct,zuper_nodes_wrapper.utils,zuper_nodes,zuper_nodes.language_parse,zuper_nodes_wrapper.types,zuper_nodes_wrapper.meta_protocol,zuper_nodes_wrapper.interface,zuper_nodes_wrapper.identify,zuper_nodes_wrapper.reading,zuper_nodes_wrapper.wrapper',
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin,
-      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests}
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests}
     steps:
     - checkout
     - run: {command: "mkdir -p  build-stats\nenv | tee  build-stats/env.txt\n", name: Build
@@ -76,7 +76,7 @@ jobs:
           \n#              --processes=8 --process-timeout=1000 --process-restartworker\
           \ \\\n# --cover-packages=${COVER_PACKAGES} \\\nnosetests \\\n  --rednose\
           \ --immediate \\\n  --cover-tests --with-coverage \\\n  --with-xunitmp --xunitmp-file=${xunit_output}\
-          \ \\\n  --cover-packages=${COVER_PACKAGES} \\\n  ${TEST_PACKAGES}\n", name: Run
+          \ \\\n  --cover-package=${COVER_PACKAGES} \\\n  ${TEST_PACKAGES}\n", name: Run
           tests}
     - store_test_results: {path: out/test-results, when: always}
     - run: {command: "coverage combine\ncoverage html -d out/coverage\ncoverage xml\n",
@@ -99,4 +99,4 @@ workflows:
           branches: {ignore: /z7-stage.*/}
   version: 2
 
-# sigil a50dc77278f844a9e1611ad73ccd9cd6
+# sigil 2edcdbf4a84063da9ac5849c16d49aa5
