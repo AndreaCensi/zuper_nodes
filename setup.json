@@ -9,7 +9,10 @@
     "zuper-ipce-z7",
     "zuper-typing-z7"
   ],
-  "tests_require": [],
+  "tests_require": [
+    "comptests-z7",
+    "pydot"
+  ],
   "srcdir": "src",
   "package_name": "zuper-nodes-z7",
   "entry_points": {
@@ -23,7 +26,7 @@
     "zuper_nodes",
     "zuper_nodes_wrapper"
   ],
-  "version": "7.1.2104181351",
+  "version": "7.1.2104191744",
   "author": "",
   "author_email": "info@zupermind.com",
   "url": "https://github.com/zupermind/PACKAGENAME"
