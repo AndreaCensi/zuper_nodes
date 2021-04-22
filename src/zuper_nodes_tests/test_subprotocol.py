@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 
 from nose.tools import assert_raises
+
 from zuper_nodes import check_compatible_protocol, IncompatibleProtocol, InteractionProtocol
 from zuper_nodes.language import opposite, particularize_no_check
-
-from . import logger
 
 
 @dataclass
