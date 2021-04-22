@@ -20,7 +20,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
+      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
       auth:
@@ -96,14 +96,14 @@ jobs:
         name: Run tests
         command: |
           mkdir -p out/test-results
-          xunit_output=out/test-results/nose-${CIRCLE_NODE_INDEX}-xunit.xml
+          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-xunit.xml
 
           #              --processes=8 --process-timeout=1000 --process-restartworker \
           # --cover-packages=${COVER_PACKAGES} \
           nosetests \
             --rednose --immediate \
             --cover-tests --with-coverage \
-            --with-xunitmp --xunitmp-file=${xunit_output} \
+            --with-xunit --xunit-file=${xunit_output} \
             --cover-package=${COVER_PACKAGES} \
             ${TEST_PACKAGES}
 
@@ -142,7 +142,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
+      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
       auth:
@@ -218,14 +218,14 @@ jobs:
         name: Run tests
         command: |
           mkdir -p out/test-results
-          xunit_output=out/test-results/nose-${CIRCLE_NODE_INDEX}-xunit.xml
+          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-xunit.xml
 
           #              --processes=8 --process-timeout=1000 --process-restartworker \
           # --cover-packages=${COVER_PACKAGES} \
           nosetests \
             --rednose --immediate \
             --cover-tests --with-coverage \
-            --with-xunitmp --xunitmp-file=${xunit_output} \
+            --with-xunit --xunit-file=${xunit_output} \
             --cover-package=${COVER_PACKAGES} \
             ${TEST_PACKAGES}
 
@@ -259,4 +259,4 @@ jobs:
         command: |
           bash <(curl -s https://codecov.io/bash)
 
-# sigil 5a9c7d53227fe7aa0bef63949622cce8
+# sigil 5a0a99ae8be8a5726f4b0d65d3c5802c
