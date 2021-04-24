@@ -1,48 +1,48 @@
 package_name: zuper-nodes-z7
 srcdir: src
-version_file: "1"
+version_file: '1'
 modules:
-  - zuper_nodes
-  - zuper_nodes_wrapper
+- zuper_nodes
+- zuper_nodes_wrapper
 
 install_requires:
-  - zuper-commons-z7
-  - zuper-ipce-z7
-  - zuper-typing-z7
-  - PyYAML
-  - cbor2
-  - networkx
-  - numpy
-  - pyparsing
+- zuper-commons-z7
+- zuper-ipce-z7
+- zuper-typing-z7
+- PyYAML
+- cbor2
+- networkx
+- numpy
+- pyparsing
 #    "networkx>=2,<3",
 #    "termcolor",
 #    f"zuper-ipce-{line}",
 #    "base58<2.0,>=1.0.2",
-install_conflicts: [ 'PACKAGENAME-*' ]
+install_conflicts: [PACKAGENAME-*]
 tests_require:
-  - comptests-z7
-  - pydot
+- comptests-z7
+- pydot
 
 console_scripts:
   zuper-node-identify: zuper_nodes_wrapper.identify:identify_main
 nose:
   modules:
-    - "*_tests"
+  - '*_tests'
   python_versions:
-    - '3.7'
-    - '3.8'
+  - '3.7'
+  - '3.8'
 
 pypi:
-  upload: [ ]
+  upload: []
 
 circleci:
   active: true
-  test_python_versions: [ '3.8' ]
+  test_python_versions: ['3.7', '3.8']
 
 python_syntax_version: '3.8'
 
 url: https://github.com/zupermind/PACKAGENAME
 author: ''
-author_email: 'info@zupermind.com'
+author_email: info@zupermind.com
 short_description: ''
 full_description: ''
