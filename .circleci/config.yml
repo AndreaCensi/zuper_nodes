@@ -30,7 +30,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.7:z7
       auth:
@@ -152,7 +152,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.7:z7
       auth:
@@ -274,7 +274,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
       auth:
@@ -396,7 +396,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_wrapper_tests zuper_nodes_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
       auth:
@@ -513,4 +513,4 @@ jobs:
         command: |
           bash <(curl -s https://codecov.io/bash)
 
-# sigil e5da46acf48f48633d56e0deda55c1a7
+# sigil c3e0a137d7af8d1ca262af09d73a449f
