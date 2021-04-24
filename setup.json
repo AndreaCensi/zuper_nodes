@@ -20,8 +20,8 @@
       "zuper-node-identify = zuper_nodes_wrapper.identify:identify_main"
     ]
   },
-  "zip_safe": false,
-  "include_package_data": false,
+  "zip_safe": true,
+  "include_package_data": true,
   "modules": [
     "zuper_nodes",
     "zuper_nodes_wrapper"
@@ -29,5 +29,6 @@
   "version": "7.1.2104231704",
   "author": "",
   "author_email": "info@zupermind.com",
-  "url": "https://github.com/zupermind/PACKAGENAME"
+  "url": "https://github.com/zupermind/PACKAGENAME",
+  "hey": 2
 }
