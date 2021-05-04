@@ -110,8 +110,8 @@ jobs:
     - run:
         name: zuper_nodes_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -123,8 +123,8 @@ jobs:
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -258,8 +258,8 @@ jobs:
     - run:
         name: zuper_nodes_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -271,8 +271,8 @@ jobs:
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -406,8 +406,8 @@ jobs:
     - run:
         name: zuper_nodes_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -419,8 +419,8 @@ jobs:
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -554,8 +554,8 @@ jobs:
     - run:
         name: zuper_nodes_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -567,8 +567,8 @@ jobs:
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
-          set -ex
-          mkdir -p out/test-results;
+          set -euxo pipefail
+          mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
           nosetests \
               --rednose --immediate \
@@ -617,4 +617,4 @@ jobs:
           bash <(curl -s https://codecov.io/bash)
     resource_class: medium+
 
-# sigil 6b2f4ac474a626ece09ab97492dc01e7
+# sigil ecd6b20b99dac09cf7fdcd1690bcb558
