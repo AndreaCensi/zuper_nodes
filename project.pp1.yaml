@@ -19,7 +19,7 @@ install_requires:
 #    "termcolor",
 #    f"zuper-ipce-{line}",
 #    "base58<2.0,>=1.0.2",
-install_conflicts: [PACKAGENAME-*]
+
 tests_require:
 - comptests-z7
 - pydot
