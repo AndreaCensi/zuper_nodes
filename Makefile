@@ -43,7 +43,7 @@ install-testing-deps:
 
 	pip install 		pipdeptree==0.13.2		bumpversion		nose==1.3.7		nose2==0.9.2		nose2-html-report==0.6.0		nose-parallel==0.3.1		nose_xunitmp==0.4.1		pre-commit==2.1.1		rednose==1.3.0		coverage==5.0.3		codecov==2.0.16		sphinx		sphinx-rtd-theme
 
-cover_packages=zuper_nodes_tests,zuper_nodes_wrapper_tests,zuper_nodes_wrapper,zuper_nodes
+cover_packages=zuper_nodes_wrapper_tests,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes
 
 # PROJECT_ROOT ?= /project
 # REGISTRY ?= docker.io
@@ -91,4 +91,4 @@ docs:
 	
 -include extra.mk
         
-# sigil 80a714e099f4c2eb3128821d4ffa51a3
+# sigil f7844bc119421544ba1aaa98116416c6
