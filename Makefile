@@ -1,24 +1,18 @@
 
 all:
-	@echo "You can try:"
 	@echo
-	@echo "  make build run"
-	@echo "  make docs "
-	@echo "  make test coverage-combine coverage-report"
-	@echo "  "
-	@echo "  make -C notebooks clean all"
+	 
 
+template:
+	zuper-cli template
+	
 bump:
-	bumpversion patch
-	git push --tags
-	git push
+	zuper-cli bump
 
 upload:
-	aido-check-not-dirty
-	aido-check-tagged
-	aido-check-need-upload --package zuper-nodes-z7 make upload-do
+	zuper-cli upload
 
-upload-do:
+upload-old:
 	rm -f dist/*
 	rm -rf src/*.egg-info
 	python3 setup.py sdist
@@ -62,6 +56,7 @@ parallel=--processes=8 --process-timeout=1000 --process-restartworker
 coverage=--cover-html --cover-html-dir=$(coverage_dir) --cover-tests \
             --with-coverage --cover-package=$(cover_packages)
 
+xunit=--with-xunit --xunit-file=$(xunit_output)
 xunitmp=--with-xunitmp --xunitmp-file=$(xunit_output)
 extra=--rednose --immediate
 
@@ -69,18 +64,19 @@ clean:
 	coverage erase
 	rm -rf $(out) $(coverage_dir) $(tr)
 
-test: clean
+test:  
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  src  -v --nologcapture $(xunitmp)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $dock(xunit)
 
 
-test-parallel: clean
+test-parallel:  
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) src  -v --nologcapture $(parallel)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(parallel) $(xunitmp)
 
 
 test-parallel-circle:
-	DISABLE_CONTRACTS=1 	NODE_TOTAL=$(CIRCLE_NODE_TOTAL) 	NODE_INDEX=$(CIRCLE_NODE_INDEX) 	nosetests $(coverage) $(xunitmp) TEST_PACKAGES  -v  $(parallel)
+	mkdir -p  $(tr)
+	DISABLE_CONTRACTS=1 	NODE_TOTAL=$(CIRCLE_NODE_TOTAL) 	NODE_INDEX=$(CIRCLE_NODE_INDEX) 	nosetests $(coverage) $(xunitmp) zuper_nodes_tests zuper_nodes_wrapper_tests  -v  $(parallel)
 
 
 coverage-combine:
@@ -91,4 +87,4 @@ docs:
 	
 -include extra.mk
         
-# sigil 216205cf5884895e995163762099e92e
+# sigil f86995ca4c94b8a0f4d93d4cc301e9fd
