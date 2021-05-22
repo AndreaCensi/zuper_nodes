@@ -66,7 +66,7 @@ clean:
 
 test:  
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $dock(xunit)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(xunit)
 
 
 test-parallel:  
@@ -87,4 +87,4 @@ docs:
 	
 -include extra.mk
         
-# sigil f86995ca4c94b8a0f4d93d4cc301e9fd
+# sigil d9e1ff008c0552eef6895515ebdd2630
