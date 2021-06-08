@@ -1,10 +1,11 @@
-import select
 import time
 from typing import Iterator, Optional, Union
 
+import select
 from zuper_commons.text import indent
 from zuper_ipce.json2cbor import read_next_cbor
 from zuper_nodes.structures import ExternalTimeout
+
 from . import logger
 from .constants import CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC
 from .struct import ControlMessage, interpret_control_message, RawTopicMessage, WireMessage
