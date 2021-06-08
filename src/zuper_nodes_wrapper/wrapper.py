@@ -195,7 +195,7 @@ def get_translation_table(t: str) -> Tuple[Dict[str, str], Dict[str, str]]:
 
 def check_variables():
     for k, v in os.environ.items():
-        if k.startswith("AIDO") and k not in KNOWN:
+        if k.startswith("AIDONODE") and k not in KNOWN:
             msg = f'I do not expect variable "{k}" set in environment with value "{v}".'
             msg += f" I expect: {', '.join(KNOWN)}"
             logger.warn(msg)
@@ -536,8 +536,8 @@ def check_implementation(node, protocol: InteractionProtocol):
     for n in protocol.inputs:
         expect_fn = f"on_received_{n}"
         if not hasattr(node, expect_fn):
-            msg = f"Missing function {expect_fn}"
-            msg += f"\nI know {sorted(type(node).__dict__)}"
+            msg = f"The class {type(node).__name__} misses the function {expect_fn}"
+            msg += f"\nI know {sorted(_ for _ in type(node).__dict__ if _.startswith('on'))}"
             raise NotConforming(msg)
 
     for x in type(node).__dict__:
