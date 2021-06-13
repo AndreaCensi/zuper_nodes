@@ -85,6 +85,12 @@ class ComponentInterface:
         self._cc = f
 
     def _get_node_protocol(self, timeout: float = None):
+        """
+        raises ExternalProtocolViolation, indirectly IncompatibleProtocol
+
+        :param timeout:
+        :return:
+        """
         self.my_capabilities = {TAG_Z2: {CAPABILITY_PROTOCOL_REFLECTION: True}}
         msg = {FIELD_CONTROL: CTRL_CAPABILITIES, FIELD_DATA: self.my_capabilities}
 

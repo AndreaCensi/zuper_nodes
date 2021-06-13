@@ -38,7 +38,7 @@ class ExternalProtocolViolation(ProtocolViolation):
     pass
 
 
-class ExternalNodeDidNotUnderstand(ProtocolViolation):
+class ExternalNodeDidNotUnderstand(ExternalProtocolViolation):
     pass
 
 
