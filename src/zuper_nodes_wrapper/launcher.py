@@ -69,7 +69,7 @@ def launcher_main():
             try:
                 with open(parsed.config) as f:
                     data = f.read()
-                y = yaml.load(data)
+                y = yaml.load(data, Loader=yaml.Loader)
                 config = object_from_ipce(y, NodeLaunchConfig)
 
             except Exception:
