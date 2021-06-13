@@ -4,13 +4,16 @@ import os
 import socket
 import time
 import traceback
+from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from io import BufferedReader, BufferedWriter
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import yaml
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance, ZValueError
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
+
 from zuper_nodes import (
     ChannelName,
     InputReceived,
@@ -30,7 +33,6 @@ from zuper_nodes.structures import (
     timestamp_from_seconds,
     TimingInfo,
 )
-
 from . import logger, logger_interaction
 from .constants import (
     ATT_CONFIG,
@@ -201,6 +203,34 @@ def check_variables():
             logger.warn(msg)
 
 
+@dataclass
+class CommContext:
+    fi: BufferedReader
+    fo: BufferedWriter
+    fo_sink: Sink
+    context_meta: ConcreteContext
+
+
+@contextmanager
+def open_comms(node_name: str) -> Iterator[CommContext]:
+    data_in = os.environ.get(ENV_DATA_IN, "/dev/stdin")
+    data_out = os.environ.get(ENV_DATA_OUT, "/dev/stdout")
+
+    fi = open_for_read(data_in)
+    fo = open_for_write(data_out)
+    sink = Sink(fo)
+    context_meta = ConcreteContext(
+        sink=sink, protocol=basic_protocol, node_name=node_name, tout={}
+    )
+    cc = CommContext(fi, fo, sink, context_meta)
+    try:
+        yield cc
+    except:
+        # sink.write_control_message()
+        context_meta.write(TOPIC_ABORTED, traceback.format_exc())
+        raise
+
+
 def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None):
     parser = argparse.ArgumentParser()
 
@@ -261,12 +291,12 @@ TOPIC_ABORTED = "aborted"
 # noinspection PyBroadException
 def loop(
     node_name: str,
-    fi,
+    fi: BufferedReader,
     fo,
-    node,
+    node: object,
     protocol: InteractionProtocol,
-    tin,
-    tout,
+    tin: Dict[str, str],
+    tout: Dict[str, str],
     config: dict,
     fi_desc: str,
     fo_desc: str,

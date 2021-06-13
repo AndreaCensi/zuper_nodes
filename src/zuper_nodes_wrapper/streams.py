@@ -22,7 +22,7 @@ def wait_for_creation(fn: str, wait: float = 3.0):
     logger.debug(f"Found {fn} after {dt} seconds waiting.")
 
 
-def open_for_read(fin: str, timeout: float = None):
+def open_for_read(fin: str, timeout: float = None) -> BufferedReader:
     t0 = time.time()
     # first open reader file in case somebody is waiting for it
     if os.path.exists(fin):
