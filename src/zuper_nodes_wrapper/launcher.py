@@ -102,7 +102,7 @@ def launcher_main():
         else:
             logger.info('Check passed')
             sys.exit(0)
-            
+
     if not errors:
         try:
             # noinspection PyCallingNonCallable
