@@ -1,10 +1,11 @@
 import sys
-from abc import ABCMeta, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from typing import List, Optional
 
 from zuper_commons.logs import monkeypatch_findCaller
 from zuper_nodes.structures import TimingInfo
 from zuper_typing import PYTHON_36, PYTHON_37
+from .profiler import Profiler
 
 __all__ = [
     "Context",
@@ -16,7 +17,7 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
     if args is None:
         args = sys.argv[1:]
 
-    from zuper_nodes_wrapper.wrapper import check_implementation, run_loop
+    from  .wrapper import check_implementation, run_loop
 
     if PYTHON_36 or PYTHON_37:
         monkeypatch_findCaller()
@@ -24,7 +25,7 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
     run_loop(node, protocol, args)
 
 
-class Context(metaclass=ABCMeta):
+class Context(ABC):
     @abstractmethod
     def write(
         self, topic: str, data: object, timing: TimingInfo = None, with_schema: bool = False,
@@ -49,4 +50,8 @@ class Context(metaclass=ABCMeta):
 
     @abstractmethod
     def get_hostname(self):
+        pass
+
+    @abstractmethod
+    def get_profiler(self) -> Profiler:
         pass

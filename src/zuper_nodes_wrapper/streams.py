@@ -16,7 +16,7 @@ def wait_for_creation(fn: str, wait: float = 3.0):
         time.sleep(wait)
         dt = int(time.time() - t0)
         msg = f"Waiting for creation of {fn} since {dt} seconds."
-        logger.info(msg)
+        logger.debug(msg)
 
     dt = int(time.time() - t0)
     logger.debug(f"Found {fn} after {dt} seconds waiting.")
@@ -70,11 +70,11 @@ def open_for_write(fout: str):
 
         if wants_fifo:
             logger_interaction.info(f"Fifo {fout} created. Opening will block until a reader appears.")
-            logger.info(f"Fifo {fout} created. I will block until a reader appears.")
+            logger.debug(f"Fifo {fout} created. I will block until a reader appears.")
 
         make_sure_dir_exists(fout)
         fo = open(fout, "wb", buffering=0)
-        logger.info(f"Fifo reader appeared for {fout}.")
+        logger.debug(f"Fifo reader appeared for {fout}.")
 
         if wants_fifo:
             logger_interaction.info(f"A reader has connected to my fifo {fout}")

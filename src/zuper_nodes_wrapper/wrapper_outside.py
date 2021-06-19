@@ -7,6 +7,7 @@ from zuper_commons.text import indent
 from zuper_commons.types import ZException
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
 from zuper_ipce.json2cbor import read_next_cbor
+
 from zuper_nodes import (
     check_compatible_protocol,
     ExternalNodeDidNotUnderstand,
@@ -16,7 +17,6 @@ from zuper_nodes import (
     RemoteNodeAborted,
     TimingInfo,
 )
-
 from . import logger, logger_interaction
 from .constants import (
     CAPABILITY_PROTOCOL_REFLECTION,
@@ -221,7 +221,7 @@ class ComponentInterface:
             else:
                 waiting_for = None
 
-            msgs = read_reply(self.fpout, timeout=timeout, waiting_for=waiting_for, nickname=self.nickname,)
+            msgs = read_reply(self.fpout, timeout=timeout, waiting_for=waiting_for, nickname=self.nickname, )
 
             if len(msgs) == 0:
                 msg = f'Expected one message from node "{self.nickname}". Got zero.'
@@ -287,7 +287,7 @@ class ComponentInterface:
             raise TimeoutError(msg) from e
 
 
-def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None,) -> List:
+def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None, ) -> List:
     """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
      Raises:
          ExternalTimeout

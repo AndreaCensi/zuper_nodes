@@ -33,7 +33,7 @@ from zuper_nodes.structures import (
     timestamp_from_seconds,
     TimingInfo,
 )
-from . import logger, logger_interaction
+from . import logger, logger_interaction, Profiler, ProfilerImp
 from .constants import (
     ATT_CONFIG,
     CAPABILITY_PROTOCOL_REFLECTION,
@@ -87,6 +87,10 @@ class ConcreteContext(Context):
 
         self.to_write = []
         self.last_timing = None
+        self.profiler = ProfilerImp()
+
+    def get_profiler(self) -> Profiler:
+        return self.profiler
 
     def set_last_timing(self, timing: TimingInfo):
         self.last_timing = timing
@@ -122,8 +126,9 @@ class ConcreteContext(Context):
         klass = self.protocol.outputs[topic]
 
         if isinstance(data, dict):
-            # noinspection PyTypeChecker
-            data = object_from_ipce(data, klass, iedo=iedo)
+            with self.profiler.prof(':serialization'):
+                # noinspection PyTypeChecker
+                data = object_from_ipce(data, klass, iedo=iedo)
 
         if timing is None:
             timing = self.last_timing
@@ -143,7 +148,8 @@ class ConcreteContext(Context):
 
         topic_o = self.tout.get(topic, topic)
         ieso = IESO(use_ipce_from_typelike_cache=True, with_schema=with_schema)
-        data = ipce_from_object(data, ieso=ieso)
+        with self.profiler.prof(':serialization'):
+            data = ipce_from_object(data, ieso=ieso)
 
         if timing is not None:
             ieso2 = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
@@ -349,7 +355,8 @@ def loop(
 
                 if receiver0 is node and not initialized:
                     try:
-                        call_if_fun_exists(node, "init", context=context_data)
+                        with context_data.profiler.prof('init'):
+                            call_if_fun_exists(node, "init", context=context_data)
                     except PASSTHROUGH:
                         try:
                             context_meta.write(TOPIC_ABORTED, traceback.format_exc())
@@ -416,7 +423,8 @@ def loop(
 
         if initialized:
             try:
-                call_if_fun_exists(node, "finish", context=context_data)
+                with context_data.profiler.prof('finish'):
+                    call_if_fun_exists(node, "finish", context=context_data)
             except PASSTHROUGH:
                 context_meta.write(TOPIC_ABORTED, traceback.format_exc())
                 raise
@@ -425,6 +433,9 @@ def loop(
                 msg += "\n\n" + indent(traceback.format_exc(), "| ")
                 context_meta.write(TOPIC_ABORTED, msg)
                 raise Exception(msg) from e
+
+            logger.info(f'user: \n' + context_data.profiler.show_stats())
+            logger.info(f'meta: \n' + context_meta.profiler.show_stats())
 
     except BrokenPipeError:
         msg = "The other side closed communication."
@@ -521,22 +532,23 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
     pc = context.pc
 
     klass = protocol.inputs[topic]
-    try:
-        # noinspection PyTypeChecker
-        ob = object_from_ipce(data, klass, iedo=iedo)
-    except BaseException as e:
-        msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
+    with context.profiler.prof(':deserialization'):
         try:
-            parsed = json.dumps(parsed, indent=2)
-        except:
-            parsed = str(parsed)
-        msg += "\n\n" + indent(parsed, "|", "parsed: |")
-        raise DecodingError(msg) from e
+            # noinspection PyTypeChecker
+            ob = object_from_ipce(data, klass, iedo=iedo)
+        except BaseException as e:
+            msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
+            try:
+                parsed = json.dumps(parsed, indent=2)
+            except:
+                parsed = str(parsed)
+            msg += "\n\n" + indent(parsed, "|", "parsed: |")
+            raise DecodingError(msg) from e
 
-    if parsed.timing is not None:
-        timing = object_from_ipce(parsed.timing, TimingInfo, iedo=iedo)
-    else:
-        timing = TimingInfo()
+        if parsed.timing is not None:
+            timing = object_from_ipce(parsed.timing, TimingInfo, iedo=iedo)
+        else:
+            timing = TimingInfo()
 
     timing.received = local_time()
 
@@ -558,7 +570,8 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
         raise ExternalProtocolViolation(msg)
     else:
         expect_fn = f"on_received_{topic}"
-        call_if_fun_exists(agent, expect_fn, data=ob, context=context, timing=timing)
+        with context.profiler.prof(topic):
+            call_if_fun_exists(agent, expect_fn, data=ob, context=context, timing=timing)
 
 
 def check_implementation(node, protocol: InteractionProtocol):
