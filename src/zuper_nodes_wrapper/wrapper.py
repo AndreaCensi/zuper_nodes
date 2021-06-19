@@ -152,8 +152,9 @@ class ConcreteContext(Context):
             data = ipce_from_object(data, ieso=ieso)
 
         if timing is not None:
-            ieso2 = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
-            timing_o = ipce_from_object(timing, ieso=ieso2)
+            with self.profiler.prof(':timing-serialization'):
+                ieso2 = IESO(use_ipce_from_typelike_cache=True, with_schema=False)
+                timing_o = ipce_from_object(timing, ieso=ieso2)
         else:
             timing_o = None
 

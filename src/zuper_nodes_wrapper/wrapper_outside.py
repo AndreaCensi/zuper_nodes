@@ -35,6 +35,7 @@ from .constants import (
     TOPIC_ABORTED,
 )
 from .meta_protocol import basic_protocol, ProtocolDescription
+from .profiler import fake_profiler, Profiler
 from .streams import wait_for_creation
 from .struct import interpret_control_message, MsgReceived, WireMessage
 
@@ -135,35 +136,46 @@ class ComponentInterface:
         timeout: float = None,
         timing=None,
         expect: str = None,
+        profiler: Profiler = fake_profiler
     ) -> MsgReceived:
         timeout = timeout or self.timeout
-        self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
-        ob: MsgReceived = self.read_one(expect_topic=expect, timeout=timeout)
+        with profiler.prof(f':write-{topic}'):
+            self._write_topic(topic, data=data, with_schema=with_schema, timing=timing, profiler=profiler)
+        with profiler.prof(f':write-{topic}-expect-{expect}'):
+            ob: MsgReceived = self.read_one(expect_topic=expect, timeout=timeout, profiler=profiler)
         return ob
 
     def write_topic_and_expect_zero(
-        self, topic: str, data=None, with_schema=False, timeout=None, timing=None
+        self, topic: str, data=None, with_schema=False, timeout=None, timing=None,
+        profiler: Profiler = fake_profiler
     ):
         timeout = timeout or self.timeout
-        self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
-        msgs = read_reply(self.fpout, timeout=timeout, nickname=self.nickname)
+        with profiler.prof(f':write-{topic}'):
+            self._write_topic(topic, data=data, with_schema=with_schema, timing=timing, profiler=profiler)
+        with profiler.prof(f':write-{topic}-wait-reply'):
+            msgs = read_reply(self.fpout, timeout=timeout, nickname=self.nickname)
         if msgs:
             msg = f"Expecting zero, got {msgs}"
             raise ExternalProtocolViolation(msg)
 
-    def _write_topic(self, topic: str, data=None, with_schema: bool = False, timing=None):
+    def _write_topic(self, topic: str, data=None, with_schema: bool = False, timing=None,
+                     profiler: Profiler = fake_profiler):
         suggest_type = object
         if self.node_protocol:
             if topic in self.node_protocol.inputs:
                 suggest_type = self.node_protocol.inputs[topic]
         ieso = IESO(with_schema=with_schema)
         ieso_true = IESO(with_schema=True)
-        ipce = ipce_from_object(data, suggest_type, ieso=ieso)
+
+        with profiler.prof(':serialization'):
+            ipce = ipce_from_object(data, suggest_type, ieso=ieso)
 
         # try to re-read
+
         if suggest_type is not object:
             try:
-                _ = object_from_ipce(ipce, suggest_type, iedo=iedo)
+                with profiler.prof(':double-check'):
+                    _ = object_from_ipce(ipce, suggest_type, iedo=iedo)
             except BaseException as e:
                 msg = (
                     f'While attempting to write on topic "{topic}", cannot '
@@ -177,16 +189,22 @@ class ComponentInterface:
             FIELD_DATA: ipce,
             FIELD_TIMING: timing,
         }
-        j = self._serialize(msg)
-        self._write(j)
+        with profiler.prof(':cbor-dump1'):
+            j = self._serialize(msg)
+        with profiler.prof(':write'):
+            self._write(j)
         # make sure we write the schema when we copy it
         if not with_schema:
-            msg[FIELD_DATA] = ipce_from_object(data, ieso=ieso_true)
-            j = self._serialize(msg)
+            with profiler.prof(':re-serializing-for-log'):
+                msg[FIELD_DATA] = ipce_from_object(data, ieso=ieso_true)
+
+            with profiler.prof(':cbor-dump2'):
+                j = self._serialize(msg)
 
         if self._cc:
-            self._cc.write(j)
-            self._cc.flush()
+            with profiler.prof(':write-cc'):
+                self._cc.write(j)
+                self._cc.flush()
 
         logger_interaction.info(f'Written to topic "{topic}" >> {self.nickname}.')
 
@@ -213,7 +231,8 @@ class ComponentInterface:
         j = cbor.dumps(msg)
         return j
 
-    def read_one(self, expect_topic: str = None, timeout: float = None) -> MsgReceived:
+    def read_one(self, expect_topic: str = None, timeout: float = None,
+                 profiler: Profiler = fake_profiler) -> MsgReceived:
         timeout = timeout or self.timeout
         try:
             if expect_topic:
@@ -221,7 +240,8 @@ class ComponentInterface:
             else:
                 waiting_for = None
 
-            msgs = read_reply(self.fpout, timeout=timeout, waiting_for=waiting_for, nickname=self.nickname, )
+            msgs = read_reply(self.fpout, timeout=timeout, waiting_for=waiting_for, nickname=self.nickname,
+                              profiler=profiler)
 
             if len(msgs) == 0:
                 msg = f'Expected one message from node "{self.nickname}". Got zero.'
@@ -287,7 +307,8 @@ class ComponentInterface:
             raise TimeoutError(msg) from e
 
 
-def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None, ) -> List:
+def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None,
+               profiler: Profiler = fake_profiler) -> List:
     """ Reads a control message. Returns if it is CTRL_UNDERSTOOD.
      Raises:
          ExternalTimeout
@@ -295,7 +316,8 @@ def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = N
          ExternalNodeDidNotUnderstand
          ExternalProtocolViolation otherwise. """
     try:
-        c = read_next_cbor(fpout, timeout=timeout, waiting_for=waiting_for)
+        with profiler.prof(':read_next_cbor'):
+            c = read_next_cbor(fpout, timeout=timeout, waiting_for=waiting_for)
         wm = cast(WireMessage, c)
         # logger.debug(f'{nickname} sent {wm}')
     except TimeoutError:
@@ -307,8 +329,9 @@ def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = N
 
     cm = interpret_control_message(wm)
     if cm.code == CTRL_UNDERSTOOD:
-        others = read_until_over(fpout, timeout=timeout, nickname=nickname)
-        return others
+        with profiler.prof(':read_until_over'):
+            others = read_until_over(fpout, timeout=timeout, nickname=nickname)
+            return others
     elif cm.code == CTRL_ABORTED:
         msg = f'The remote node "{nickname}" aborted with the following error:'
         msg += "\n\n" + indent(cm.msg, "|", f"error in {nickname} |")

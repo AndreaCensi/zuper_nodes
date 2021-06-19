@@ -5,7 +5,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import ContextManager, Dict, List, Optional, Tuple
 
-__all__ = ['ProfilerImp', 'Profiler']
+__all__ = ['ProfilerImp', 'Profiler', 'fake_profiler']
 
 from zuper_commons.types import ZException
 
@@ -27,8 +27,9 @@ class Profiler(ABC):
         yield
 
     @abstractmethod
-    def show_stats(self, prefix: Optional[Tuple[str, ...]]=None) -> str:
+    def show_stats(self, prefix: Optional[Tuple[str, ...]] = None) -> str:
         pass
+
 
 class ProfilerImp(Profiler):
     context: List[Iteration]
@@ -66,7 +67,7 @@ class ProfilerImp(Profiler):
             # logger.debug(f'timer: {dt:10.4f} {s}')
         self.stats[my_id].append(dt)
 
-    def show_stats(self, prefix: Tuple[str, ...]=('root',)) -> str:
+    def show_stats(self, prefix: Tuple[str, ...] = ('root',)) -> str:
         # logger.info(str(list(self.stats)))
         tottime = time.time() - self.t0
         lines = self.show_stats_(prefix, 1, tottime)
@@ -88,9 +89,9 @@ class ProfilerImp(Profiler):
                 total = sum(v)
                 rn = n / ntot
                 dt = total / n
-                perc = 100 * total/tottime
+                perc = 100 * total / tottime
 
-                s = f'{perc:4.1f}%   ' +  k[-1] + f' {dt:6.3f}'
+                s = f'{perc:4.1f}%   ' + k[-1] + f' {dt:6.3f}'
                 if rn != 1:
                     s += f' {rn:6.1f}x'
                 lines.append(s)
@@ -100,3 +101,15 @@ class ProfilerImp(Profiler):
             #     logger.info(f'excluding {k} not child')
         # logger.info(f'lines for {prefix}: {lines}')
         return lines
+
+
+class FakeProfiler(Profiler):
+    @contextmanager
+    def prof(self, s: str):
+        yield
+
+    def show_stats(self, prefix: Optional[Tuple[str, ...]] = None) -> str:
+        return '(fake)'
+
+
+fake_profiler = FakeProfiler()
