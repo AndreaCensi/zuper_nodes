@@ -8,7 +8,7 @@ import pyparsing
 logger = ZLogger(__name__)
 
 path = os.path.dirname(os.path.dirname(__file__))
-logger.info(f"version {__version__} path {path} pyparsing {pyparsing.__version__}")
+logger.debug(f"version {__version__} path {path} pyparsing {pyparsing.__version__}")
 
 from .language import *
 
