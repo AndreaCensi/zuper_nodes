@@ -304,7 +304,7 @@ class ComponentInterface:
             msg = f"Timeout detected on {self.fnout} after {self.nreceived} messages."
             if expect_topic:
                 msg += f' Expected topic "{expect_topic}".'
-            raise TimeoutError(msg) from e
+            raise ExternalTimeout(msg) from e
 
 
 def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = None,
@@ -347,7 +347,7 @@ def read_reply(fpout, nickname: str, timeout: float = None, waiting_for: str = N
 
 
 def read_until_over(fpout, timeout: float, nickname: str) -> List[WireMessage]:
-    """ Raises RemoteNodeAborted, TimeoutError """
+    """ Raises RemoteNodeAborted, ExternalTimeout """
     res = []
     waiting_for = f"Reading reply of {nickname}."
     while True:
@@ -366,7 +366,7 @@ def read_until_over(fpout, timeout: float, nickname: str) -> List[WireMessage]:
             msg = f'External node "{nickname}" closed communication.'
             raise RemoteNodeAborted(msg) from None
         except TimeoutError:
-            msg = f'Timeout while reading output of node "{nickname}".'
-            raise TimeoutError(msg) from None
+            msg = f'Timeout while reading output of node "{nickname}" after {timeout} s.'
+            raise ExternalTimeout(msg) from None
         res.append(wm)
     return res
