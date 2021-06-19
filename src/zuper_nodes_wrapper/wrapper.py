@@ -308,7 +308,7 @@ def loop(
     fi_desc: str,
     fo_desc: str,
 ):
-    logger.info(f"Node {node_name} starting reading", fi_desc=fi_desc, fo_desc=fo_desc)
+    logger.debug(f"Node {node_name} starting reading", fi_desc=fi_desc, fo_desc=fo_desc)
     initialized = False
     context_data = None
     sink = Sink(fo)
