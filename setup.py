@@ -27,7 +27,6 @@ line = "z6"
 
 install_requires = [
     "pyparsing",
-    "PyContracts3",
     "networkx>=2,<3",
     "termcolor",
     f"zuper-ipce-{line}",

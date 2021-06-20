@@ -91,16 +91,17 @@ class ProfilerImp(Profiler):
                 dt = total / n
                 perc = 100 * total / tottime
 
-                s = f'{perc:4.1f}%   ' + k[-1] + f' {dt:6.3f}'
+                s = f'┌ {perc:4.1f}%   ' + k[-1] + f' {dt:6.3f}'
                 if rn != 1:
                     s += f' {rn:6.1f}x'
                 lines.append(s)
                 for _ in self.show_stats_(prefix=k, ntot=n, tottime=total):
-                    lines.append('| ' + _)
+                    lines.append('│ ' + _)
             # else:
             #     logger.info(f'excluding {k} not child')
         # logger.info(f'lines for {prefix}: {lines}')
         return lines
+
 
 
 class FakeProfiler(Profiler):
