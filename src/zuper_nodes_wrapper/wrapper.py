@@ -10,6 +10,7 @@ from io import BufferedReader, BufferedWriter
 from typing import Dict, Iterator, List, Optional, Tuple
 
 import yaml
+from zuper_commons.logs import ZLoggerInterface
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance, ZValueError
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
@@ -33,7 +34,7 @@ from zuper_nodes.structures import (
     timestamp_from_seconds,
     TimingInfo,
 )
-from . import logger, logger_interaction, Profiler, ProfilerImp
+from . import logger as logger0, logger_interaction
 from .constants import (
     ATT_CONFIG,
     CAPABILITY_PROTOCOL_REFLECTION,
@@ -47,7 +48,7 @@ from .constants import (
     ENV_DATA_OUT,
     ENV_NAME,
     ENV_TRANSLATE,
-    KNOWN,
+    KNOWN, TOPIC_ABORTED,
 )
 from .interface import Context
 from .meta_protocol import (
@@ -58,6 +59,7 @@ from .meta_protocol import (
     ProtocolDescription,
     SetConfig,
 )
+from .profiler import Profiler, ProfilerImp
 from .reading import inputs
 from .streams import open_for_read, open_for_write
 from .struct import ControlMessage, RawTopicMessage
@@ -77,6 +79,7 @@ class ConcreteContext(Context):
 
     def __init__(
         self, sink: Sink, protocol: InteractionProtocol, node_name: str, tout: Dict[str, str],
+        logger: ZLoggerInterface
     ):
         self.sink = sink
         self.protocol = protocol
@@ -88,6 +91,7 @@ class ConcreteContext(Context):
         self.to_write = []
         self.last_timing = None
         self.profiler = ProfilerImp()
+        self.logger = logger
 
     def get_profiler(self) -> Profiler:
         return self.profiler
@@ -120,7 +124,7 @@ class ConcreteContext(Context):
         res = self.pc.push(event)
         if isinstance(res, Unexpected):
             msg = f"Unexpected output {topic}: {res}"
-            logger.error(msg)
+            self.logger.error(msg)
             return
 
         klass = self.protocol.outputs[topic]
@@ -169,23 +173,23 @@ class ConcreteContext(Context):
 
     def log(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
-        logger.info(prefix + s)
+        self.logger.info(prefix + s)
 
     def info(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
-        logger.info(prefix + s)
+        self.logger.info(prefix + s)
 
     def debug(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
-        logger.debug(prefix + s)
+        self.logger.debug(prefix + s)
 
     def warning(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
-        logger.warning(prefix + s)
+        self.logger.warning(prefix + s)
 
     def error(self, s: str):
         prefix = f"{self.hostname}:{self.node_name}: "
-        logger.error(prefix + s)
+        self.logger.error(prefix + s)
 
 
 def get_translation_table(t: str) -> Tuple[Dict[str, str], Dict[str, str]]:
@@ -207,7 +211,7 @@ def check_variables():
         if k.startswith("AIDONODE") and k not in KNOWN:
             msg = f'I do not expect variable "{k}" set in environment with value "{v}".'
             msg += f" I expect: {', '.join(KNOWN)}"
-            logger.warn(msg)
+            logger0.warn(msg)
 
 
 @dataclass
@@ -219,7 +223,7 @@ class CommContext:
 
 
 @contextmanager
-def open_comms(node_name: str) -> Iterator[CommContext]:
+def open_comms(node_name: str, logger_meta: ZLoggerInterface) -> Iterator[CommContext]:
     data_in = os.environ.get(ENV_DATA_IN, "/dev/stdin")
     data_out = os.environ.get(ENV_DATA_OUT, "/dev/stdout")
 
@@ -227,7 +231,8 @@ def open_comms(node_name: str) -> Iterator[CommContext]:
     fo = open_for_write(data_out)
     sink = Sink(fo)
     context_meta = ConcreteContext(
-        sink=sink, protocol=basic_protocol, node_name=node_name, tout={}
+        sink=sink, protocol=basic_protocol, node_name=node_name, tout={},
+        logger=logger_meta
     )
     cc = CommContext(fi, fo, sink, context_meta)
     try:
@@ -266,25 +271,30 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
     fin = parsed.data_in
     fout = parsed.data_out
 
-    logger.debug("run_loop", fin=fin, fout=fout)
+    node_name = parsed.name or type(node).__name__
+
+    my_logger = logger0.getChild(node_name)
+
+    my_logger.debug("run_loop", fin=fin, fout=fout)
     fi = open_for_read(fin)
     fo = open_for_write(fout)
 
-    node_name = parsed.name or type(node).__name__
-
-    logger.name = node_name
+    # logger.name = node_name
 
     try:
         config = yaml.load(config, Loader=yaml.SafeLoader)
 
-        loop(node_name, fi, fo, node, protocol, tin, tout, config=config, fi_desc=fin, fo_desc=fout)
+        loop(my_logger, node_name, fi, fo, node, protocol, tin, tout, config=config, fi_desc=fin,
+             fo_desc=fout)
     except RuntimeError as e:
         s = str(e).lower()
         if "gpu" in s or "cuda" in s:
             raise SystemExit(138)
     except BaseException as e:
         msg = f"Error in node {node_name}"
-        logger.error(f"Error in node {node_name}: \n{traceback.format_exc()}")
+        my_logger.error(f"Error in node {node_name}",
+                        ET=type(e).__name__,
+                        tb=traceback.format_exc())
         raise Exception(msg) from e
     finally:
         fo.flush()
@@ -292,11 +302,22 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
         fi.close()
 
 
-TOPIC_ABORTED = "aborted"
-
-
 # noinspection PyBroadException
+@contextmanager
+def suppress_exception_logit():
+    """ Will suppress any exception """
+    try:
+        yield
+    except BaseException:
+        logger0.error("cannot write sink control messages", bt=traceback.format_exc())
+    finally:
+        pass
+
+    # noinspection PyBroadException
+
+
 def loop(
+    logger: ZLoggerInterface,
     node_name: str,
     fi: BufferedReader,
     fo,
@@ -308,15 +329,19 @@ def loop(
     fi_desc: str,
     fo_desc: str,
 ):
-    logger.debug(f"Node {node_name} starting reading", fi_desc=fi_desc, fo_desc=fo_desc)
+    logger.debug(f"Starting reading", fi_desc=fi_desc, fo_desc=fo_desc)
     initialized = False
     context_data = None
     sink = Sink(fo)
     PASSTHROUGH = (RuntimeError,)
+    logger_data = logger.getChild('data')
+    logger_meta = logger.getChild('meta')
     try:
-        context_data = ConcreteContext(sink=sink, protocol=protocol, node_name=node_name, tout=tout)
+        context_data = ConcreteContext(sink=sink, protocol=protocol, node_name=node_name, tout=tout,
+                                       logger=logger_data)
         context_meta = ConcreteContext(
             sink=sink, protocol=basic_protocol, node_name=node_name + ".wrapper", tout=tout,
+            logger=logger_meta
         )
 
         wrapper = MetaHandler(node, protocol)
@@ -359,32 +384,27 @@ def loop(
                         with context_data.profiler.prof('init'):
                             call_if_fun_exists(node, "init", context=context_data)
                     except PASSTHROUGH:
-                        try:
+                        with suppress_exception_logit():
                             context_meta.write(TOPIC_ABORTED, traceback.format_exc())
-                        except BaseException:
-                            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
-
                         raise
                     except BaseException as e:
-
+                        msg = type(e).__name__
+                        msg += '\n'
                         msg = "Exception while calling the node's init() function."
-                        msg += "\n\n" + indent(traceback.format_exc(), "| ")
-                        try:
+                        msg += '\n'
+                        msg += indent(traceback.format_exc(), "| ")
+                        with suppress_exception_logit():
                             context_meta.write(TOPIC_ABORTED, msg)
-                        except BaseException:
-                            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
 
-                        raise Exception(msg) from e
+                        raise InternalProblem(msg) from e  # XXX
                     initialized = True
 
                 if parsed.topic not in context0.protocol.inputs:
                     msg = f'Input channel "{parsed.topic}" not found in protocol. '
                     msg += f"\n\nKnown channels: {sorted(context0.protocol.inputs)}"
-                    try:
+                    with suppress_exception_logit():
                         sink.write_control_message(CTRL_NOT_UNDERSTOOD, msg)
                         sink.write_control_message(CTRL_OVER)
-                    except BaseException:
-                        logger.warn("cannot write sink control messages", bt=traceback.format_exc())
 
                     raise ExternalProtocolViolation(msg)
 
@@ -398,24 +418,19 @@ def loop(
                         sink.write_topic_message(rtm.topic, rtm.data, rtm.timing)
                     sink.write_control_message(CTRL_OVER)
                 except PASSTHROUGH:
-                    try:
+                    with suppress_exception_logit():
                         context_meta.write(TOPIC_ABORTED, traceback.format_exc())
-                    except BaseException:
-                        logger.warn("cannot write TOPIC_ABORTED on context_meta", bt=traceback.format_exc())
-
                     raise
                 except BaseException as e:
                     msg = f'Exception while handling a message on topic "{parsed.topic}".'
                     msg += "\n\n" + indent(traceback.format_exc(), "| ")
-                    try:
+                    with suppress_exception_logit():
                         sink.write_control_message(CTRL_ABORTED, msg)
                         sink.write_control_message(CTRL_OVER)
-                    except BaseException:
-                        logger.warn("cannot write sink control messages", bt=traceback.format_exc())
 
                     raise InternalProblem(msg) from e  # XXX
             else:
-                assert False
+                assert False, parsed
 
         res = context_data.pc.finish()
         if isinstance(res, Unexpected):
@@ -433,10 +448,10 @@ def loop(
                 msg = "Exception while calling the node's finish() function."
                 msg += "\n\n" + indent(traceback.format_exc(), "| ")
                 context_meta.write(TOPIC_ABORTED, msg)
-                raise Exception(msg) from e
+                raise InternalProblem(msg) from e  # XXX
 
-            logger.info(f'user: \n' + context_data.profiler.show_stats())
-            logger.info(f'meta: \n' + context_meta.profiler.show_stats())
+        logger.info("benchmark data", stats=context_data.profiler.show_stats())
+        logger.info("benchmark meta", stats=context_meta.profiler.show_stats())
 
     except BrokenPipeError:
         msg = "The other side closed communication."
@@ -446,22 +461,18 @@ def loop(
         msg = "Could not receive any other messages."
         if context_data:
             msg += f"\n Expecting one of:  {context_data.pc.get_expected_events()}"
-        try:
+        with suppress_exception_logit():
             sink.write_control_message(CTRL_ABORTED, msg)
             sink.write_control_message(CTRL_OVER)
-        except BaseException:
-            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
         raise ExternalTimeout(msg) from e
     except InternalProblem:
         raise
     except BaseException as e:
         msg = f"Unexpected error:"
         msg += "\n\n" + indent(traceback.format_exc(), "| ")
-        try:
+        with suppress_exception_logit():
             sink.write_control_message(CTRL_ABORTED, msg)
             sink.write_control_message(CTRL_OVER)
-        except BaseException:
-            logger.warn("cannot write sink control messages", bt=traceback.format_exc())
 
         raise InternalProblem(msg) from e  # XXX
 
@@ -567,7 +578,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
         msg = f'Unexpected input "{topic}": {res}'
         msg += f"\nI expected: {expected}"
         msg += f"\n {pc}"
-        logger.error(msg)
+        context.error(msg)
         raise ExternalProtocolViolation(msg)
     else:
         expect_fn = f"on_received_{topic}"
@@ -576,7 +587,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
 
 
 def check_implementation(node, protocol: InteractionProtocol):
-    logger.info("checking implementation")
+    logger0.debug("checking implementation")
     for n in protocol.inputs:
         expect_fn = f"on_received_{n}"
         if not hasattr(node, expect_fn):
@@ -590,4 +601,4 @@ def check_implementation(node, protocol: InteractionProtocol):
             if input_name not in protocol.inputs:
                 msg = f'The node has function "{x}" but there is no input "{input_name}".'
                 raise NotConforming(msg)
-    logger.info("checking implementation OK")
+    logger0.debug("checking implementation OK")

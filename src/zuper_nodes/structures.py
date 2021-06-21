@@ -17,7 +17,7 @@ __all__ = [
     "TimeSpec",
     "local_time",
     "TimingInfo",
-    "EnvironmentError",
+    # "EnvironmentError",
     "NotConforming",
     "ExternalTimeout",
     "ExternalNodeDidNotUnderstand",
@@ -72,10 +72,12 @@ class NotConforming(AIDONodesException):
     pass
 
 
-class EnvironmentError(AIDONodesException):
-    """ Things such as files not existing. """
-
-    pass
+#
+#
+# class EnvironmentError(AIDONodesException):
+#     """ Things such as files not existing. """
+#
+#     pass
 
 
 @dataclass
