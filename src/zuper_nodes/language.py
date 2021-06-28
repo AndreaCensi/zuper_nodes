@@ -3,21 +3,21 @@ from dataclasses import dataclass
 from typing import Dict, Iterator, NewType, Optional, Tuple, TYPE_CHECKING
 
 __all__ = [
-    "InteractionProtocol",
-    "particularize",
-    "opposite",
     "ChannelName",
     "Either",
     "ExpectInputReceived",
     "ExpectOutputProduced",
     "InSequence",
-    "Language",
-    "ZeroOrOne",
-    "OneOrMore",
-    "ZeroOrMore",
-    "OutputProduced",
     "InputReceived",
+    "InteractionProtocol",
+    "Language",
+    "OneOrMore",
+    "OutputProduced",
     "ZEvent",
+    "ZeroOrMore",
+    "ZeroOrOne",
+    "opposite",
+    "particularize",
     "particularize_no_check",
 ]
 

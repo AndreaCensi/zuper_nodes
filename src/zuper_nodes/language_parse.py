@@ -26,9 +26,9 @@ from .language import (
 )
 
 __all__ = [
-    "parse_language",
-    "language_to_str",
     "Syntax",
+    "language_to_str",
+    "parse_language",
 ]
 
 ParserElement.enablePackrat()

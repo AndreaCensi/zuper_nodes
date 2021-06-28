@@ -16,7 +16,7 @@ from .language import (
 )
 from zuper_commons.text import indent
 
-__all__ = ["Enough", "Unexpected", "Always", "LanguageChecker", "NeedMore"]
+__all__ = ["Always", "Enough", "LanguageChecker", "NeedMore", "Unexpected"]
 
 
 class Result:

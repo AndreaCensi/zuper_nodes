@@ -7,22 +7,22 @@ import numpy as np
 
 __all__ = [
     "AIDONodesException",
-    "ProtocolViolation",
-    "ExternalProtocolViolation",
-    "InternalProtocolViolation",
     "DecodingError",
     "EncodingError",
-    "Timestamp",
-    "timestamp_from_seconds",
-    "TimeSpec",
-    "local_time",
-    "TimingInfo",
     "EnvironmentError",
-    "NotConforming",
-    "ExternalTimeout",
     "ExternalNodeDidNotUnderstand",
-    "RemoteNodeAborted",
+    "ExternalProtocolViolation",
+    "ExternalTimeout",
     "InternalProblem",
+    "InternalProtocolViolation",
+    "NotConforming",
+    "ProtocolViolation",
+    "RemoteNodeAborted",
+    "TimeSpec",
+    "Timestamp",
+    "TimingInfo",
+    "local_time",
+    "timestamp_from_seconds",
 ]
 
 
