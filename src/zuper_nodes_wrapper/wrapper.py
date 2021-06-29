@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple
 
 import yaml
+
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance, ZValueError
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
@@ -30,7 +31,6 @@ from zuper_nodes.structures import (
     timestamp_from_seconds,
     TimingInfo,
 )
-
 from . import logger, logger_interaction
 from .constants import (
     ATT_CONFIG,
@@ -112,6 +112,7 @@ class ConcreteContext(Context):
 
         klass = self.protocol.outputs[topic]
         if isinstance(klass, type):
+            # noinspection PyTypeChecker
             check_isinstance(data, klass)
 
         event = OutputProduced(topic)
