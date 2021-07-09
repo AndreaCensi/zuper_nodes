@@ -1,5 +1,5 @@
 from zuper_commons.types import ZException
-from zuper_typing import can_be_used_as2
+from zuper_typing import type_liskov
 
 from .language import InteractionProtocol
 
@@ -43,7 +43,7 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
             v1 = p1.inputs[k]
             v2 = p2.inputs[k]
 
-            r = can_be_used_as2(v2, v1)
+            r = type_liskov(v2, v1)
             if not r:
                 msg = f'For input "{k}", cannot use type v2 as v1'
                 raise IncompatibleProtocol(
@@ -55,7 +55,7 @@ def check_compatible_protocol(p1: InteractionProtocol, p2: InteractionProtocol):
         for k in common_ouputs:
             v1 = p1.outputs[k]
             v2 = p2.outputs[k]
-            r = can_be_used_as2(v1, v2)
+            r = type_liskov(v1, v2)
             if not r:
                 msg = f'For output "{k}", cannot use type v1 as v2.'
                 raise IncompatibleProtocol(
