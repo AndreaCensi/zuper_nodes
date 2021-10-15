@@ -71,8 +71,7 @@ test:
 
 test-parallel:  
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(parallel) $(
-	xunitmp)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_wrapper_tests -v --nologcapture $(parallel) $(xunitmp)
 
 
 test-parallel-circle:
@@ -88,4 +87,4 @@ docs:
 	
 -include extra.mk
         
-# sigil 5391369f328cf182ea59b53ae88ec9b6
+# sigil 42f022a9389624e03c8884afb3a17347
