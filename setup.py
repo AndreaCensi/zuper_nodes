@@ -31,6 +31,10 @@ install_requires = [
     "termcolor",
     f"zuper-ipce-{line}",
     "base58<2.0,>=1.0.2",
+    "cbor2",
+    "PyYAML",
+    f"zuper-commons-{line}",
+    f"zuper-typing-{line}",
 ]
 
 tests_require = [
