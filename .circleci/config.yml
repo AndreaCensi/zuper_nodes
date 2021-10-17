@@ -20,6 +20,18 @@ jobs:
           command: |
             echo PATH=$PATH
             pip install -q --user --upgrade -r requirements.txt
+
+      - run:
+          name: List deps
+          command: |
+            mkdir -p artifacts
+            pip list | tee artifacts/pip-list.txt
+
+      - run:
+          name: setup.py develop
+          command: |
+            python3 -m pip install -e . --prefix ~/.local
+
       - run:
           name: Build stats
           command: |
@@ -32,22 +44,11 @@ jobs:
       - store_artifacts:
           path: build-stats
           destination:  build-stats
-      - run:
-          name: List deps
-          command: |
-            mkdir -p artifacts
-            pip list | tee artifacts/pip-list.txt
-
-      - run:
-          name: setup.py develop
-          command: |
-            python3 -m pip install -e . --prefix ~/.local
-
 
       - run:
           name: Run tests
           command: |
-            python3 -m pip install nose rednose
+            python3 -m pip install nose rednose nose-xunitmp
             mkdir test-results
             make test
 
