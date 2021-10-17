@@ -1,8 +1,8 @@
 import os
 from typing import List, Sequence, Union
 
-from comptests import get_comptests_output_dir
 from networkx.drawing.nx_pydot import write_dot
+
 from zuper_commons.fs import make_sure_dir_exists
 from zuper_nodes import ChannelName, Event, InputReceived, Language, logger, OutputProduced
 from zuper_nodes.language_parse import language_to_str, parse_language
@@ -28,7 +28,7 @@ def assert_seq(s: Union[str, Language], seq: List[Event], expect: Sequence[type]
     pc = LanguageChecker(l)
     logger.info(f"Active start: {pc.get_active_states_names()}")
 
-    dn = get_comptests_output_dir()
+    dn = "out-tests"
     fn = os.path.join(dn, "language.dot")
     make_sure_dir_exists(fn)
     write_dot(pc.g, fn)
