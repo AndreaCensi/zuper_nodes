@@ -41,12 +41,13 @@ jobs:
       - run:
           name: setup.py develop
           command: |
-            python setup.py develop --prefix ~/.local --no-deps
+            python3 -m pip install -e . --prefix ~/.local
 
 
       - run:
           name: Run tests
           command: |
+            python3 -m pip install nose rednose
             mkdir test-results
             make test
 
