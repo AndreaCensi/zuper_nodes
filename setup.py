@@ -39,6 +39,7 @@ install_requires = [
 
 tests_require = [
     f"compmake-{line}",
+    "pydot",
 ]
 
 version = get_version(filename="src/zuper_nodes/__init__.py")
@@ -50,6 +51,8 @@ setup(
     package_dir={"": "src"},
     packages=["zuper_nodes", "zuper_nodes_tests", "zuper_nodes_wrapper", "zuper_nodes_wrapper_tests",],
     install_requires=install_requires,
+    extras_require={'test': tests_require},
+    tests_require=tests_require,
     entry_points={"console_scripts": ["zuper-node-identify=zuper_nodes_wrapper.identify:identify_main",
                                       "node-launch=zuper_nodes_wrapper.launcher:launcher_main",],},
 )
