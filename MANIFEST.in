@@ -19,7 +19,9 @@ recursive-include src *.sql
 prune src/**/__pycache__
 prune src/*_tests*
 prune out
+
 #@ add local below
+
 graft src/zuper_nodes_tests
 graft src/zuper_nodes_wrapper_tests
 prune docs
