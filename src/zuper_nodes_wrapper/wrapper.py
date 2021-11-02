@@ -161,7 +161,7 @@ class ConcreteContext(Context):
         self.to_write.append(rtm)
 
     def get_to_write(self) -> List[RawTopicMessage]:
-        """ Returns the messages to send and resets the queue"""
+        """Returns the messages to send and resets the queue"""
         res = self.to_write
         self.to_write = []
         return res

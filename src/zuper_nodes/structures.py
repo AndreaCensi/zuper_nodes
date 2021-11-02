@@ -67,13 +67,13 @@ class EncodingError(AIDONodesException):
 
 
 class NotConforming(AIDONodesException):
-    """ The node is not conforming to the protocol. """
+    """The node is not conforming to the protocol."""
 
     pass
 
 
 class EnvironmentError(AIDONodesException):
-    """ Things such as files not existing. """
+    """Things such as files not existing."""
 
     pass
 

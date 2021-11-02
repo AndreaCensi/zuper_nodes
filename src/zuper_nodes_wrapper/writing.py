@@ -10,7 +10,7 @@ class Sink:
         self.of = of
 
     def write_topic_message(self, topic: str, data: object, timing):
-        """ Can raise BrokenPipeError"""
+        """Can raise BrokenPipeError"""
         m = {}
         m[FIELD_COMPAT] = [CUR_PROTOCOL]
         m[FIELD_TOPIC] = topic
@@ -19,14 +19,14 @@ class Sink:
         self._write_raw(m)
 
     def write_control_message(self, code, data: object = None):
-        """ Can raise BrokenPipeError"""
+        """Can raise BrokenPipeError"""
         m = {}
         m[FIELD_CONTROL] = code
         m[FIELD_DATA] = data
         self._write_raw(m)
 
     def _write_raw(self, m: dict):
-        """ Can raise BrokenPipeError"""
+        """Can raise BrokenPipeError"""
         j = cbor2.dumps(m)
         self.of.write(j)
         self.of.flush()

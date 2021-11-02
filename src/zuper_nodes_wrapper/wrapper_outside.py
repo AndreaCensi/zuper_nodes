@@ -81,7 +81,7 @@ class ComponentInterface:
         self.fpout.close()
 
     def cc(self, f):
-        """ CC-s everything that is read or written to this file. """
+        """CC-s everything that is read or written to this file."""
         self._cc = f
 
     def _get_node_protocol(self, timeout: float = None):
@@ -330,7 +330,7 @@ def read_reply(
 
 
 def read_until_over(fpout, timeout: float, nickname: str) -> List[WireMessage]:
-    """ Raises RemoteNodeAborted, TimeoutError """
+    """Raises RemoteNodeAborted, TimeoutError"""
     res = []
     waiting_for = f"Reading reply of {nickname}."
     while True:
