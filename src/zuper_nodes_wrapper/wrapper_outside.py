@@ -130,7 +130,7 @@ class ComponentInterface:
         with_schema: bool = False,
         timeout: float = None,
         timing=None,
-        expect: str = None,
+        expect: Optional[str] = None,
     ) -> MsgReceived:
         timeout = timeout or self.timeout
         self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
@@ -209,7 +209,7 @@ class ComponentInterface:
         j = cbor.dumps(msg)
         return j
 
-    def read_one(self, expect_topic: str = None, timeout: float = None) -> MsgReceived:
+    def read_one(self, expect_topic: Optional[str] = None, timeout: float = None) -> MsgReceived:
         timeout = timeout or self.timeout
         try:
             if expect_topic:
@@ -292,7 +292,7 @@ def read_reply(
     fpout,
     nickname: str,
     timeout: float = None,
-    waiting_for: str = None,
+    waiting_for: Optional[str] = None,
 ) -> List:
     """Reads a control message. Returns if it is CTRL_UNDERSTOOD.
     Raises:
