@@ -21,7 +21,6 @@ install_requires:
 #    "base58<2.0,>=1.0.2",
 
 tests_require:
-- comptests-z7
 - pydot
 
 console_scripts:
