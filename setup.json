@@ -10,7 +10,6 @@
     "zuper-typing-z7"
   ],
   "tests_require": [
-    "comptests-z7",
     "pydot"
   ],
   "srcdir": "src",
