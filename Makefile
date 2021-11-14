@@ -77,12 +77,12 @@ clean:
 
 test:
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(xunit)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(xunit)
 
 
 test-parallel:
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_wrapper_tests -v --nologcapture $(parallel) $(xunitmp)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_wrapper_tests -v --nologcapture $(parallel) $(xunitmp)
 
 
 test-parallel-circle:
@@ -90,7 +90,7 @@ test-parallel-circle:
 	DISABLE_CONTRACTS=1 \
 	NODE_TOTAL=$(CIRCLE_NODE_TOTAL) \
 	NODE_INDEX=$(CIRCLE_NODE_INDEX) \
-	nosetests $(coverage) $(xunitmp) zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_wrapper_tests  -v  $(parallel)
+	nosetests $(coverage) $(xunitmp) zuper_nodes_tests zuper_nodes_wrapper_tests  -v  $(parallel)
 
 
 coverage-combine:
@@ -101,4 +101,4 @@ docs:
 
 -include extra.mk
 
-# sigil 26d10430f44f137961b98f90ec79f9bf
+# sigil a211a7e74c9e96d145c1b1e07e733919

@@ -32,8 +32,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests
-        zuper_nodes_wrapper_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
       auth:
@@ -119,45 +118,6 @@ jobs:
     #       make -C notebooks cleanup all
 
 
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
     - run:
         name: zuper_nodes_tests
         command: |-
@@ -225,8 +185,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests
-        zuper_nodes_wrapper_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
       auth:
@@ -326,45 +285,6 @@ jobs:
               zuper_nodes_tests
         when: always
     - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
@@ -418,8 +338,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests
-        zuper_nodes_wrapper_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.9:z7
       auth:
@@ -505,45 +424,6 @@ jobs:
     #       make -C notebooks cleanup all
 
 
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
     - run:
         name: zuper_nodes_tests
         command: |-
@@ -611,8 +491,7 @@ jobs:
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
-      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests
-        zuper_nodes_wrapper_tests
+      TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.9:z7
       auth:
@@ -712,45 +591,6 @@ jobs:
               zuper_nodes_tests
         when: always
     - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
-        name: zuper_nodes_tests
-        command: |-
-          set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
-        when: always
-    - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
@@ -799,4 +639,4 @@ jobs:
           bash <(curl -s https://codecov.io/bash)
     resource_class: medium
 
-# sigil 0d27cc9a6afc09283f1a227805507fea
+# sigil c45658d284149036da9542137cf6d33f
