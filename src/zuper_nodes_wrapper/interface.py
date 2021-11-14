@@ -14,7 +14,7 @@ def wrap_direct(node, protocol, args: Optional[List[str]] = None):
     if args is None:
         args = sys.argv[1:]
 
-    from zuper_nodes_wrapper.wrapper import check_implementation, run_loop
+    from .wrapper import check_implementation, run_loop
 
     # if PYTHON_36 or PYTHON_37:
     #     monkeypatch_findCaller()
