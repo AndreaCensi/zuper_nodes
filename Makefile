@@ -48,7 +48,7 @@ install-testing-deps:
 		codecov\
 		sphinx\
 		sphinx-rtd-theme
-cover_packages=zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
+cover_packages=zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
 
 # PROJECT_ROOT ?= /project
 # REGISTRY ?= docker.io
@@ -77,12 +77,12 @@ clean:
 
 test:
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(xunit)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage)  zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_wrapper_tests  -v --nologcapture $(xunit)
 
 
 test-parallel:
 	mkdir -p  $(tr)
-	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_wrapper_tests -v --nologcapture $(parallel) $(xunitmp)
+	DISABLE_CONTRACTS=1 nosetests $(extra) $(coverage) zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_wrapper_tests -v --nologcapture $(parallel) $(xunitmp)
 
 
 test-parallel-circle:
@@ -90,7 +90,7 @@ test-parallel-circle:
 	DISABLE_CONTRACTS=1 \
 	NODE_TOTAL=$(CIRCLE_NODE_TOTAL) \
 	NODE_INDEX=$(CIRCLE_NODE_INDEX) \
-	nosetests $(coverage) $(xunitmp) zuper_nodes_tests zuper_nodes_wrapper_tests  -v  $(parallel)
+	nosetests $(coverage) $(xunitmp) zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_tests zuper_nodes_wrapper_tests  -v  $(parallel)
 
 
 coverage-combine:
@@ -101,4 +101,4 @@ docs:
 
 -include extra.mk
 
-# sigil f60a5d3467960bfd5006f7f1cadd47fe
+# sigil 26d10430f44f137961b98f90ec79f9bf

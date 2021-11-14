@@ -10,6 +10,7 @@
     "zuper-typing-z7"
   ],
   "tests_require": [
+    "nose",
     "pydot"
   ],
   "srcdir": "src",
