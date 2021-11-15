@@ -31,7 +31,7 @@ jobs:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
+      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
@@ -184,7 +184,7 @@ jobs:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
+      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.8:z7
@@ -337,7 +337,7 @@ jobs:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
+      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.9:z7
@@ -490,7 +490,7 @@ jobs:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
+      COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
     - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.9:z7
@@ -639,4 +639,4 @@ jobs:
           bash <(curl -s https://codecov.io/bash)
     resource_class: medium
 
-# sigil c45658d284149036da9542137cf6d33f
+# sigil 6f29e5c53e57ef086d48f1a3c40a523d
