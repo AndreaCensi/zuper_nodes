@@ -10,6 +10,14 @@ from zuper_nodes.language_recognize import Enough, LanguageChecker, NeedMore, Un
 from zuper_nodes_wrapper.meta_protocol import basic_protocol
 
 
+def _fix():
+    # this is needed because we import it implicitly using
+    # from networkx.drawing.nx_pydot import write_dot
+    import pydot
+
+    _ = pydot
+
+
 def assert_seq(s: Union[str, Language], seq: List[ZEvent], expect: Sequence[type], final: type):
     if isinstance(s, str):
         s = s.replace("\n", " ").strip()
