@@ -149,7 +149,7 @@ class InteractionProtocol:
 
     # interaction: Language = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         from .language_parse import parse_language, language_to_str
 
         self.interaction = parse_language(self.language)
