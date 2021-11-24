@@ -1,4 +1,4 @@
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Iterator, NewType, Optional, Tuple, TYPE_CHECKING
 
@@ -44,7 +44,7 @@ class OutputProduced(ZEvent):
 # Language over events
 
 
-class Language(metaclass=ABCMeta):
+class Language(ABC):
     @abstractmethod
     def collect_simple_events(self) -> Iterator[ZEvent]:
         ...
