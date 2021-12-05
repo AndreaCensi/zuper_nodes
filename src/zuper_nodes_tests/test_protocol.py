@@ -64,52 +64,52 @@ def assert_seq(s: Union[str, Language], seq: List[ZEvent], expect: Sequence[type
         raise Exception(msg)
 
 
-def test_proto_out1():
+def test_proto_out1() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a", seq, (Enough,), Enough)
 
 
-def test_proto_in1():
+def test_proto_in1() -> None:
     seq = [InputReceived(ChannelName("a"))]
     assert_seq("in:a", seq, (Enough,), Enough)
 
 
-def test_proto3():
+def test_proto3() -> None:
     seq = [InputReceived(ChannelName("a"))]
     assert_seq("out:a", seq, (Unexpected,), Unexpected)
 
 
-def test_proto4():
+def test_proto4() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
-def test_proto05():
+def test_proto05() -> None:
     seq = [InputReceived(ChannelName("b"))]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
-def test_proto06():
+def test_proto06() -> None:
     seq = [OutputProduced(ChannelName("b"))]
     assert_seq("in:a", seq, (Unexpected,), Unexpected)
 
 
-def test_proto07():
+def test_proto07() -> None:
     seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b"))]
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough), Enough)
 
 
-def test_proto08():
+def test_proto08() -> None:
     seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b"))]
     assert_seq("out:a ; out:b ; out:b", seq, (NeedMore, NeedMore), NeedMore)
 
 
-def test_proto09():
+def test_proto09() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a ; out:b", seq, (NeedMore,), NeedMore)
 
 
-def test_proto10():
+def test_proto10() -> None:
     seq = [
         OutputProduced(ChannelName("a")),
         OutputProduced(ChannelName("b")),
@@ -118,42 +118,42 @@ def test_proto10():
     assert_seq("out:a ; out:b", seq, (NeedMore, Enough, Unexpected), Unexpected)
 
 
-def test_proto_zom_01():
+def test_proto_zom_01() -> None:
     seq = []
     assert_seq("out:a *", seq, (), Enough)
 
 
-def test_proto_zom_02():
+def test_proto_zom_02() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a *", seq, (Enough,), Enough)
 
 
-def test_proto_zom_03():
+def test_proto_zom_03() -> None:
     seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("a"))]
     assert_seq("out:a *", seq, (Enough, Enough), Enough)
 
 
-def test_proto_either_01():
+def test_proto_either_01() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a | out:b ", seq, (Enough,), Enough)
 
 
-def test_proto_either_02():
+def test_proto_either_02() -> None:
     seq = [OutputProduced(ChannelName("b"))]
     assert_seq("out:a | out:b ", seq, (Enough,), Enough)
 
 
-def test_proto_either_03():
+def test_proto_either_03() -> None:
     seq = [OutputProduced(ChannelName("c"))]
     assert_seq("out:a | out:b | out:c ", seq, (Enough,), Enough)
 
 
-def test_proto_either_04():
+def test_proto_either_04() -> None:
     seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("b"))]
     assert_seq("(out:a ; out:b) | (out:b ; out:a) ", seq, (NeedMore, Enough), Enough)
 
 
-def test_proto_either_05():
+def test_proto_either_05() -> None:
     seq = [OutputProduced(ChannelName("b")), OutputProduced(ChannelName("a"))]
     assert_seq(
         "(out:a ; out:b) | (out:b ; out:a) ",
@@ -166,37 +166,37 @@ def test_proto_either_05():
     )
 
 
-def test_proto_oom_01():
+def test_proto_oom_01() -> None:
     seq = []
     assert_seq("out:a +", seq, (), NeedMore)
 
 
-def test_proto_oom_02():
+def test_proto_oom_02() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a +", seq, (Enough,), Enough)
 
 
-def test_proto_oom_03():
+def test_proto_oom_03() -> None:
     seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("a"))]
     assert_seq("out:a +", seq, (Enough, Enough), Enough)
 
 
-def test_proto_zoom_01():
+def test_proto_zoom_01() -> None:
     seq = []
     assert_seq("out:a ?", seq, (), Enough)
 
 
-def test_proto_zoom_02():
+def test_proto_zoom_02() -> None:
     seq = [OutputProduced(ChannelName("a"))]
     assert_seq("out:a ?", seq, (Enough,), Enough)
 
 
-def test_proto_zoom_03():
+def test_proto_zoom_03() -> None:
     seq = [OutputProduced(ChannelName("a")), OutputProduced(ChannelName("a"))]
     assert_seq("out:a ?", seq, (Enough, Unexpected), Unexpected)
 
 
-def test_protocol_complex1():
+def test_protocol_complex1() -> None:
     l = """
         (
             in:next_episode ; (
@@ -210,7 +210,7 @@ def test_protocol_complex1():
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
-def test_protocol_complex1_0():
+def test_protocol_complex1_0() -> None:
     l = """
 
             in:next_episode ; (
@@ -224,7 +224,7 @@ def test_protocol_complex1_0():
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
-def test_protocol_complex1_1():
+def test_protocol_complex1_1() -> None:
     l = """
 
                in:next_episode ; (
@@ -238,7 +238,7 @@ def test_protocol_complex1_1():
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
-def test_protocol_complex1_2():
+def test_protocol_complex1_2() -> None:
     l = """
 
                in:next_episode ; (
@@ -257,7 +257,7 @@ def test_protocol_complex1_2():
     assert_seq(l, seq, (NeedMore, Enough), Enough)
 
 
-def test_protocol_complex1_3():
+def test_protocol_complex1_3() -> None:
     l = """
                 (
                     in:next_episode ; (
@@ -273,7 +273,7 @@ def test_protocol_complex1_3():
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
 
-def test_protocol_complex1_3b():
+def test_protocol_complex1_3b() -> None:
     l = """
                 (
                     in:next_episode ; (
@@ -289,7 +289,7 @@ def test_protocol_complex1_3b():
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
 
-def test_protocol_complex1_3c():
+def test_protocol_complex1_3c() -> None:
     l = """
                 (
                     in:next_episode ; (
@@ -305,7 +305,7 @@ def test_protocol_complex1_3c():
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
 
-def test_protocol_complex1_3e():
+def test_protocol_complex1_3e() -> None:
     l = """
                 (
                     in:next_episode ; (
@@ -321,7 +321,7 @@ def test_protocol_complex1_3e():
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
 
-def test_protocol_complex1_3d():
+def test_protocol_complex1_3d() -> None:
     l = """
                 (
                     in:next_episode ; (
@@ -337,7 +337,7 @@ def test_protocol_complex1_3d():
     assert_seq(l, seq, (Unexpected,), Unexpected)
 
 
-def test_protocol_complex1_3v():
+def test_protocol_complex1_3v() -> None:
     l0 = """
 
         out:episode_start ;
@@ -348,7 +348,7 @@ def test_protocol_complex1_3v():
     assert_seq(l0, seq, (Enough,), Enough)
 
 
-def test_basic_protocol1():
+def test_basic_protocol1() -> None:
     l0 = basic_protocol.language
     seq = [InputReceived(ChannelName("set_config"))]
     assert_seq(l0, seq, (NeedMore,), NeedMore)

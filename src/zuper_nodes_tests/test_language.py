@@ -33,44 +33,44 @@ def expect_parse(expr, s, expected):
         assert_equal(res, expected)
 
 
-def test_parse_language_01():
+def test_parse_language_01() -> None:
     s = "in:name"
     e = ExpectInputReceived(ChannelName("name"))
     expect_parse(Syntax.input_received, s, e)
     expect_parse(Syntax.language, s, e)
 
 
-def test_parse_language_02():
+def test_parse_language_02() -> None:
     s = "out:name"
     e = ExpectOutputProduced(ChannelName("name"))
     expect_parse(Syntax.output_produced, s, e)
 
 
-def test_parse_language_03():
+def test_parse_language_03() -> None:
     s = "out:first ; in:second"
     e = InSequence((ExpectOutputProduced(ChannelName("first")), ExpectInputReceived(ChannelName("second"))))
     expect_parse(Syntax.language, s, e)
 
 
-def test_parse_language_04():
+def test_parse_language_04() -> None:
     s = "(out:first)*"
     e = ZeroOrMore(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
-def test_parse_language_05():
+def test_parse_language_05() -> None:
     s = "(out:first)?"
     e = ZeroOrOne(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
-def test_parse_language_06():
+def test_parse_language_06() -> None:
     s = "(out:first)+"
     e = OneOrMore(ExpectOutputProduced(ChannelName("first")))
     expect_parse(Syntax.language, s, e)
 
 
-def test_parse_language_07():
+def test_parse_language_07() -> None:
     s = "out:first | out:second"
     e = Either((ExpectOutputProduced(ChannelName("first")), ExpectOutputProduced(ChannelName("second"))))
     expect_parse(Syntax.language, s, e)
@@ -79,7 +79,7 @@ def test_parse_language_07():
     expect_parse(Syntax.language, s2, e)
 
 
-def test_parse_language_08():
+def test_parse_language_08() -> None:
     s = """
                 (
                     in:next_episode ; (
@@ -93,7 +93,7 @@ def test_parse_language_08():
     expect_parse(Syntax.language, s, None)
 
 
-def test_parse_language_09():
+def test_parse_language_09() -> None:
     s = """
                 (
                     in:next_episode ; (

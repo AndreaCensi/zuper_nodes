@@ -11,7 +11,7 @@ class Empty:
     pass
 
 
-def test_subprotocol_obs():
+def test_subprotocol_obs() -> None:
     # this is the story of the duckiebot
 
     protocol_agent = InteractionProtocol(
@@ -53,7 +53,7 @@ def test_subprotocol_obs():
     assert_raises(IncompatibleProtocol, check_compatible_protocol, protocol_agent_2020, protocol_agent_2018)
 
 
-def test_subprotocol_cmds():
+def test_subprotocol_cmds() -> None:
     # this is the story of the duckiebot
     @dataclass
     class Commands2018:
@@ -100,7 +100,7 @@ def test_subprotocol_cmds():
     )
 
 
-def test_subprotocol_channels_inputs():
+def test_subprotocol_channels_inputs() -> None:
 
     protocol_agent_2018 = InteractionProtocol(
         description="",
@@ -131,7 +131,7 @@ def test_subprotocol_channels_inputs():
     )
 
 
-def test_subprotocol_channels_outputs():
+def test_subprotocol_channels_outputs() -> None:
 
     protocol_agent_2018 = InteractionProtocol(
         description="",
