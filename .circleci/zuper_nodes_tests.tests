@@ -1,0 +1,3 @@
+zuper_nodes_tests.test_language
+zuper_nodes_tests.test_protocol
+zuper_nodes_tests.test_subprotocol
