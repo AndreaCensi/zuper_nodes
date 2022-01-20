@@ -15,12 +15,12 @@ workflows:
         filters:
           branches:
             only: /.*z7-prod.*/
-    - test-3.9-stage:
+    - test-3.10-stage:
         context: z7-stage
         filters:
           branches:
             only: /.*z7-stage.*/
-    - test-3.9-prod:
+    - test-3.10-prod:
         context: z7-prod
         filters:
           branches:
@@ -123,26 +123,26 @@ jobs:
         name: zuper_nodes_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
+              mkdir -p out/test-results
+              xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
+              nosetests \
+                  --rednose --immediate \
+                  --cover-tests --with-coverage \
+                  --with-xunit --xunit-file=${xunit_output} \
+                  --cover-package=${COVER_PACKAGES} \
+                  zuper_nodes_tests
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_wrapper_tests
+              mkdir -p out/test-results
+              xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
+              nosetests \
+                  --rednose --immediate \
+                  --cover-tests --with-coverage \
+                  --with-xunit --xunit-file=${xunit_output} \
+                  --cover-package=${COVER_PACKAGES} \
+                  zuper_nodes_wrapper_tests
     - run:
         name: post-circle-tests
         command: |
@@ -180,7 +180,7 @@ jobs:
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov
           ./codecov -t ${CODECOV_TOKEN}
-    resource_class: medium
+    resource_class: small
   test-3.8-prod:
     #    machine: true
     #    resource_class: zuper-ci-ns/my-resource-class
@@ -278,26 +278,26 @@ jobs:
         name: zuper_nodes_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
+              mkdir -p out/test-results
+              xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
+              nosetests \
+                  --rednose --immediate \
+                  --cover-tests --with-coverage \
+                  --with-xunit --xunit-file=${xunit_output} \
+                  --cover-package=${COVER_PACKAGES} \
+                  zuper_nodes_tests
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_wrapper_tests
+              mkdir -p out/test-results
+              xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
+              nosetests \
+                  --rednose --immediate \
+                  --cover-tests --with-coverage \
+                  --with-xunit --xunit-file=${xunit_output} \
+                  --cover-package=${COVER_PACKAGES} \
+                  zuper_nodes_wrapper_tests
     - run:
         name: post-circle-tests
         command: |
@@ -335,8 +335,8 @@ jobs:
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov
           ./codecov -t ${CODECOV_TOKEN}
-    resource_class: medium
-  test-3.9-stage:
+    resource_class: small
+  test-3.10-stage:
     #    machine: true
     #    resource_class: zuper-ci-ns/my-resource-class
     environment:
@@ -346,7 +346,7 @@ jobs:
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
-    - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.9:z7
+    - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.10:z7
       auth:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
@@ -433,26 +433,18 @@ jobs:
         name: zuper_nodes_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
+                          mkdir -p out/test-results
+                          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
+                          nose2 --with-coverage --plugin nose2.plugins.junitxml  --junit-xml --junit-xml-path                     ${xunit_output} zuper_nodes_tests
+                          # TODO: cover packages
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_wrapper_tests
+                          mkdir -p out/test-results
+                          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
+                          nose2 --with-coverage --plugin nose2.plugins.junitxml  --junit-xml --junit-xml-path                     ${xunit_output} zuper_nodes_wrapper_tests
+                          # TODO: cover packages
     - run:
         name: post-circle-tests
         command: |
@@ -490,8 +482,8 @@ jobs:
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov
           ./codecov -t ${CODECOV_TOKEN}
-    resource_class: medium
-  test-3.9-prod:
+    resource_class: small
+  test-3.10-prod:
     #    machine: true
     #    resource_class: zuper-ci-ns/my-resource-class
     environment:
@@ -501,7 +493,7 @@ jobs:
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
-    - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.9:z7
+    - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.10:z7
       auth:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
@@ -588,26 +580,18 @@ jobs:
         name: zuper_nodes_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_tests
+                          mkdir -p out/test-results
+                          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
+                          nose2 --with-coverage --plugin nose2.plugins.junitxml  --junit-xml --junit-xml-path                     ${xunit_output} zuper_nodes_tests
+                          # TODO: cover packages
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
-          mkdir -p out/test-results
-          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
-          nosetests \
-              --rednose --immediate \
-              --cover-tests --with-coverage \
-              --with-xunit --xunit-file=${xunit_output} \
-              --cover-package=${COVER_PACKAGES} \
-              zuper_nodes_wrapper_tests
+                          mkdir -p out/test-results
+                          xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
+                          nose2 --with-coverage --plugin nose2.plugins.junitxml  --junit-xml --junit-xml-path                     ${xunit_output} zuper_nodes_wrapper_tests
+                          # TODO: cover packages
     - run:
         name: post-circle-tests
         command: |
@@ -645,6 +629,6 @@ jobs:
           curl -Os https://uploader.codecov.io/latest/linux/codecov
           chmod +x codecov
           ./codecov -t ${CODECOV_TOKEN}
-    resource_class: medium
+    resource_class: small
 
-# sigil 2261152a91895f4a5363ff1e52a3be1c
+# sigil 153248f9bd04831af8dba1c943ca1936
