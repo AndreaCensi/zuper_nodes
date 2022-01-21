@@ -274,7 +274,8 @@ jobs:
           fi
           mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-          nose2 --with-coverage --plugin nose2.plugins.junitxml --junit-xml --junit-xml-path ${xunit_output} $TEST_MODULES
+          nose2 --with-coverage --plugin nose2.plugins.junitxml --junit-xml --junit-xml-path ${xunit_output}
+          $TEST_MODULES
           # TODO: cover packages
     - run:
         name: zuper_nodes_wrapper_tests
@@ -290,7 +291,8 @@ jobs:
           fi
           mkdir -p out/test-results
           xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
-          nose2 --with-coverage --plugin nose2.plugins.junitxml --junit-xml --junit-xml-path ${xunit_output} $TEST_MODULES
+          nose2 --with-coverage --plugin nose2.plugins.junitxml --junit-xml --junit-xml-path ${xunit_output}
+          $TEST_MODULES
           # TODO: cover packages
     - run:
         name: post-circle-tests
@@ -331,4 +333,4 @@ jobs:
           ./codecov -t ${CODECOV_TOKEN}
     resource_class: small
 
-# sigil 285161f567cc8c47b3282bf688996c79
+# sigil 2adc61f5102d30d7a8c0c4de76a489c3
