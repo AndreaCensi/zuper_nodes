@@ -111,30 +111,24 @@ jobs:
           set -euxo pipefail
               mkdir -p out/test-results
               xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_tests-xunit.xml
-              NODE_TOTAL=${CIRCLE_NODE_TOTAL} NODE_INDEX=${CIRCLE_NODE_INDEX} \
-                  nosetests -x \
-                      --rednose --immediate \
-                      --cover-tests --with-coverage \
-                      --with-parallel --processes=1 --process-timeout=120 \
-                      --cover-package=${COVER_PACKAGES} \
-                      --with-xunitmp --xunitmp-file=${xunit_output} \
-                      -v \
-                      zuper_nodes_tests
+              nosetests \
+                  --rednose --immediate \
+                  --cover-tests --with-coverage \
+                  --with-xunit --xunit-file=${xunit_output} \
+                  --cover-package=${COVER_PACKAGES} \
+                  zuper_nodes_tests
     - run:
         name: zuper_nodes_wrapper_tests
         command: |-
           set -euxo pipefail
               mkdir -p out/test-results
               xunit_output=$PWD/out/test-results/nose-${CIRCLE_NODE_INDEX}-zuper_nodes_wrapper_tests-xunit.xml
-              NODE_TOTAL=${CIRCLE_NODE_TOTAL} NODE_INDEX=${CIRCLE_NODE_INDEX} \
-                  nosetests -x \
-                      --rednose --immediate \
-                      --cover-tests --with-coverage \
-                      --with-parallel --processes=1 --process-timeout=120 \
-                      --cover-package=${COVER_PACKAGES} \
-                      --with-xunitmp --xunitmp-file=${xunit_output} \
-                      -v \
-                      zuper_nodes_wrapper_tests
+              nosetests \
+                  --rednose --immediate \
+                  --cover-tests --with-coverage \
+                  --with-xunit --xunit-file=${xunit_output} \
+                  --cover-package=${COVER_PACKAGES} \
+                  zuper_nodes_wrapper_tests
     - run:
         name: post-circle-tests
         command: |
@@ -153,8 +147,8 @@ jobs:
         when: always
         command: |
           coverage combine || true
-          coverage html -d out/coverage/${CIRCLE_NODE_INDEX}
-          coverage xml
+          coverage html -d out/coverage/${CIRCLE_NODE_INDEX} || true
+          coverage xml || true
 
     - store_artifacts:
         path: out/coverage
@@ -316,8 +310,8 @@ jobs:
         when: always
         command: |
           coverage combine || true
-          coverage html -d out/coverage/${CIRCLE_NODE_INDEX}
-          coverage xml
+          coverage html -d out/coverage/${CIRCLE_NODE_INDEX} || true
+          coverage xml || true
 
     - store_artifacts:
         path: out/coverage
@@ -337,4 +331,4 @@ jobs:
           ./codecov -t ${CODECOV_TOKEN}
     resource_class: small
 
-# sigil b949b786f1f33526915fb615d80e0daa
+# sigil 285161f567cc8c47b3282bf688996c79
