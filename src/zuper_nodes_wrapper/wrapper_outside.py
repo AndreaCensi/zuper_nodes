@@ -6,7 +6,7 @@ import cbor2 as cbor
 from zuper_commons.text import indent
 from zuper_commons.types import ZException
 from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
-from zuper_ipce.json2cbor import read_next_cbor
+from zuper_ipce import read_next_cbor
 from zuper_nodes import (
     check_compatible_protocol,
     ExternalNodeDidNotUnderstand,

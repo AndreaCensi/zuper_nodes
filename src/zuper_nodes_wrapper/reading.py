@@ -3,7 +3,7 @@ from typing import Iterator, Optional, Union
 
 import select
 from zuper_commons.text import indent
-from zuper_ipce.json2cbor import read_next_cbor
+from zuper_ipce import read_next_cbor
 from zuper_nodes.structures import ExternalTimeout
 
 from . import logger

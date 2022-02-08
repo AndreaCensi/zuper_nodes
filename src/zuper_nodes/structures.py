@@ -9,7 +9,7 @@ __all__ = [
     "AIDONodesException",
     "DecodingError",
     "EncodingError",
-    "EnvironmentError",
+    "NodeEnvironmentError",
     "ExternalNodeDidNotUnderstand",
     "ExternalProtocolViolation",
     "ExternalTimeout",
@@ -72,7 +72,7 @@ class NotConforming(AIDONodesException):
     pass
 
 
-class EnvironmentError(AIDONodesException):
+class NodeEnvironmentError(AIDONodesException):
     """Things such as files not existing."""
 
     pass
