@@ -17,10 +17,11 @@ jobs:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       PATH: /root/.local/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      CONTEXT_NAME: << pipeline.parameters.context_name >>
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
-    - image: ${DOCKER_REGISTRY}/zupermind/zuper-ci-3.10:z7
+    - image: ${DOCKER_REGISTRY}/zupermind/z7-stage-zuper-ci-3.10:z7
       auth:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
@@ -183,4 +184,4 @@ jobs:
           ./codecov -t ${CODECOV_TOKEN}
     resource_class: small
 
-# sigil 9797d5b37007954524f08d44b233d102
+# sigil 275b6cf44184076caa814b21f0a82121
