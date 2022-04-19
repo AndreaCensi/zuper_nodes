@@ -107,7 +107,7 @@ jobs:
 
     - run:
         name: zuper_nodes_tests
-        command: |-
+        command: |
           set -euxo pipefail
           TEST_MODULES=$(circleci tests split <.circleci/zuper_nodes_tests.tests)
           echo "TEST_MODULES=[$TEST_MODULES]"
@@ -127,7 +127,7 @@ jobs:
           # TODO: cover packages
     - run:
         name: zuper_nodes_wrapper_tests
-        command: |-
+        command: |
           set -euxo pipefail
           TEST_MODULES=$(circleci tests split <.circleci/zuper_nodes_wrapper_tests.tests)
           echo "TEST_MODULES=[$TEST_MODULES]"
@@ -184,4 +184,4 @@ jobs:
           ./codecov -t ${CODECOV_TOKEN}
     resource_class: small
 
-# sigil dcc75bd137a2f0d231b446063fa2ff4b
+# sigil 9e88c556d9f56f7c10de0664bff11900
