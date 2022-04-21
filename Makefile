@@ -20,7 +20,7 @@ upload-old:
 	devpi upload --verbose dist/*
 
 black:
-	black -l 110 --target-version py38 src
+	black -l 110 --target-version py310 src
 
 install-deps:
 	pip3 install --user shyaml
@@ -101,4 +101,4 @@ docs:
 
 -include extra.mk
 
-# sigil a211a7e74c9e96d145c1b1e07e733919
+# sigil 0d9434a98a3a6a284b950eef6cbdb272
