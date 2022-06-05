@@ -2,7 +2,7 @@
   "install_requires": [
     "PyYAML",
     "cbor2",
-    "networkx",
+    "networkx<2.8",
     "numpy",
     "pyparsing",
     "zuper-commons-z7",

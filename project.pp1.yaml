@@ -12,7 +12,7 @@ install_requires:
 - zuper-typing-z7
 - PyYAML
 - cbor2
-- networkx
+- networkx<2.8 # # ValueError: ('start',) is not a valid node name while using pydot. Please refer https://github.com/pydot/pydot/issues/258
 - numpy
 - pyparsing
 #    "networkx>=2,<3",
