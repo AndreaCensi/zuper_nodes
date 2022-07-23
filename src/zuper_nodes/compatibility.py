@@ -3,7 +3,10 @@ from zuper_typing import type_liskov
 
 from .language import InteractionProtocol
 
-__all__ = ["IncompatibleProtocol", "check_compatible_protocol"]
+__all__ = [
+    "IncompatibleProtocol",
+    "check_compatible_protocol",
+]
 
 
 class IncompatibleProtocol(ZException):

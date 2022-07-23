@@ -38,7 +38,11 @@ from .meta_protocol import basic_protocol, ProtocolDescription
 from .streams import wait_for_creation
 from .struct import interpret_control_message, MsgReceived, WireMessage
 
-__all__ = ["ComponentInterface", "MsgReceived", "read_reply"]
+__all__ = [
+    "ComponentInterface",
+    "MsgReceived",
+    "read_reply",
+]
 iedo = IEDO(True, True)
 
 
