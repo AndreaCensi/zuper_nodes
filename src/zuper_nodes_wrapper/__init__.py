@@ -1,8 +1,8 @@
 import logging
 
-from zuper_commons.logs import ZLogger
+from zuper_commons.logs import ZLogger, ZLoggerInterface
 
-logger = ZLogger(__name__)
+logger: ZLoggerInterface = ZLogger(__name__)
 
 logger.setLevel(logging.DEBUG)
 
