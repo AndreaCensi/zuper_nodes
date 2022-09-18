@@ -48,6 +48,8 @@ install-testing-deps:
 		codecov\
 		sphinx\
 		sphinx-rtd-theme
+
+pack::
 cover_packages=zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
 
 # PROJECT_ROOT ?= /project
@@ -101,4 +103,4 @@ docs:
 
 -include extra.mk
 
-# sigil 0d9434a98a3a6a284b950eef6cbdb272
+# sigil 7710710b21a7675513e8280eb27ab758
