@@ -11,7 +11,7 @@ import ujson as json
 
 def bytes_to_json(jpg_bytes: bytes) -> str:
     data = {"jpg_bytes": base64.b64encode(jpg_bytes).decode("ascii")}
-    return json.dumps(data).encode("utf-8")
+    return json.dumps(data)
 
 
 def bytes_to_cbor(jpg_bytes: bytes) -> bytes:
@@ -86,7 +86,6 @@ def test5():
 
 
 number = 800
-
 
 for f in [
     test3,
