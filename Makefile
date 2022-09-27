@@ -11,14 +11,6 @@ bump:
 upload:
 	zuper-cli upload
 
-upload-old:
-	rm -f dist/*
-	rm -rf src/*.egg-info
-	python3 setup.py sdist
-	devpi use $(TWINE_REPOSITORY_URL)
-	devpi login $(TWINE_USERNAME) --password $(TWINE_PASSWORD)
-	devpi upload --verbose dist/*
-
 black:
 	black -l 110 --target-version py310 src
 
@@ -48,8 +40,6 @@ install-testing-deps:
 		codecov\
 		sphinx\
 		sphinx-rtd-theme
-
-pack::
 cover_packages=zuper_nodes,zuper_nodes_tests,zuper_nodes_tests.test_language,zuper_nodes_tests.test_protocol,zuper_nodes_tests.test_subprotocol,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
 
 # PROJECT_ROOT ?= /project
@@ -103,4 +93,4 @@ docs:
 
 -include extra.mk
 
-# sigil 7710710b21a7675513e8280eb27ab758
+# sigil 08a4d97dbd358efa7a6247be6977ab09
