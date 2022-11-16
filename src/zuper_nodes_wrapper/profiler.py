@@ -72,9 +72,9 @@ class ProfilerImp(Profiler):
         tottime = time.time() - self.t0
         lines = self.show_stats_(prefix, 1, tottime)
         if not lines:
-            msg = 'Could not find any *completed* children for prefix'
-            raise ZException(msg, prefix=prefix, lines=lines,
-                             known=list(self.stats))
+            lines.append(f'Could not find any *completed* children for prefix {prefix}.')
+            # raise ZException(msg, prefix=prefix, lines=lines,
+            #                  known=list(self.stats))
         return "\n".join(lines)
 
     def show_stats_(self, prefix: Tuple[str, ...], ntot: int, tottime: float) -> List[str]:
