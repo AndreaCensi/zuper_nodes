@@ -10,6 +10,7 @@ from io import BufferedReader, BufferedWriter
 from typing import Dict, Iterator, List, Optional, Tuple
 
 import yaml
+
 from zuper_commons.logs import ZLoggerInterface
 from zuper_commons.text import indent
 from zuper_commons.types import check_isinstance, ZValueError
@@ -33,7 +34,6 @@ from zuper_nodes.structures import (
     timestamp_from_seconds,
     TimingInfo,
 )
-
 from . import logger as logger0, logger_interaction
 from .constants import (
     ATT_CONFIG,
@@ -288,12 +288,14 @@ def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[st
              fo_desc=fout)
     except RuntimeError as e:
         s = str(e).lower()
-        if ("gpu" in s)or ("cuda" in s )or ("CUDA" in s):
+        if ("gpu" in s) or ("cuda" in s) or ("CUDA" in s) or ("bailing" in s):
             raise SystemExit(138)
         if 'CUDNN_STATUS_INTERNAL_ERROR' in s:
             raise SystemExit(138)
 
     except BaseException as e:
+        if "I need a GPU".lower() in str(e).lower():
+            raise SystemExit(138)
         msg = f"Error in node {node_name}"
         my_logger.error(f"Error in node {node_name}",
                         ET=type(e).__name__,
