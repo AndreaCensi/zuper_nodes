@@ -124,7 +124,7 @@ def launcher_main():
 
     else:
         cc: CommContext
-        with open_comms('unnamed') as cc:
+        with open_comms('unnamed', logger_meta=logger) as cc:
             msg = debug_print(errors)
             cc.fo_sink.write_control_message(CTRL_ABORTED, msg)
             cc.fo_sink.write_control_message(CTRL_OVER)
