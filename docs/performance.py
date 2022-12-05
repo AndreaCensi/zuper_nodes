@@ -60,7 +60,7 @@ test_image: bytes = get_jpg_image(shape)
 
 
 # f = open('stream.bin', 'wb')
-def test1():
+def test_1():
     """ JSON with base64"""
     res = bytes_to_json(test_image)
 
