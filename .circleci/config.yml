@@ -23,6 +23,7 @@ jobs:
       DEPS_INSTALL_TIMEOUT: 10m
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
+      PIP_INDEX_URL: ${PIP_INDEX_URL_SRC}
     docker:
     - image: ${DOCKER_REGISTRY}/${DOCKER_TARGET_ORG}/${DOCKER_REPO_PREFIX}zuper-ci-3.10:${Z_DISTRO}
       auth:
@@ -197,6 +198,7 @@ jobs:
       DEPS_INSTALL_TIMEOUT: 10m
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
+      PIP_INDEX_URL: ${PIP_INDEX_URL_SRC}
     docker:
     - image: ${DOCKER_REGISTRY}/${DOCKER_TARGET_ORG}/${DOCKER_REPO_PREFIX}zuper-ci-3.11:${Z_DISTRO}
       auth:
@@ -361,4 +363,4 @@ jobs:
           ./codecov  
     resource_class: small
 
-# sigil acab280106bd164e6eb50cf84542b271
+# sigil e554df4307e015a93d10dbbe663bfc43
