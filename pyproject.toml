@@ -2,7 +2,16 @@
 name = "zuper-nodes-z7"
 version = "7.2"
 authors = [{name = "Andrea Censi", email = "info@zupermind.com"}]
-dependencies = ["zuper-commons-z7", "zuper-ipce-z7", "zuper-typing-z7", "PyYAML", "cbor2", "networkx<2.8", "numpy", "pyparsing"]
+dependencies = [
+    "PyYAML",
+    "cbor2",
+    "networkx<2.8",
+    "numpy",
+    "pyparsing",
+    "zuper-commons-z7",
+    "zuper-ipce-z7",
+    "zuper-typing-z7",
+    ]
 
 [project.scripts]
 zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
@@ -13,8 +22,14 @@ name = "zuper-nodes-z7"
 version = "7.2"
 description = ""
 authors = ["Andrea Censi <info@zupermind.com>"]
-packages = [{include = "zuper_nodes", from = "src"}, {include = "zuper_nodes_wrapper", from = "src"}]
+packages = [
+    {from = "src", include = "zuper_nodes"},
+    {from = "src", include = "zuper_nodes_wrapper"},
+    ]
 
 [tool.setuptools]
-packages = ["zuper_nodes", "zuper_nodes_wrapper"]
+packages = [
+    "zuper_nodes",
+    "zuper_nodes_wrapper",
+    ]
 package-dir = {"" = "src"}
