@@ -16,6 +16,12 @@ dependencies = [
 [project.scripts]
 zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
 
+[project.optional-dependencies]
+test = [
+    "nose",
+    "pydot",
+    ]
+
 [tool]
 [tool.poetry]
 name = "zuper-nodes-z7"
