@@ -307,17 +307,15 @@ def loop(
                     sink.write_control_message(CTRL_NOT_UNDERSTOOD, msg)
                     sink.write_control_message(CTRL_OVER)
                 else:
-
                     if parsed.code == CTRL_CAPABILITIES:
                         my_capabilities = {"z2": {CAPABILITY_PROTOCOL_REFLECTION: True}}
                         sink.write_control_message(CTRL_UNDERSTOOD)
                         sink.write_control_message(CTRL_CAPABILITIES, my_capabilities)
                         sink.write_control_message(CTRL_OVER)
                     else:
-                        assert False
+                        raise AssertionError(parsed.code)
 
             elif isinstance(parsed, RawTopicMessage):
-
                 parsed.topic = tin.get(parsed.topic, parsed.topic)
                 logger_interaction.info(f'Received message of topic "{parsed.topic}".')
                 if parsed.topic.startswith("wrapper."):
@@ -339,7 +337,6 @@ def loop(
 
                         raise
                     except BaseException as e:
-
                         msg = "Exception while calling the node's init() function."
                         msg += "\n\n" + indent(traceback.format_exc(), "| ")
                         try:
@@ -388,7 +385,7 @@ def loop(
 
                     raise InternalProblem(msg) from e  # XXX
             else:
-                assert False
+                raise AssertionError
 
         res = context_data.pc.finish()
         if isinstance(res, Unexpected):
