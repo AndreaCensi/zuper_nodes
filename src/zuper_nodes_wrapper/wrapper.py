@@ -210,7 +210,7 @@ def check_variables():
 
 
 def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None):
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()  # ok
 
     check_variables()
 

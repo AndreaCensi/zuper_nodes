@@ -24,7 +24,7 @@ from .meta_protocol import (
 
 def identify_main():
     usage = None
-    parser = argparse.ArgumentParser(usage=usage)
+    parser = argparse.ArgumentParser(usage=usage)  # ok
 
     parser.add_argument("--image", default=None)
 
