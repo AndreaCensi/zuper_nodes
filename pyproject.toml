@@ -1,7 +1,7 @@
 [project]
 name = "zuper-nodes-z7"
 version = "7.2"
-authors = [{name = "Andrea Censi", email = "info@zupermind.com"}]
+authors = [{name = "Andrea Censi", email = "AndreaCensi@users.noreply.github.com"}]
 dependencies = [
     "PyYAML",
     "cbor2",
@@ -27,7 +27,7 @@ test = [
 name = "zuper-nodes-z7"
 version = "7.2"
 description = ""
-authors = ["Andrea Censi <info@zupermind.com>"]
+authors = ["Andrea Censi <AndreaCensi@users.noreply.github.com>"]
 packages = [
     {from = "src", include = "zuper_nodes"},
     {from = "src", include = "zuper_nodes_wrapper"},
