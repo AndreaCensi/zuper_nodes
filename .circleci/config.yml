@@ -34,6 +34,11 @@ jobs:
     steps:
     - checkout
     - run:
+        name: Avoid hosts unknown for Github
+        command: |
+          mkdir -p ~/.ssh
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+    - run:
         name: Build statistics
         command: |
           set -x 
@@ -232,6 +237,11 @@ jobs:
     working_directory: ~/repo
     steps:
     - checkout
+    - run:
+        name: Avoid hosts unknown for Github
+        command: |
+          mkdir -p ~/.ssh
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
     - run:
         name: Build statistics
         command: |
@@ -432,6 +442,11 @@ jobs:
     steps:
     - checkout
     - run:
+        name: Avoid hosts unknown for Github
+        command: |
+          mkdir -p ~/.ssh
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+    - run:
         name: Build statistics
         command: |
           set -x 
@@ -631,6 +646,11 @@ jobs:
     steps:
     - checkout
     - run:
+        name: Avoid hosts unknown for Github
+        command: |
+          mkdir -p ~/.ssh
+          echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+    - run:
         name: Build statistics
         command: |
           set -x 
@@ -813,4 +833,4 @@ jobs:
           ./codecov  
     resource_class: small
 
-# sigil 409c7cc92f734bb440f61ac2705ed748
+# sigil 844f269c50ab0458c74914656afd397a
