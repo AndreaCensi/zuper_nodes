@@ -5,7 +5,7 @@ authors = [{name = "Andrea Censi", email = "AndreaCensi@users.noreply.github.com
 dependencies = [
     "PyYAML",
     "cbor2",
-    "networkx<2.8",
+    "networkx",
     "numpy",
     "pyparsing",
     "zuper-commons-z7",
