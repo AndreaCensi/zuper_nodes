@@ -8,22 +8,22 @@ workflows:
   test:
     jobs:
     - test-310-src:
-        context: << pipeline.parameters.context_name >>
+        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
     - test-310-bin:
-        context: << pipeline.parameters.context_name >>
+        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
     - test-311-src:
-        context: << pipeline.parameters.context_name >>
+        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
     - test-311-bin:
-        context: << pipeline.parameters.context_name >>
+        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
@@ -845,4 +845,4 @@ jobs:
           ./codecov  
     resource_class: small
 
-# sigil 4499579bd5cc7e7904f10b8842760b4f
+# sigil 948080d1e626b9454b674cd0c0dd0fc9
