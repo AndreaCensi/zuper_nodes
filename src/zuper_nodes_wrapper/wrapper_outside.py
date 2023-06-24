@@ -191,7 +191,6 @@ class ComponentInterface:
         logger_interaction.info(f'Written to topic "{topic}" >> {self.nickname}.')
 
     def _write(self, j):
-
         try:
             self.fpin.write(j)
             self.fpin.flush()

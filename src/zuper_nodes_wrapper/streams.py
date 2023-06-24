@@ -57,7 +57,6 @@ def open_for_write(fout: str):
         logger_interaction.info(f"Opening output file {fout} (wants fifo: {wants_fifo})")
 
         if not os.path.exists(fout):
-
             if wants_fifo:
                 make_sure_dir_exists(fout)
                 os.mkfifo(fout)

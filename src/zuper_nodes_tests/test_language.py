@@ -1,4 +1,4 @@
-from nose.tools import assert_equal
+from zuper_commons.test_utils import my_assert_equal
 from zuper_commons.types import check_isinstance
 from zuper_nodes import (
     ChannelName,

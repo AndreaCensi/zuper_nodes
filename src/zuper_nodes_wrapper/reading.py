@@ -34,7 +34,6 @@ def inputs(f, give_up: Optional[float] = None, waiting_for: Optional[str] = None
                 m = interpret_control_message(WireMessage(parsed))
                 yield m
             elif FIELD_TOPIC in parsed:
-
                 if not FIELD_COMPAT in parsed:
                     msg = f'Could not find field "compat" in structure "{parsed}".'
                     logger.error(msg)

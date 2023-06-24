@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 
-from nose.tools import assert_raises
-
+from zuper_commons.test_utils import assert_raises
 from zuper_nodes import check_compatible_protocol, IncompatibleProtocol, InteractionProtocol
 from zuper_nodes.language import opposite, particularize_no_check
 
@@ -50,7 +49,8 @@ def test_subprotocol_obs() -> None:
     # logger.info(protocol_agent_2018=protocol_agent_2018, protocol_agent_2020=protocol_agent_2020)
     # Every agent2018 is an agent2020
     check_compatible_protocol(protocol_agent_2018, protocol_agent_2020)
-    assert_raises(IncompatibleProtocol, check_compatible_protocol, protocol_agent_2020, protocol_agent_2018)
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2020, protocol_agent_2018)
 
 
 def test_subprotocol_cmds() -> None:
@@ -91,17 +91,16 @@ def test_subprotocol_cmds() -> None:
     # logger.info(protocol_agent_2018=protocol_agent_2018, protocol_agent_2020=protocol_agent_2020)
     # Every agent2020 is an agent2018
     check_compatible_protocol(protocol_agent_2020, protocol_agent_2018)
-    assert_raises(IncompatibleProtocol, check_compatible_protocol, protocol_agent_2018, protocol_agent_2020)
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2018, protocol_agent_2020)
     protocol_agent_2020_op = opposite(protocol_agent_2020)
     protocol_agent_2018_op = opposite(protocol_agent_2018)
     check_compatible_protocol(protocol_agent_2018_op, protocol_agent_2020_op)
-    assert_raises(
-        IncompatibleProtocol, check_compatible_protocol, protocol_agent_2020_op, protocol_agent_2018_op
-    )
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2020_op, protocol_agent_2018_op)
 
 
 def test_subprotocol_channels_inputs() -> None:
-
     protocol_agent_2018 = InteractionProtocol(
         description="",
         inputs={"observations": object},
@@ -122,17 +121,16 @@ def test_subprotocol_channels_inputs() -> None:
 
     # Every agent2020 is an agent2018
     check_compatible_protocol(protocol_agent_2020, protocol_agent_2018)
-    assert_raises(IncompatibleProtocol, check_compatible_protocol, protocol_agent_2018, protocol_agent_2020)
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2018, protocol_agent_2020)
     protocol_agent_2020_op = opposite(protocol_agent_2020)
     protocol_agent_2018_op = opposite(protocol_agent_2018)
     check_compatible_protocol(protocol_agent_2018_op, protocol_agent_2020_op)
-    assert_raises(
-        IncompatibleProtocol, check_compatible_protocol, protocol_agent_2020_op, protocol_agent_2018_op
-    )
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2020_op, protocol_agent_2018_op)
 
 
 def test_subprotocol_channels_outputs() -> None:
-
     protocol_agent_2018 = InteractionProtocol(
         description="",
         inputs={"observations": object, "extra": int},
@@ -153,10 +151,10 @@ def test_subprotocol_channels_outputs() -> None:
 
     # Every agent2020 is an agent2018
     check_compatible_protocol(protocol_agent_2020, protocol_agent_2018)
-    assert_raises(IncompatibleProtocol, check_compatible_protocol, protocol_agent_2018, protocol_agent_2020)
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2018, protocol_agent_2020)
     protocol_agent_2020_op = opposite(protocol_agent_2020)
     protocol_agent_2018_op = opposite(protocol_agent_2018)
     check_compatible_protocol(protocol_agent_2018_op, protocol_agent_2020_op)
-    assert_raises(
-        IncompatibleProtocol, check_compatible_protocol, protocol_agent_2020_op, protocol_agent_2018_op
-    )
+    with assert_raises(IncompatibleProtocol):
+        check_compatible_protocol(protocol_agent_2020_op, protocol_agent_2018_op)
