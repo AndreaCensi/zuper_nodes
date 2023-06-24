@@ -30,7 +30,7 @@ def expect_parse(expr, s, expected):
     print(f"Obtained: {res}")
     print(f"Expected: {expected}")
     if expected:
-        assert_equal(res, expected)
+        my_assert_equal(res, expected)
 
 
 def test_parse_language_01() -> None:
