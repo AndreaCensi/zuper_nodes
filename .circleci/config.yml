@@ -2,28 +2,28 @@ version: 2.1
 parameters:
   context_name:
     type: string
-    default: << pipeline.git.branch >>
+    default: <<#pipeline.git.branch>><<pipeline.parameters.branch>><</pipeline.git.branch>><<^pipeline.git.branch>>default_context<</pipeline.git.branch>>
 workflows:
   version: 2
   test:
     jobs:
     - test-310-src:
-        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
+        context: <<pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
     - test-310-bin:
-        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
+        context: <<pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
     - test-311-src:
-        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
+        context: <<pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
     - test-311-bin:
-        context: <<#pipeline.parameters.context_name>><<pipeline.parameters.context_name>><</pipeline.parameters.context_name>><<^pipeline.parameters.context_name>>default_context<</pipeline.parameters.context_name>>
+        context: <<pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
@@ -845,4 +845,4 @@ jobs:
           ./codecov  
     resource_class: small
 
-# sigil 948080d1e626b9454b674cd0c0dd0fc9
+# sigil cd9624cc25b13ed87adff4fece3d77cd
