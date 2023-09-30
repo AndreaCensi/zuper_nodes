@@ -1,4 +1,4 @@
-from nose.tools import assert_equal
+from zuper_commons.test_utils import my_assert_equal
 from zuper_commons.types import check_isinstance
 from zuper_nodes import (
     ChannelName,
@@ -30,7 +30,7 @@ def expect_parse(expr, s, expected):
     print(f"Obtained: {res}")
     print(f"Expected: {expected}")
     if expected:
-        assert_equal(res, expected)
+        my_assert_equal(res, expected)
 
 
 def test_parse_language_01() -> None:
