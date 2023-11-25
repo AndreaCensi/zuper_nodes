@@ -2,26 +2,7 @@
 name = "zuper-nodes-z7"
 version = "7.2"
 authors = [{name = "Andrea Censi", email = "AndreaCensi@users.noreply.github.com"}]
-dependencies = [
-    "PyYAML",
-    "cbor2",
-    "networkx",
-    "numpy",
-    "pyparsing",
-    "zuper-commons-z7",
-    "zuper-ipce-z7",
-    "zuper-typing-z7",
-    ]
 
-[project.scripts]
-zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
-
-[project.optional-dependencies]
-test = [
-    "pydot",
-    ]
-
-[tool]
 [tool.poetry]
 name = "zuper-nodes-z7"
 version = "7.2"
@@ -32,15 +13,21 @@ packages = [
     {from = "src", include = "zuper_nodes_wrapper"},
     ]
 
+[tool.poetry.dependencies]
+PyYAML = "*"
+cbor2 = "*"
+networkx = "*"
+numpy = "*"
+pyparsing = "*"
+zuper-commons-z7 = "*"
+zuper-ipce-z7 = "*"
+zuper-typing-z7 = "*"
+
+[tool.poetry.group.test.dependencies]
+pydot = "*"
+
 [tool.poetry.scripts]
 zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
-
-[tool.setuptools]
-packages = [
-    "zuper_nodes",
-    "zuper_nodes_wrapper",
-    ]
-package-dir = {"" = "src"}
 
 [build-system]
 requires = [
