@@ -141,9 +141,7 @@ class ComponentInterface:
         ob: MsgReceived = self.read_one(expect_topic=expect, timeout=timeout)
         return ob
 
-    def write_topic_and_expect_zero(
-        self, topic: str, data=None, with_schema=False, timeout=None, timing=None
-    ):
+    def write_topic_and_expect_zero(self, topic: str, data=None, with_schema=False, timeout=None, timing=None):
         timeout = timeout or self.timeout
         self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
         msgs = read_reply(self.fpout, timeout=timeout, nickname=self.nickname)
@@ -196,8 +194,7 @@ class ComponentInterface:
             self.fpin.flush()
         except BrokenPipeError as e:
             msg = (
-                f'While attempting to write to node "{self.nickname}", '
-                f"I reckon that the pipe is closed and the node exited."
+                f'While attempting to write to node "{self.nickname}", ' f"I reckon that the pipe is closed and the node exited."
             )
             try:
                 received = self.read_one(expect_topic=TOPIC_ABORTED)
