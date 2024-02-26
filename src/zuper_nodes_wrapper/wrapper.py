@@ -96,14 +96,10 @@ class ConcreteContext(Context):
     def get_hostname(self):
         return self.hostname
 
-    def write(
-        self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False
-    ):
+    def write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False):
         self._write(topic, data, timing, with_schema)
 
-    def _write(
-        self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False
-    ) -> None:
+    def _write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False) -> None:
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
