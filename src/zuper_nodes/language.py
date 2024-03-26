@@ -46,12 +46,10 @@ class OutputProduced(ZEvent):
 
 class Language(ABC):
     @abstractmethod
-    def collect_simple_events(self) -> Iterator[ZEvent]:
-        ...
+    def collect_simple_events(self) -> Iterator[ZEvent]: ...
 
     @abstractmethod
-    def opposite(self) -> "Language":
-        ...
+    def opposite(self) -> "Language": ...
 
 
 @dataclass(frozen=True, unsafe_hash=True)
