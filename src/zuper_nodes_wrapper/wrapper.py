@@ -502,7 +502,7 @@ def handle_message_node(parsed: RawTopicMessage, agent, context: ConcreteContext
         msg = f'Cannot deserialize object for topic "{topic}" expecting {klass}.'
         try:
             parsed = json.dumps(parsed, indent=2)
-        except:
+        except:  # OK
             parsed = str(parsed)
         msg += "\n\n" + indent(parsed, "|", "parsed: |")
         raise DecodingError(msg) from e
