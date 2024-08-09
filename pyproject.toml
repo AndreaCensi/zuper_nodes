@@ -2,6 +2,20 @@
 name = "zuper-nodes-z7"
 version = "7.2"
 authors = [{name = "Andrea Censi", email = "AndreaCensi@users.noreply.github.com"}]
+dependencies = [
+    "PyYAML",
+    "cbor2",
+    "networkx",
+    "numpy",
+    "pyparsing",
+    "zuper-commons-z7",
+    "zuper-ipce-z7",
+    "zuper-typing-z7",]
+
+[project.optional-dependencies]
+test = [
+    "pydot",
+    ]
 
 [tool.poetry]
 name = "zuper-nodes-z7"
@@ -25,6 +39,7 @@ zuper-typing-z7 = "*"
 
 [tool.poetry.group.test.dependencies]
 pydot = "*"
+python = "^3.12"
 
 [tool.poetry.scripts]
 zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
