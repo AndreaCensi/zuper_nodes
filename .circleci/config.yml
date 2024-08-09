@@ -8,18 +8,18 @@ workflows:
   version: 2
   test:
     jobs:
-    - test-311-src:
+    - test-312-src:
         context: <<pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
-    - test-311-bin:
+    - test-312-bin:
         context: <<pipeline.parameters.context_name>>
         filters:
           tags:
             ignore: /.*/
 jobs:
-  test-311-src:
+  test-312-src:
     environment:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -30,7 +30,7 @@ jobs:
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
-    - image: docker.io/${DOCKER_TARGET_ORG}/${DOCKER_REPO_PREFIX}zuper-ci-3.11:${Z_DISTRO}
+    - image: docker.io/${DOCKER_TARGET_ORG}/${DOCKER_REPO_PREFIX}zuper-ci-3.12:${Z_DISTRO}
       # auth:
       #   username: $DOCKER_USERNAME
       #   password: $DOCKER_PASSWORD
@@ -232,7 +232,7 @@ jobs:
           chmod +x codecov || true
           timeout 1m ./codecov || true
     resource_class: small
-  test-311-bin:
+  test-312-bin:
     environment:
       COLUMNS: '160'
       # default is /usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -243,7 +243,7 @@ jobs:
       COVER_PACKAGES: zuper_nodes,zuper_nodes_tests,zuper_nodes_wrapper,zuper_nodes_wrapper_tests
       TEST_PACKAGES: zuper_nodes_tests zuper_nodes_wrapper_tests
     docker:
-    - image: docker.io/${DOCKER_TARGET_ORG}/${DOCKER_REPO_PREFIX}zuper-ci-3.11:${Z_DISTRO}
+    - image: docker.io/${DOCKER_TARGET_ORG}/${DOCKER_REPO_PREFIX}zuper-ci-3.12:${Z_DISTRO}
       # auth:
       #   username: $DOCKER_USERNAME
       #   password: $DOCKER_PASSWORD
@@ -446,4 +446,4 @@ jobs:
           timeout 1m ./codecov || true
     resource_class: small
 
-# sigil 41dc8b43205677e306581974f77cae84
+# sigil 421266c3f14ecbe8f4124aad47a23d16
