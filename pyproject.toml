@@ -12,6 +12,9 @@ dependencies = [
     "zuper-ipce-z7",
     "zuper-typing-z7",]
 
+[project.scripts]
+zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
+
 [project.optional-dependencies]
 test = [
     "pydot",
@@ -39,7 +42,7 @@ zuper-typing-z7 = "*"
 
 [tool.poetry.group.test.dependencies]
 pydot = "*"
-python = "^3.12"
+python = ">=3.12"
 
 [tool.poetry.scripts]
 zuper-node-identify = "zuper_nodes_wrapper.identify:identify_main"
