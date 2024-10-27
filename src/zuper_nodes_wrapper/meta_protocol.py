@@ -1,6 +1,6 @@
 from dataclasses import dataclass
+from typing import Any
 
-from typing import Any, Dict, List
 from zuper_nodes import InteractionProtocol
 
 
@@ -35,11 +35,11 @@ class ProtocolDescription:
 @dataclass
 class CommsHealth:
     # ignored because not compatible
-    ignored: Dict[str, int]
+    ignored: dict[str, int]
     # unexpected topics
-    unexpected: Dict[str, int]
+    unexpected: dict[str, int]
     # malformed data
-    malformed: Dict[str, int]
+    malformed: dict[str, int]
     # if we are completely lost
     unrecoverable_protocol_error: bool
 
@@ -57,7 +57,6 @@ class NodeHealth:
 
 
 LogEntry = str
-
 
 basic_protocol = InteractionProtocol(
     description="""\
@@ -106,7 +105,7 @@ Basic interaction protocol for nodes spoken by the node wrapper.
         "node_state": Any,
         "set_state_ack": type(None),
         "set_state_error": str,
-        "logs": List[LogEntry],
+        "logs": list[LogEntry],
         "aborted": str,
     },
 )

@@ -1,7 +1,6 @@
 import socket
 import time
 from dataclasses import dataclass, field
-from typing import Dict, Optional
 
 import numpy as np
 
@@ -97,7 +96,7 @@ class TimeSpec:
     frame: str
     clock: str
 
-    time2: Optional[Timestamp] = None
+    time2: Timestamp | None = None
 
 
 def local_time() -> TimeSpec:
@@ -108,6 +107,6 @@ def local_time() -> TimeSpec:
 
 @dataclass
 class TimingInfo:
-    acquired: Optional[Dict[str, TimeSpec]] = field(default_factory=dict)
-    processed: Optional[Dict[str, TimeSpec]] = field(default_factory=dict)
-    received: Optional[TimeSpec] = None
+    acquired: dict[str, TimeSpec] | None = field(default_factory=dict)
+    processed: dict[str, TimeSpec] | None = field(default_factory=dict)
+    received: TimeSpec | None = None

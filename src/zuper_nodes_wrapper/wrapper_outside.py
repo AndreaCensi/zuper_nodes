@@ -1,12 +1,12 @@
 import os
 from io import BufferedReader
-from typing import cast, List, Optional
+from typing import cast
 
 import cbor2 as cbor
+
 from zuper_commons.text import indent
 from zuper_commons.types import ZException
-from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce
-from zuper_ipce import read_next_cbor
+from zuper_ipce import IEDO, IESO, ipce_from_object, object_from_ipce, read_next_cbor
 from zuper_nodes import (
     check_compatible_protocol,
     ExternalNodeDidNotUnderstand,
@@ -16,7 +16,6 @@ from zuper_nodes import (
     RemoteNodeAborted,
     TimingInfo,
 )
-
 from . import logger, logger_interaction
 from .constants import (
     CAPABILITY_PROTOCOL_REFLECTION,
@@ -47,16 +46,16 @@ iedo = IEDO(True, True)
 
 
 class ComponentInterface:
-    node_protocol: Optional[InteractionProtocol]
-    data_protocol: Optional[InteractionProtocol]
+    node_protocol: InteractionProtocol | None
+    data_protocol: InteractionProtocol | None
     nreceived: int
-    expect_protocol: Optional[InteractionProtocol]
+    expect_protocol: InteractionProtocol | None
 
     def __init__(
         self,
         fnin: str,
         fnout: str,
-        expect_protocol: Optional[InteractionProtocol],
+        expect_protocol: InteractionProtocol | None,
         nickname: str,
         timeout=None,
     ):
@@ -134,7 +133,7 @@ class ComponentInterface:
         with_schema: bool = False,
         timeout: float = None,
         timing=None,
-        expect: Optional[str] = None,
+        expect: str | None = None,
     ) -> MsgReceived:
         timeout = timeout or self.timeout
         self._write_topic(topic, data=data, with_schema=with_schema, timing=timing)
@@ -209,7 +208,7 @@ class ComponentInterface:
         j = cbor.dumps(msg)
         return j
 
-    def read_one(self, expect_topic: Optional[str] = None, timeout: float = None) -> MsgReceived:
+    def read_one(self, expect_topic: str | None = None, timeout: float = None) -> MsgReceived:
         timeout = timeout or self.timeout
         try:
             if expect_topic:
@@ -292,8 +291,8 @@ def read_reply(
     fpout,
     nickname: str,
     timeout: float = None,
-    waiting_for: Optional[str] = None,
-) -> List:
+    waiting_for: str | None = None,
+) -> list:
     """Reads a control message. Returns if it is CTRL_UNDERSTOOD.
     Raises:
         ExternalTimeout
@@ -329,7 +328,7 @@ def read_reply(
         raise ExternalProtocolViolation(msg)
 
 
-def read_until_over(fpout, timeout: float, nickname: str) -> List[WireMessage]:
+def read_until_over(fpout, timeout: float, nickname: str) -> list[WireMessage]:
     """Raises RemoteNodeAborted, TimeoutError"""
     res = []
     waiting_for = f"Reading reply of {nickname}."

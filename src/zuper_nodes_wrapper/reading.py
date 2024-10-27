@@ -1,11 +1,11 @@
-import time
-from typing import Iterator, Optional, Union
-
 import select
+import time
+from collections.abc import Iterator
+from typing import Union
+
 from zuper_commons.text import indent
 from zuper_ipce import read_next_cbor
 from zuper_nodes.structures import ExternalTimeout
-
 from . import logger
 from .constants import CUR_PROTOCOL, FIELD_COMPAT, FIELD_CONTROL, FIELD_DATA, FIELD_TIMING, FIELD_TOPIC
 from .struct import ControlMessage, interpret_control_message, RawTopicMessage, WireMessage
@@ -13,7 +13,7 @@ from .struct import ControlMessage, interpret_control_message, RawTopicMessage, 
 M = Union[RawTopicMessage, ControlMessage]
 
 
-def inputs(f, give_up: Optional[float] = None, waiting_for: Optional[str] = None) -> Iterator[M]:
+def inputs(f, give_up: float | None = None, waiting_for: str | None = None) -> Iterator[M]:
     last = time.time()
     intermediate_timeout = 3.0
     intermediate_timeout_multiplier = 1.5

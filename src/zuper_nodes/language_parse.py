@@ -1,18 +1,10 @@
 import pyparsing
-from pyparsing import (
-    Suppress,
-    Literal,
-    Keyword,
-    ParserElement,
-    pyparsing_common,
-    opAssoc,
-)
+from pyparsing import Keyword, Literal, opAssoc, ParserElement, pyparsing_common, Suppress
 
 try:
     from pyparsing import operatorPrecedence
 except ImportError:  # pragma: no cover
     from pyparsing import infixNotation as operatorPrecedence
-
 
 from .language import (
     ExpectInputReceived,

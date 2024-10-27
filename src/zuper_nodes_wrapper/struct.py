@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Generic, NewType, Optional, TypeVar
+from typing import Generic, NewType, TypeVar
 
 from zuper_nodes.structures import TimingInfo
 from .constants import FIELD_CONTROL, FIELD_DATA
@@ -17,14 +17,14 @@ class MsgReceived(Generic[X]):
 @dataclass
 class RawTopicMessage:
     topic: str
-    data: Optional[dict]
-    timing: Optional[dict]
+    data: dict | None
+    timing: dict | None
 
 
 @dataclass
 class ControlMessage:
     code: str
-    msg: Optional[str]
+    msg: str | None
 
 
 WireMessage = NewType("WireMessage", dict)

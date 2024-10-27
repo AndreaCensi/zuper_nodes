@@ -10,8 +10,7 @@ import cbor2
 import yaml
 
 from zuper_commons.text import indent
-from zuper_ipce import object_from_ipce
-from zuper_ipce import read_cbor_or_json_objects
+from zuper_ipce import object_from_ipce, read_cbor_or_json_objects
 from zuper_nodes import InteractionProtocol
 from . import logger
 from .meta_protocol import (

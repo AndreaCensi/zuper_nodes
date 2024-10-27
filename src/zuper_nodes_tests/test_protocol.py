@@ -1,5 +1,5 @@
 import os
-from typing import List, Sequence, Union
+from collections.abc import Sequence
 
 from networkx.drawing.nx_pydot import write_dot
 
@@ -18,7 +18,7 @@ def _fix():
     _ = pydot
 
 
-def assert_seq(s: Union[str, Language], seq: List[ZEvent], expect: Sequence[type], final: type):
+def assert_seq(s: str | Language, seq: list[ZEvent], expect: Sequence[type], final: type):
     if isinstance(s, str):
         s = s.replace("\n", " ").strip()
         while "  " in s:

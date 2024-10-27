@@ -1,20 +1,19 @@
 from dataclasses import dataclass
-from typing import Union, Tuple, Optional, Set
 
+from zuper_commons.text import indent
 from .language import (
-    Language,
-    OutputProduced,
-    InputReceived,
-    ZEvent,
+    Either,
     ExpectInputReceived,
     ExpectOutputProduced,
+    InputReceived,
     InSequence,
-    ZeroOrMore,
-    Either,
+    Language,
     OneOrMore,
+    OutputProduced,
+    ZeroOrMore,
     ZeroOrOne,
+    ZEvent,
 )
-from zuper_commons.text import indent
 
 __all__ = [
     "Always",
@@ -49,7 +48,7 @@ class NeedMore(Result):
 
 import networkx as nx
 
-NodeName = Tuple[str, ...]
+NodeName = tuple[str, ...]
 
 
 class Always:
@@ -57,11 +56,11 @@ class Always:
 
 
 def get_nfa(
-    g: Optional[nx.DiGraph],
+    g: nx.DiGraph | None,
     start_node: NodeName,
     accept_node: NodeName,
     l: Language,
-    prefix: Tuple[str, ...] = (),
+    prefix: tuple[str, ...] = (),
 ):
     # assert start_node != accept_node
     if not start_node in g:
@@ -157,7 +156,7 @@ ACCEPT = ("accept",)
 
 class LanguageChecker:
     g: nx.DiGraph
-    active: Set[NodeName]
+    active: set[NodeName]
 
     def __init__(self, language: Language):
         self.g = nx.MultiDiGraph()
@@ -230,7 +229,7 @@ class LanguageChecker:
         # print(f'push: now active is {self.active}')
         return self.finish()
 
-    def finish(self) -> Union[NeedMore, Enough, Unexpected]:
+    def finish(self) -> NeedMore | Enough | Unexpected:
         # print(f'finish: active is {self.active}')
         if not self.active:
             return Unexpected("no active")
@@ -241,7 +240,7 @@ class LanguageChecker:
     def get_active_states_names(self):
         return [self.g.nodes[_]["label"] for _ in self.active]
 
-    def get_expected_events(self) -> Set:
+    def get_expected_events(self) -> set:
         events = set()
         for state in self.active:
             for _, neighbor, data in self.g.out_edges(nbunch=[state], data=True):

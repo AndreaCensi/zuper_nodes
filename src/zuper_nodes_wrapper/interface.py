@@ -1,6 +1,5 @@
 import sys
 from abc import ABC, abstractmethod
-from typing import List, Optional
 
 from zuper_nodes.structures import TimingInfo
 
@@ -10,7 +9,7 @@ __all__ = [
 ]
 
 
-def wrap_direct(node, protocol, args: Optional[List[str]] = None):
+def wrap_direct(node, protocol, args: list[str] | None = None):
     if args is None:
         args = sys.argv[1:]
 

@@ -5,7 +5,6 @@ import socket
 import time
 import traceback
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
 
 import yaml
 
@@ -67,18 +66,18 @@ iedo = IEDO(True, True)
 
 class ConcreteContext(Context):
     protocol: InteractionProtocol
-    to_write: List[RawTopicMessage]
+    to_write: list[RawTopicMessage]
     pc: LanguageChecker
     node_name: str
     hostname: str
-    tout: Dict[str, str]
+    tout: dict[str, str]
 
     def __init__(
         self,
         sink: Sink,
         protocol: InteractionProtocol,
         node_name: str,
-        tout: Dict[str, str],
+        tout: dict[str, str],
     ):
         self.sink = sink
         self.protocol = protocol
@@ -96,10 +95,10 @@ class ConcreteContext(Context):
     def get_hostname(self):
         return self.hostname
 
-    def write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False):
+    def write(self, topic: ChannelName, data: object, timing: TimingInfo | None = None, with_schema: bool = False):
         self._write(topic, data, timing, with_schema)
 
-    def _write(self, topic: ChannelName, data: object, timing: Optional[TimingInfo] = None, with_schema: bool = False) -> None:
+    def _write(self, topic: ChannelName, data: object, timing: TimingInfo | None = None, with_schema: bool = False) -> None:
         if topic not in self.protocol.outputs:
             msg = f'Output channel "{topic}" not found in protocol; know {sorted(self.protocol.outputs)}.'
             raise Exception(msg)
@@ -156,7 +155,7 @@ class ConcreteContext(Context):
         rtm = RawTopicMessage(topic_o, data, timing_o)
         self.to_write.append(rtm)
 
-    def get_to_write(self) -> List[RawTopicMessage]:
+    def get_to_write(self) -> list[RawTopicMessage]:
         """Returns the messages to send and resets the queue"""
         res = self.to_write
         self.to_write = []
@@ -183,7 +182,7 @@ class ConcreteContext(Context):
         logger.error(prefix + s)
 
 
-def get_translation_table(t: str) -> Tuple[Dict[str, str], Dict[str, str]]:
+def get_translation_table(t: str) -> tuple[dict[str, str], dict[str, str]]:
     tout = {}
     tin = {}
     for t in t.split(","):
@@ -205,7 +204,7 @@ def check_variables():
             logger.warn(msg)
 
 
-def run_loop(node: object, protocol: InteractionProtocol, args: Optional[List[str]] = None):
+def run_loop(node: object, protocol: InteractionProtocol, args: list[str] | None = None):
     parser = argparse.ArgumentParser()  # ok
 
     check_variables()

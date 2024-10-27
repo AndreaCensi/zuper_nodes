@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
+from collections.abc import Iterator
 from dataclasses import dataclass
-from typing import Dict, Iterator, NewType, Optional, Tuple, TYPE_CHECKING
+from typing import NewType, TYPE_CHECKING
 
 __all__ = [
     "ChannelName",
@@ -76,7 +77,7 @@ class ExpectOutputProduced(Language):
 
 @dataclass(frozen=True, unsafe_hash=True)
 class InSequence(Language):
-    ls: Tuple[Language, ...]
+    ls: tuple[Language, ...]
 
     def collect_simple_events(self):
         for l in self.ls:
@@ -122,7 +123,7 @@ class OneOrMore(Language):
 
 @dataclass(frozen=True, unsafe_hash=True)
 class Either(Language):
-    ls: Tuple[Language, ...]
+    ls: tuple[Language, ...]
 
     def collect_simple_events(self):
         for l in self.ls:
@@ -140,8 +141,8 @@ class InteractionProtocol:
     # Description
     description: str
     # Type for each input or output
-    inputs: Dict[ChannelName, type]
-    outputs: Dict[ChannelName, type]
+    inputs: dict[ChannelName, type]
+    outputs: dict[ChannelName, type]
     # The interaction language
     language: str
 
@@ -181,9 +182,9 @@ def opposite(ip: InteractionProtocol) -> InteractionProtocol:
 
 def particularize(
     ip: InteractionProtocol,
-    description: Optional[str] = None,
-    inputs: Optional[Dict[ChannelName, type]] = None,
-    outputs: Optional[Dict[ChannelName, type]] = None,
+    description: str | None = None,
+    inputs: dict[ChannelName, type] | None = None,
+    outputs: dict[ChannelName, type] | None = None,
 ) -> InteractionProtocol:
     inputs2 = dict(ip.inputs)
     inputs2.update(inputs or {})
@@ -201,9 +202,9 @@ def particularize(
 
 def particularize_no_check(
     ip: InteractionProtocol,
-    description: Optional[str] = None,
-    inputs: Optional[Dict[ChannelName, type]] = None,
-    outputs: Optional[Dict[ChannelName, type]] = None,
+    description: str | None = None,
+    inputs: dict[ChannelName, type] | None = None,
+    outputs: dict[ChannelName, type] | None = None,
 ) -> InteractionProtocol:
     inputs2 = dict(ip.inputs)
     inputs2.update(inputs or {})
